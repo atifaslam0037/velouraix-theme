@@ -1,18 +1,87 @@
-{% style %}
-  {% # Loads all font variantions with display: swap %}
-  {{ settings.type_primary_font | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+{% doc %}
+  Renders all global theme settings as CSS custom properties on :root.
+  Inject this snippet inside <head> so every page has access to design tokens.
+{% enddoc %}
 
+<style>
   :root {
+    {%- comment -%} ── Layout ── {%- endcomment -%}
+    --page-width: {{ settings.max_page_width }};
+    --page-margin: {{ settings.min_page_margin }}px;
+
+    {%- comment -%} ── Branding ── {%- endcomment -%}
+    --logo-width: {{ settings.logo_width }}px;
+
+    {%- comment -%} ── Brand Colors ── {%- endcomment -%}
+    --color-primary: {{ settings.color_primary }};
+    --color-primary-hover: {{ settings.color_primary_hover }};
+    --color-secondary: {{ settings.color_secondary }};
+    --color-secondary-hover: {{ settings.color_secondary_hover }};
+    --color-accent: {{ settings.color_accent }};
+    --color-accent-hover: {{ settings.color_accent_hover }};
+
+    {%- comment -%} ── Background & Foreground ── {%- endcomment -%}
+    --color-background: {{ settings.background_color }};
+    --color-foreground: {{ settings.foreground_color }};
+
+    {%- comment -%} ── Text ── {%- endcomment -%}
+    --color-text: {{ settings.color_text }};
+    --color-text-muted: {{ settings.color_text_muted }};
+
+    {%- comment -%} ── Borders & Inputs ── {%- endcomment -%}
+    --color-border: {{ settings.color_border }};
+    --color-input-background: {{ settings.color_input_background }};
+    --color-input-text: {{ settings.color_input_text }};
+    --color-input-border: {{ settings.color_input_border }};
+    --color-input-focus: {{ settings.color_input_focus }};
+
+    {%- comment -%} ── Buttons ── {%- endcomment -%}
+    --color-btn-primary-bg: {{ settings.color_btn_primary_bg }};
+    --color-btn-primary-text: {{ settings.color_btn_primary_text }};
+    --color-btn-primary-bg-hover: {{ settings.color_btn_primary_bg_hover }};
+    --color-btn-primary-text-hover: {{ settings.color_btn_primary_text_hover }};
+
+    --color-btn-secondary-bg: {{ settings.color_btn_secondary_bg }};
+    --color-btn-secondary-text: {{ settings.color_btn_secondary_text }};
+    --color-btn-secondary-bg-hover: {{ settings.color_btn_secondary_bg_hover }};
+    --color-btn-secondary-text-hover: {{ settings.color_btn_secondary_text_hover }};
+
+    {%- comment -%} ── Pricing ── {%- endcomment -%}
+    --color-price-sale: {{ settings.color_price_sale }};
+    --color-price-compare: {{ settings.color_price_compare }};
+
+    {%- comment -%} ── Border radius ── {%- endcomment -%}
+    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+    --style-border-radius-buttons: {{ settings.button_corner_radius }}px;
+
+    {%- comment -%} ── Typography – Primary font ── {%- endcomment -%}
     --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
     --font-primary--style: {{ settings.type_primary_font.style }};
     --font-primary--weight: {{ settings.type_primary_font.weight }};
-    --page-width: {{ settings.max_page_width }};
-    --page-margin: {{ settings.min_page_margin }}px;
-    --color-background: {{ settings.background_color }};
-    --color-foreground: {{ settings.foreground_color }};
-    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+
+    {%- comment -%} ── Body text ── {%- endcomment -%}
+    --font-body-size: {{ settings.font_body_size }}px;
+    --font-body-weight: {{ settings.font_body_weight }};
+    --font-body-line-height: {{ settings.font_body_line_height }};
+
+    {%- comment -%} ── Heading sizes ── {%- endcomment -%}
+    --font-h1-size: {{ settings.font_h1_size }}px;
+    --font-h2-size: {{ settings.font_h2_size }}px;
+    --font-h3-size: {{ settings.font_h3_size }}px;
+    --font-h4-size: {{ settings.font_h4_size }}px;
+    --font-h5-size: {{ settings.font_h5_size }}px;
+    --font-h6-size: {{ settings.font_h6_size }}px;
+
+    {%- comment -%} ── Heading weights ── {%- endcomment -%}
+    --font-heading-weight: {{ settings.font_heading_weight }};
+    --font-heading-line-height: {{ settings.font_heading_line_height }};
+
+    {%- comment -%} ── Heading color ── {%- endcomment -%}
+    --color-heading: {{ settings.color_heading }};
   }
-{% endstyle %}
+
+  {%- comment -%} ── Font Face injection ── {%- endcomment -%}
+  {% unless settings.type_primary_font.system? %}
+    {{ settings.type_primary_font | font_face: font_display: 'swap' }}
+  {% endunless %}
+</style>

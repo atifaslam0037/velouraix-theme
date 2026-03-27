@@ -21,7 +21,7 @@
     "main": "Main",
     "page": "Page",
     "password": "Password",
-    "primary": "Primary",
+    "primary": "Primary font",
     "product": "Product",
     "row": "Row",
     "search": "Search",
@@ -31,12 +31,59 @@
     "sidebar": "Sidebar",
     "text": "Text",
     "theme": "Theme",
-    "typography": "Typography"
+    "typography": "Typography",
+    "branding": "Logo & Favicon"
   },
   "labels": {
     "alignment": "Alignment",
-    "background": "Background",
-    "foreground": "Foreground",
+    "background": "Page background",
+    "foreground": "Page foreground",
+    "base_colors": "Base colors",
+    "brand_colors": "Brand colors",
+
+    "color_primary": "Primary color",
+    "color_primary_hover": "Primary hover color",
+    "color_secondary": "Secondary color",
+    "color_secondary_hover": "Secondary hover color",
+    "color_accent": "Accent color",
+    "color_accent_hover": "Accent hover color",
+
+    "text_colors": "Text colors",
+    "color_text": "Body text color",
+    "color_text_muted": "Muted / secondary text color",
+    "color_heading": "Heading color",
+
+    "border_input_colors": "Border & Input colors",
+    "color_border": "Border color",
+    "color_input_background": "Input background",
+    "color_input_text": "Input text color",
+    "color_input_border": "Input border color",
+    "color_input_focus": "Input focus / highlight color",
+
+    "primary_button": "Primary button",
+    "secondary_button": "Secondary button",
+    "button_background": "Button background",
+    "button_text": "Button text color",
+    "button_background_hover": "Button background (hover)",
+    "button_text_hover": "Button text color (hover)",
+    "button_corner_radius": "Button corner radius",
+
+    "pricing_colors": "Pricing colors",
+    "color_price_sale": "Sale price color",
+    "color_price_compare": "Compare-at price color",
+
+    "body_text": "Body text",
+    "headings": "Headings (H1–H6)",
+    "font_size": "Font size",
+    "font_weight": "Font weight",
+    "line_height": "Line height",
+    "h1_size": "H1 size",
+    "h2_size": "H2 size",
+    "h3_size": "H3 size",
+    "h4_size": "H4 size",
+    "h5_size": "H5 size",
+    "h6_size": "H6 size",
+
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
     "input_corner_radius": "Input corner radius",
@@ -48,7 +95,14 @@
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+
+    "logo": "Logo",
+    "logo_image": "Logo image",
+    "logo_width": "Logo width",
+    "logo_alt": "Logo alt text",
+    "favicon": "Favicon",
+    "favicon_image": "Favicon image (32×32 px recommended)"
   },
   "options": {
     "alignment": {
@@ -61,8 +115,9 @@
       "vertical": "Vertical"
     },
     "page_width": {
-      "narrow": "Narrow",
-      "wide": "Wide"
+      "narrow": "Narrow (80rem)",
+      "normal": "Normal (90rem)",
+      "wide": "Wide (110rem)"
     },
     "size": {
       "large": "Large",
@@ -73,5 +128,25 @@
       "subtitle": "Subtitle",
       "normal": "Normal text"
     },
+    "font_weight": {
+      "light": "Light (300)",
+      "regular": "Regular (400)",
+      "medium": "Medium (500)",
+      "semibold": "Semi Bold (600)",
+      "bold": "Bold (700)",
+      "extrabold": "Extra Bold (800)",
+      "black": "Black (900)"
+    },
+    "line_height": {
+      "tight": "Tight",
+      "normal": "Normal",
+      "relaxed": "Relaxed"
+    },
+    "full": "Full width",
+    "narrow": "Narrow",
+    "normal": "Normal"
+  },
+  "placeholders": {
+    "logo_alt": "Enter a description of your logo"
   }
 }

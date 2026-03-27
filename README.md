@@ -145,9 +145,9 @@ When developing components defined by schema settings, we recommend these guidel
 
 For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
 
-### `critical.css`
+### `base.css`
 
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
+The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `base.css` file.
 
 ## Contributing
 
