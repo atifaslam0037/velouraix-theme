@@ -1,0 +1,223 @@
+/** base CSS for the theme. This file is included on every page. */
+
+/* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-height: 100svh;
+}
+
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+  overflow: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+
+
+dialog {
+  background-color: var(--color-background);
+  color: var(--color-text, var(--color-foreground));
+}
+
+p {
+  text-wrap: pretty;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p:empty {
+  display: none;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):first-child,
+:empty:first-child+ :where(p, h1, h2, h3, h4, h5, h6) {
+  margin-block-start: 0;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):last-child,
+:where(p, h1, h2, h3, h4, h5, h6)+ :has(+ :empty:last-child) {
+  margin-block-end: 0;
+}
+
+/** Theme styles below */
+body {
+  font-family: var(--font-primary--family);
+  font-size: var(--font-body-size);
+  font-weight: var(--font-body-weight);
+  line-height: var(--font-body-line-height);
+  background-color: var(--color-background);
+  color: var(--color-text, var(--color-foreground));
+}
+
+/** Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-primary--family);
+  font-weight: var(--font-heading-weight);
+  line-height: var(--font-heading-line-height);
+  color: var(--color-heading, var(--color-foreground));
+}
+
+h1 {
+  font-size: var(--font-h1-size);
+}
+
+h2 {
+  font-size: var(--font-h2-size);
+}
+
+h3 {
+  font-size: var(--font-h3-size);
+}
+
+h4 {
+  font-size: var(--font-h4-size);
+}
+
+h5 {
+  font-size: var(--font-h5-size);
+}
+
+h6 {
+  font-size: var(--font-h6-size);
+}
+
+/** Inputs */
+input,
+textarea,
+select {
+  background-color: var(--color-input-background);
+  color: var(--color-input-text);
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--style-border-radius-inputs);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-focus) 20%, transparent);
+}
+
+/** Buttons */
+.btn,
+button[type="submit"],
+.shopify-payment-button__button {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border: 2px solid var(--color-btn-primary-bg);
+  border-radius: var(--style-border-radius-buttons);
+  padding: 0.75rem 1.5rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn:hover,
+button[type="submit"]:hover {
+  background-color: var(--color-btn-primary-bg-hover);
+  color: var(--color-btn-primary-text-hover);
+  border-color: var(--color-btn-primary-bg-hover);
+}
+
+.btn--secondary {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border: 2px solid var(--color-btn-secondary-text);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-btn-secondary-bg-hover);
+  color: var(--color-btn-secondary-text-hover);
+  border-color: var(--color-btn-secondary-bg-hover);
+}
+
+/** Pricing */
+.price--sale,
+.price-item--sale {
+  color: var(--color-price-sale);
+}
+
+.price--compare,
+.price-item--regular.price--on-sale {
+  color: var(--color-price-compare);
+  text-decoration: line-through;
+}
+
+/** Borders */
+hr,
+.border {
+  border-color: var(--color-border);
+}
+
+/** Section layout utilities */
+
+/**
+ * Setup a grid that enables both full-width and constrained layouts
+ * depending on the class of the child elements.
+ *
+ * By default, a minimum content margin is set on the left and right
+ * sides of the section and the content is centered in the viewport to
+ * not exceed the maximum page width.
+ *
+ * When a child element is given the `full-width` class, it will span
+ * the entire viewport.
+ */
+.shopify-section {
+  --content-width: min(calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2));
+  --content-margin: minmax(var(--page-margin), 1fr);
+  --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
+
+  /* This is required to make <img> elements work as background images */
+  position: relative;
+  grid-template-columns: var(--content-grid);
+  display: grid;
+  width: 100%;
+}
+
+/* Child elements, by default, are constrained to the central column of the grid. */
+.shopify-section>* {
+  grid-column: 2;
+}
+
+/* Child elements that use the full-width utility class span the entire viewport. */
+.shopify-section>.full-width {
+  grid-column: 1 / -1;
+}
