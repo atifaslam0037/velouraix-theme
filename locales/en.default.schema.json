@@ -21,6 +21,8 @@
     "colors": "Colors",
     "column": "Column",
     "content": "Content",
+    "custom_liquid": "Custom liquid",
+    "custom_liquid_info": "Add app snippets or other Liquid code to create advanced customizations.",
     "custom_section": "Custom section",
     "fonts": "Fonts",
     "footer": "Footer",
@@ -44,7 +46,9 @@
     "branding": "Logo & Favicon",
     "spacing": "Spacing",
     "animations": "Animations",
-    "behavior": "Behavior"
+    "behavior": "Behavior",
+    "padding_top": "Top padding",
+    "padding_bottom": "Bottom padding"
   },
   "labels": {
     "alignment": "Alignment",
