@@ -161,7 +161,7 @@
       "relaxed": "Relaxed"
     },
     "search_style": {
-      "search_style": "Search Page",
+      "page": "Search page",
       "modal": "Search Modal"
     },
     "cart_style": {

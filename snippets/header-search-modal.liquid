@@ -24,7 +24,7 @@
     </div>
 
     <div class="search-modal__body">
-      {%- form 'search', class: 'search-modal__form', role: 'search' -%}
+      <form action="{{ routes.search_url }}" method="get" class="search-modal__form" role="search">
         <input type="hidden" name="type" value="product">
         <label for="search-modal-input" class="visually-hidden">
           {{- 'sections.header.search_label' | t -}}
@@ -48,7 +48,7 @@
         >
           {%- render 'icon', name: 'search' -%}
         </button>
-      {%- endform -%}
+      </form>
 
       <div class="search-modal__blocks">
         <div class="search-modal__block">

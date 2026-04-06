@@ -8,6 +8,71 @@
  * ------------------------------------------------------------
  */
 {
+  "general": {
+    "layout": "Layout",
+    "typography": "Typography",
+    "fonts": "Fonts",
+    "primary": "Primary font",
+    "colors": "Colors",
+    "branding": "Branding",
+    "search": "Search",
+    "cart": "Cart"
+  },
+  "labels": {
+    "page_width": "Page width",
+    "page_margin": "Page margin",
+    "body_text": "Body text",
+    "font_size": "Font size",
+    "font_weight": "Font weight",
+    "line_height": "Line height",
+    "headings": "Headings",
+    "h1_size": "H1 size",
+    "h2_size": "H2 size",
+    "h3_size": "H3 size",
+    "h4_size": "H4 size",
+    "h5_size": "H5 size",
+    "h6_size": "H6 size",
+    "base_colors": "Base colors",
+    "background": "Background",
+    "foreground": "Foreground",
+    "text_colors": "Text colors",
+    "color_text": "Text color",
+    "color_text_muted": "Muted text color",
+    "color_heading": "Heading color",
+    "border_input_colors": "Border & input colors",
+    "color_border": "Border color",
+    "color_input_background": "Input background",
+    "color_input_text": "Input text",
+    "color_input_border": "Input border",
+    "color_input_focus": "Input focus color",
+    "input_corner_radius": "Input corner radius",
+    "primary_button": "Primary button",
+    "button_background": "Button background",
+    "button_text": "Button text",
+    "button_background_hover": "Button background (hover)",
+    "button_text_hover": "Button text (hover)",
+    "button_corner_radius": "Button corner radius",
+    "secondary_button": "Secondary button",
+    "pricing_colors": "Pricing colors",
+    "color_price_sale": "Sale price color",
+    "color_price_compare": "Compare-at price color",
+    "logo": "Logo",
+    "logo_image": "Logo image",
+    "logo_width": "Logo width",
+    "logo_alt": "Logo alt text",
+    "favicon": "Favicon",
+    "favicon_image": "Favicon image",
+    "search_style": "Search style",
+    "predictive_search": "Enable predictive search",
+    "cart_style": "Cart style",
+    "cart_auto_open": "Auto-open cart after adding items",
+    "cart_notes": "Enable cart notes",
+    "free_shipping_bar": "Show free shipping progress bar",
+    "free_shipping_threshold": "Free shipping threshold"
+  },
+  "placeholders": {
+    "logo_alt": "Your shop name"
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",
@@ -51,6 +116,39 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "options": {
+    "search_page": {
+      "page": "Search page"
+    },
+    "search_style": {
+      "modal": "Search Modal"
+    },
+    "cart_style": {
+      "drawer": "Cart drawer",
+      "page": "Cart page"
+    },
+    "page_width": {
+      "narrow": "Narrow",
+      "normal": "Normal",
+      "wide": "Wide"
+    },
+    "font_weight": {
+      "light": "Light",
+      "regular": "Regular",
+      "medium": "Medium",
+      "semibold": "Semibold",
+      "bold": "Bold",
+      "extrabold": "Extrabold",
+      "black": "Black"
+    },
+    "line_height": {
+      "tight": "Tight",
+      "normal": "Normal",
+      "relaxed": "Relaxed"
+    },
+    "full": "Full width",
+    "narrow": "Narrow"
   },
   "accessibility": {
     "close": "Close",

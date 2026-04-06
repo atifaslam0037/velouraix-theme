@@ -489,7 +489,7 @@
         "options": [
           {
             "value": "page",
-            "label": "t:options.search_page.page"
+            "label": "t:options.search_style.page"
           },
           {
             "value": "modal",
