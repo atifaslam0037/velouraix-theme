@@ -13,10 +13,48 @@
   "sections": {
     "header": {
       "type": "header",
-      "settings": {}
+      "blocks": {
+        "nav_left_gjLWLC": {
+          "type": "nav_left",
+          "settings": {
+            "menu": "main-menu"
+          }
+        },
+        "nav_right_LHBFNL": {
+          "type": "nav_right",
+          "settings": {
+            "show_search": true,
+            "show_account": true,
+            "show_wishlist": true,
+            "show_cart": true,
+            "wishlist_url": ""
+          }
+        },
+        "logo_m7RFbR": {
+          "type": "logo",
+          "settings": {
+            "logo_width": 80
+          }
+        }
+      },
+      "block_order": [
+        "nav_left_gjLWLC",
+        "nav_right_LHBFNL",
+        "logo_m7RFbR"
+      ],
+      "settings": {
+        "layout": "logo_center",
+        "nav_style": "mega_menu",
+        "sticky": true,
+        "transparent": false,
+        "header_height": 56,
+        "bg_color": "#ffffff",
+        "text_color": "#000000",
+        "border_color": "#e8e8e8"
+      }
     }
   },
   "order": [
     "header"
-  ],
+  ]
 }

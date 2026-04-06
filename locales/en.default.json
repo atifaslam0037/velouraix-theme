@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "404": {
     "title": "404",
@@ -12,12 +21,6 @@
     "comment_form_name": "Name",
     "comment_form_submit": "Post",
     "comment_form_title": "Add a comment"
-  },
-  "cart": {
-    "checkout": "Checkout",
-    "title": "Cart",
-    "update": "Update",
-    "remove": "Remove"
   },
   "customers": {
     "login": {
@@ -48,5 +51,174 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "accessibility": {
+    "close": "Close",
+    "expand": "Expand",
+    "expand_submenu": "Expand submenu for",
+    "skip_to_content": "Skip to content"
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "title": "Cart",
+    "update": "Update",
+    "remove": "Remove",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "view_cart": "View cart",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity"
+  },
+  "sections": {
+    "header": {
+      "name": "Header",
+      "menu_label": "Menu",
+      "search_label": "Search",
+      "search_placeholder": "Search...",
+      "popular_searches": "Popular searches",
+      "popular_new_in": "New in",
+      "popular_dresses": "Dresses",
+      "popular_accessories": "Accessories",
+      "popular_query_new": "new",
+      "popular_query_dresses": "dresses",
+      "popular_query_accessories": "accessories",
+      "recently_viewed": "Recently viewed",
+      "search_aria_label": "Search",
+      "account_label": "Account",
+      "account_aria_label": "Account",
+      "wishlist_label": "Wishlist",
+      "wishlist_aria_label": "Wishlist",
+      "cart_label": "Cart",
+      "cart_aria_label": "Cart ({{ count }} items)",
+      "summary_items": "Summary items",
+      "mobile_menu_label": "Open menu",
+      "menu_close_label": "Close",
+      "mobile_search_placeholder": "Search",
+      "mobile_register_label": "Register",
+      "mobile_contacts_label": "Contacts",
+      "nav_aria_label": "Main navigation",
+      "icons_aria_label": "Header actions",
+      "logo_aria_label": "{{ store }} — home",
+      "settings": {
+        "layout_header": "Layout",
+        "behavior_header": "Behaviour",
+        "colors_header": "Colors",
+        "layout": {
+          "label": "Layout",
+          "options": {
+            "logo_center": "Logo centered",
+            "logo_left": "Logo left",
+            "logo_top": "Logo top"
+          }
+        },
+        "sticky": {
+          "label": "Sticky header"
+        },
+        "transparent": {
+          "label": "Transparent on first load"
+        },
+        "header_height": {
+          "label": "Header height"
+        },
+        "bg_color": {
+          "label": "Background color"
+        },
+        "text_color": {
+          "label": "Text color"
+        },
+        "border_color": {
+          "label": "Border color"
+        }
+      },
+      "blocks": {
+        "logo": {
+          "name": "Logo",
+          "settings": {
+            "image": {
+              "label": "Logo image"
+            },
+            "image_transparent": {
+              "label": "Logo image (transparent header)",
+              "info": "Shown when header is in transparent mode"
+            },
+            "width": {
+              "label": "Logo width"
+            }
+          }
+        },
+        "nav_left": {
+          "name": "Navigation",
+          "settings": {
+            "menu": {
+              "label": "Menu"
+            },
+            "show_shop_name": {
+              "label": "Show shop name"
+            },
+            "enable_mega_image_links": {
+              "label": "Make mega-menu images clickable"
+            },
+            "mega_image_1_link": {
+              "label": "Mega image 1 link"
+            },
+            "mega_image_2_link": {
+              "label": "Mega image 2 link"
+            },
+            "open_mega_image_links_new_tab": {
+              "label": "Open image links in a new tab"
+            }
+          }
+        },
+        "mega_menu": {
+          "name": "Mega menu",
+          "settings": {
+            "menu_item": {
+              "label": "Menu item name",
+              "info": "Enter the exact name of the top-level menu item to turn into a mega menu"
+            },
+            "show_shop_name": {
+              "label": "Show shop name"
+            },
+            "images_header": "Editorial images",
+            "mega_image_1": {
+              "label": "Editorial image 1"
+            },
+            "mega_image_1_link": {
+              "label": "Editorial image 1 link"
+            },
+            "mega_image_2": {
+              "label": "Editorial image 2"
+            },
+            "mega_image_2_link": {
+              "label": "Editorial image 2 link"
+            }
+          }
+        },
+        "nav_right": {
+          "name": "Header actions",
+          "settings": {
+            "show_search": {
+              "label": "Show search"
+            },
+            "show_account": {
+              "label": "Show account"
+            },
+            "show_wishlist": {
+              "label": "Show wishlist"
+            },
+            "show_cart": {
+              "label": "Show cart"
+            },
+            "wishlist_url": {
+              "label": "Wishlist page URL"
+            }
+          }
+        }
+      }
+    },
+    "announcement_bar": {
+      "aria_label": "Announcement"
+    }
   }
 }

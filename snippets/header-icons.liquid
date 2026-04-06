@@ -1,0 +1,108 @@
+{% doc %}
+  Snippet: header-icons.liquid
+  Path: snippets/header-icons.liquid
+  Description: Renders desktop header action buttons as text labels with icons.
+    Matches editorial reference: CERCA (search underlined input style), ACCOUNT, WISHLIST,
+    and cart count badge. Fully respects search_style and cart_style global settings.
+
+  @param {block} block          - Required. The nav_right block.
+  @param {string} search_style  - 'modal' or 'page'. Controls search button behaviour.
+  @param {string} cart_style    - 'drawer' or 'page'. Controls cart button behaviour.
+
+  @example
+  {% render 'header-icons', block: nav_right_block, search_style: 'modal', cart_style: 'drawer' %}
+{% enddoc %}
+
+<div class="header-icons" role="navigation" aria-label="{{ 'sections.header.icons_aria_label' | t }}">
+
+  {%- comment -%} SEARCH — inline underline style like reference image ── {%- endcomment -%}
+  {%- if block.settings.show_search -%}
+    {%- if search_style == 'page' -%}
+      <a
+        href="{{ routes.search_url }}"
+        class="header-icons__btn header-icons__btn--search"
+        aria-label="{{ 'sections.header.search_aria_label' | t }}"
+      >
+        {%- render 'icon', name: 'search' -%}
+        <span class="visually-hidden">{{ 'sections.header.search_label' | t }}</span>
+      </a>
+    {%- else -%}
+      <button
+        class="header-icons__btn header-icons__btn--search"
+        type="button"
+        aria-label="{{ 'sections.header.search_aria_label' | t }}"
+        aria-expanded="false"
+        aria-controls="search-modal"
+        data-search-toggle
+      >
+        {%- render 'icon', name: 'search' -%}
+        <span class="visually-hidden">{{ 'sections.header.search_label' | t }}</span>
+      </button>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%} ACCOUNT ── {%- endcomment -%}
+  {%- if block.settings.show_account -%}
+    <a
+      href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
+      class="header-icons__btn"
+      aria-label="{{ 'sections.header.account_aria_label' | t }}"
+    >
+      {%- render 'icon', name: 'account' -%}
+      <span class="visually-hidden">{{ 'sections.header.account_label' | t }}</span>
+    </a>
+  {%- endif -%}
+
+  {%- comment -%} WISHLIST ── {%- endcomment -%}
+  {%- if block.settings.show_wishlist -%}
+    <a
+      href="{{ block.settings.wishlist_url | default: routes.root_url }}"
+      class="header-icons__btn"
+      aria-label="{{ 'sections.header.wishlist_aria_label' | t }}"
+    >
+      {%- render 'icon', name: 'wishlist' -%}
+      <span class="visually-hidden">{{ 'sections.header.wishlist_label' | t }}</span>
+    </a>
+  {%- endif -%}
+
+  {%- comment -%} CART — text label + count badge ── {%- endcomment -%}
+  {%- if block.settings.show_cart -%}
+    {%- if cart_style == 'drawer' -%}
+      <button
+        class="header-icons__btn header-icons__cart"
+        type="button"
+        aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+        data-cart-toggle
+      >
+        {%- render 'icon', name: 'cart' -%}
+        <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
+        <span
+          class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
+          id="cart-count"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {{- cart.item_count -}}
+        </span>
+      </button>
+    {%- else -%}
+      <a
+        href="{{ routes.cart_url }}"
+        class="header-icons__btn header-icons__cart"
+        aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+      >
+        {%- render 'icon', name: 'cart' -%}
+        <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
+        <span
+          class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
+          id="cart-count"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {{- cart.item_count -}}
+        </span>
+      </a>
+    {%- endif -%}
+  {%- endif -%}
+
+</div>

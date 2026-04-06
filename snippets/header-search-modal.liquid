@@ -1,0 +1,238 @@
+<search-modal
+  id="search-modal"
+  class="search-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="search-modal-title"
+  aria-hidden="true"
+>
+  <div class="search-modal__overlay" data-search-close></div>
+
+  <div class="search-modal__panel">
+    <div class="search-modal__header">
+      <h2 class="search-modal__title" id="search-modal-title">
+        {{ 'sections.header.search_label' | t }}
+      </h2>
+      <button
+        class="search-modal__close"
+        type="button"
+        data-search-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {%- render 'icon', name: 'close' -%}
+      </button>
+    </div>
+
+    <div class="search-modal__body">
+      {%- form 'search', class: 'search-modal__form', role: 'search' -%}
+        <input type="hidden" name="type" value="product">
+        <label for="search-modal-input" class="visually-hidden">
+          {{- 'sections.header.search_label' | t -}}
+        </label>
+        <input
+          id="search-modal-input"
+          class="search-modal__input"
+          type="search"
+          name="q"
+          placeholder="{{ 'sections.header.search_placeholder' | t }}"
+          aria-label="{{ 'sections.header.search_aria_label' | t }}"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          data-search-input
+        >
+        <button
+          type="submit"
+          class="search-modal__submit"
+          aria-label="{{ 'search.submit' | t }}"
+        >
+          {%- render 'icon', name: 'search' -%}
+        </button>
+      {%- endform -%}
+
+      <div class="search-modal__blocks">
+        <div class="search-modal__block">
+          <h3 class="search-modal__subtitle">{{ 'sections.header.popular_searches' | t }}</h3>
+          <ul class="search-modal__list">
+            <li><a href="{{ routes.search_url }}?q={{ 'sections.header.popular_query_new' | t | url_encode }}">{{ 'sections.header.popular_new_in' | t }}</a></li>
+            <li><a href="{{ routes.search_url }}?q={{ 'sections.header.popular_query_dresses' | t | url_encode }}">{{ 'sections.header.popular_dresses' | t }}</a></li>
+            <li><a href="{{ routes.search_url }}?q={{ 'sections.header.popular_query_accessories' | t | url_encode }}">{{ 'sections.header.popular_accessories' | t }}</a></li>
+          </ul>
+        </div>
+        <div class="search-modal__block">
+          <h3 class="search-modal__subtitle">{{ 'sections.header.recently_viewed' | t }}</h3>
+          <!-- Placeholder for recently viewed products -->
+        </div>
+      </div>
+
+      <div class="search-modal__results" id="search-results" aria-live="polite"></div>
+    </div>
+  </div>
+</search-modal>
+
+{% stylesheet %}
+  /* Uses visibility + pointer-events for animation support */
+  .search-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .search-modal[open] {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .search-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-text) 0%, transparent);
+    transition: background 0.3s ease;
+  }
+  .search-modal[open] .search-modal__overlay {
+    background: color-mix(in srgb, var(--color-text) 40%, transparent);
+  }
+
+  .search-modal__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(calc(var(--space-16) * 6 + var(--space-4)), 100vw);
+    background: var(--color-background);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .search-modal[open] .search-modal__panel {
+    transform: translateX(0);
+  }
+
+  .search-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5) var(--space-6);
+    border-bottom: var(--space-1) solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .search-modal__title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .search-modal__body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .search-modal__form {
+    display: flex;
+    align-items: center;
+    border-bottom: var(--space-1) solid var(--color-border);
+    padding-bottom: var(--space-2);
+    gap: var(--space-3);
+  }
+
+  .search-modal__input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.05em;
+    color: var(--color-text);
+  }
+  .search-modal__input::placeholder {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--font-size-xs);
+  }
+
+  .search-modal__submit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    padding: var(--space-1);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+  }
+  .search-modal__submit:hover {
+    opacity: 0.5;
+  }
+
+  .search-modal__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+    padding: var(--space-1);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+  }
+  .search-modal__close:hover {
+    opacity: 0.5;
+  }
+
+  .search-modal__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .search-modal__subtitle {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  .search-modal__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .search-modal__list a {
+    text-decoration: none;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: opacity 0.2s;
+  }
+
+  .search-modal__list a:hover {
+    opacity: 0.5;
+  }
+
+  .search-modal__results {
+    /* Container for dynamic ajax results */
+  }
+{% endstylesheet %}

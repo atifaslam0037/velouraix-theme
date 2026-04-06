@@ -1,0 +1,45 @@
+{%- comment -%}
+  Reusable image snippet.
+  Usage: {% render 'image', image: product.featured_image, url: product.url, class: 'my-class', width: 600 %}
+  All params optional except image.
+{%- endcomment -%}
+
+{%- liquid
+  assign img = image
+  assign img_url = url | default: null
+  assign img_class = class | default: ''
+  assign img_width = width | default: 800
+  assign img_alt = image.alt | default: ''
+  assign img_load = loading | default: 'lazy'
+-%}
+
+{%- if img != blank -%}
+  {%- liquid
+    assign img_height = img_width | divided_by: img.aspect_ratio | round
+  -%}
+
+  {%- if img_url != blank -%}
+    <a href="{{ img_url }}" class="image-link" tabindex="-1" aria-hidden="true">
+  {%- endif -%}
+
+  {{-
+    img
+    | image_url: width: img_width
+    | image_tag:
+      class: img_class,
+      alt: img_alt,
+      width: img_width,
+      height: img_height,
+      loading: img_load,
+      widths: '200, 400, 600, 800, 1000, 1200'
+  -}}
+
+  {%- if img_url != blank -%}
+    </a>
+  {%- endif -%}
+
+{%- else -%}
+  <div class="image-placeholder {{ img_class }}" aria-hidden="true">
+    {{- 'product-1' | placeholder_svg_tag: 'placeholder-svg' -}}
+  </div>
+{%- endif -%}

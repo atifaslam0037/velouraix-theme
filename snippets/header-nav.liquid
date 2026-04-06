@@ -1,0 +1,116 @@
+{% doc %}
+  Renders the desktop navigation link list.
+  Supports standard dropdown and mega menu trigger modes.
+
+  @param {block} block - The nav_left block containing menu settings
+  @param {string} nav_style - 'standard' (hover dropdown) or 'mega_menu' (triggers mega panel)
+  @param section_blocks - The section blocks for checking mega menu configs
+
+  @example
+  {% render 'header-nav', block: nav_left_block, nav_style: 'mega_menu', section_blocks: section_blocks %}
+{% enddoc %}
+
+{%- liquid
+  assign nav_menu = linklists[block.settings.menu]
+  if nav_menu == blank
+    assign nav_menu = linklists['main-menu']
+  endif
+-%}
+
+<ul class="header-nav__list" role="list">
+  {%- for link in nav_menu.links -%}
+    {%- liquid
+      if link.links.size > 0
+        assign has_children = true
+      else
+        assign has_children = false
+      endif
+    -%}
+
+    {%- liquid
+      assign has_mega_block = false
+      if has_children and nav_style == 'mega_menu'
+        for block in section_blocks
+          if block.type == 'mega_menu' and block.settings.menu_item == link.title
+            assign has_mega_block = true
+            break
+          endif
+        endfor
+      endif
+    -%}
+
+    <li
+      class="header-nav__item{% if has_children %} header-nav__item--has-children{% endif %}{% if link.active %} is-active{% endif %}"
+      {% if has_mega_block %}
+        data-mega-trigger="{{ link.title | handle }}"
+      {% endif %}
+    >
+      <a
+        href="{{ link.url }}"
+        class="header-nav__link"
+        {% if link.active %}
+          aria-current="page"
+        {% endif %}
+        {% if has_children %}
+          aria-haspopup="true"
+          aria-expanded="false"
+        {% endif %}
+      >
+        {{- link.title -}}
+      </a>
+
+      {%- comment -%}
+        Standard dropdown — renders if nav_style is standard OR if mega_menu style but no block exists.
+      {%- endcomment -%}
+      {%- if has_children and has_mega_block == false -%}
+        <ul class="header-nav__dropdown" role="list">
+          {%- for child in link.links -%}
+            {%- liquid
+              if child.links.size > 0
+                assign child_has_children = true
+              else
+                assign child_has_children = false
+              endif
+            -%}
+            <li class="header-nav__dropdown-item{% if child_has_children %} header-nav__dropdown-item--has-children{% endif %}{% if child.active %} is-active{% endif %}">
+              <a
+                href="{{ child.url }}"
+                class="header-nav__dropdown-link"
+                {% if child.active %}
+                  aria-current="page"
+                {% endif %}
+                {% if child_has_children %}
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                {% endif %}
+              >
+                {{- child.title -}}
+                {%- if child_has_children -%}
+                  {%- render 'icon', name: 'chevron-down' -%}
+                {%- endif -%}
+              </a>
+
+              {%- if child_has_children -%}
+                <ul class="header-nav__dropdown header-nav__dropdown--nested" role="list">
+                  {%- for grandchild in child.links -%}
+                    <li class="header-nav__dropdown-item{% if grandchild.active %} is-active{% endif %}">
+                      <a
+                        href="{{ grandchild.url }}"
+                        class="header-nav__dropdown-link"
+                        {% if grandchild.active %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{- grandchild.title -}}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </li>
+  {%- endfor -%}
+</ul>
