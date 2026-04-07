@@ -1,0 +1,51 @@
+{%- comment -%}
+  Snippet: quantity-input.liquid
+  Path: snippets/quantity-input.liquid
+  Description: VELOURAIX editorial quantity input. Minimal − / number / + control.
+    Wrapped in the quantity-input custom element which handles button events.
+
+  @param {string}  id       - Required. Unique ID for the <input> (usually item.key).
+  @param {string}  name     - Required. Input name attr ('updates[]' for cart, 'quantity' for product form).
+  @param {number}  value    - Required. Current quantity.
+  @param {number}  [min]    - Optional. Minimum value. Defaults to 0.
+  @param {string}  [form_id]- Optional. Associates input with external form.
+  @param {number}  [index]  - Optional. data-index for line-item targeting.
+
+  @example
+  {% render 'quantity-input', id: item.key, name: 'updates[]', value: item.quantity, min: 0 %}
+{%- endcomment -%}
+
+<quantity-input class="quantity-input" role="group" aria-label="{{ 'products.product.quantity.input_label' | t }}">
+  <button
+    class="quantity-input__btn quantity-input__btn--minus"
+    name="minus"
+    type="button"
+    aria-label="{{ 'products.product.quantity.decrease' | t }}"
+    {% if value <= min %}disabled{% endif %}
+  >
+    {%- render 'icon', name: 'minus' -%}
+  </button>
+
+  <input
+    class="quantity-input__field"
+    type="number"
+    name="{{ name }}"
+    id="quantity-{{ id }}"
+    value="{{ value }}"
+    min="{{ min | default: 0 }}"
+    step="1"
+    autocomplete="off"
+    {% if form_id %}form="{{ form_id | escape }}"{% endif %}
+    {% if index %}data-index="{{ index }}"{% endif %}
+    aria-label="{{ 'products.product.quantity.input_label' | t }}"
+  >
+
+  <button
+    class="quantity-input__btn quantity-input__btn--plus"
+    name="plus"
+    type="button"
+    aria-label="{{ 'products.product.quantity.increase' | t }}"
+  >
+    {%- render 'icon', name: 'plus' -%}
+  </button>
+</quantity-input>

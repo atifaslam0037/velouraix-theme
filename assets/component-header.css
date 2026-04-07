@@ -474,27 +474,58 @@ body.mega-menu-open .header-nav__dropdown { display: none; }
 /* Always show label text on desktop */
 .header-icons__label { display: inline; }
 
-/* Cart badge — square count */
-.header-icons__cart { position: relative; }
-
-.header-icons__cart-badge {
+/* Cart icon group — positioning context for the floating badge */
+.cart-icon-group {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--space-5);
-  height: var(--space-5);
-  background: var(--color-text);
-  color: var(--color-background);
+  line-height: 0;
+}
+
+.cart-icon-group svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Cart badge — floating circle at top-right of bag icon */
+.header-icons__cart { position: relative; }
+
+.header-icons__cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -9px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #e84040;
+  color: #fff;
   font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: 0;
   line-height: 1;
-  padding: 0 var(--space-1);
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  border: 2px solid var(--color-background);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  z-index: 1;
+  transition: transform 0.15s ease;
 }
 
 .header-icons__cart-badge.hidden { display: none; }
+
+/* Pop animation when count changes */
+@keyframes badge-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.header-icons__cart-badge.is-animating { animation: badge-pop 0.3s ease forwards; }
 
 
 /* ============================================================

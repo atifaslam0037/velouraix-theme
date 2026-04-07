@@ -95,6 +95,15 @@
       "title": "Login"
     }
   },
+  "products": {
+    "product": {
+      "quantity": {
+        "decrease": "Decrease quantity",
+        "increase": "Increase quantity",
+        "input_label": "Quantity"
+      }
+    }
+  },
   "collections": {
     "title": "Collections"
   },
@@ -166,7 +175,10 @@
     "subtotal": "Subtotal",
     "view_cart": "View cart",
     "decrease_quantity": "Decrease quantity",
-    "increase_quantity": "Increase quantity"
+    "increase_quantity": "Increase quantity",
+    "items_count": "items",
+    "discounts": "Discounts",
+    "taxes_and_shipping_policy_at_checkout_html": "Taxes and shipping calculated at checkout."
   },
   "sections": {
     "header": {

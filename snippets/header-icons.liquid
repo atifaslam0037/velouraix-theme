@@ -65,7 +65,7 @@
     </a>
   {%- endif -%}
 
-  {%- comment -%} CART — text label + count badge ── {%- endcomment -%}
+  {%- comment -%} CART — badge floats over icon top-right ── {%- endcomment -%}
   {%- if block.settings.show_cart -%}
     {%- if cart_style == 'drawer' -%}
       <button
@@ -74,16 +74,18 @@
         aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
         data-cart-toggle
       >
-        {%- render 'icon', name: 'cart' -%}
-        <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
-        <span
-          class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
-          id="cart-count"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {{- cart.item_count -}}
+        <span class="cart-icon-group">
+          {%- render 'icon', name: 'cart' -%}
+          <span
+            class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
+            id="cart-count"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {{- cart.item_count -}}
+          </span>
         </span>
+        <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
       </button>
     {%- else -%}
       <a
@@ -91,16 +93,18 @@
         class="header-icons__btn header-icons__cart"
         aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
       >
-        {%- render 'icon', name: 'cart' -%}
-        <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
-        <span
-          class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
-          id="cart-count"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {{- cart.item_count -}}
+        <span class="cart-icon-group">
+          {%- render 'icon', name: 'cart' -%}
+          <span
+            class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
+            id="cart-count"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {{- cart.item_count -}}
+          </span>
         </span>
+        <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
       </a>
     {%- endif -%}
   {%- endif -%}

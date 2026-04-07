@@ -1,0 +1,100 @@
+/* ============================================================
+   component-quantity-input.css
+   VELOURAIX — Minimal editorial quantity stepper.
+   Layout: [–] [  n  ] [+] — thin border, no fill, clean.
+   ============================================================ */
+
+.quantity-input {
+  display: inline-grid;
+  grid-template-columns: 36px 1fr 36px;
+  align-items: stretch;
+  border: 1px solid oklch(from var(--color-text) l c h / 0.25);
+  width: fit-content;
+  background: transparent;
+  transition: border-color var(--transition-base);
+}
+
+.quantity-input:focus-within {
+  border-color: var(--color-text);
+}
+
+/* ── Buttons ── */
+.quantity-input__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0;
+  transition: opacity var(--transition-base), background var(--transition-base);
+  flex-shrink: 0;
+}
+
+.quantity-input__btn:hover:not(:disabled) {
+  background: oklch(from var(--color-text) l c h / 0.06);
+}
+
+.quantity-input__btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.quantity-input__btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.quantity-input__btn svg {
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* Dividers between button and input */
+.quantity-input__btn--minus {
+  border-right: 1px solid oklch(from var(--color-text) l c h / 0.12);
+}
+
+.quantity-input__btn--plus {
+  border-left: 1px solid oklch(from var(--color-text) l c h / 0.12);
+}
+
+/* ── Number input ── */
+.quantity-input__field {
+  width: 44px;
+  height: 36px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+  padding: 0;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+/* Hide native spin arrows */
+.quantity-input__field::-webkit-outer-spin-button,
+.quantity-input__field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-input__field:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* ── Reduced motion ── */
+@media screen and (prefers-reduced-motion: reduce) {
+  .quantity-input,
+  .quantity-input__btn { transition-duration: 0.001ms !important; }
+}

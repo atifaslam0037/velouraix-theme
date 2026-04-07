@@ -94,7 +94,11 @@
   <script src="{{ 'search-modal.js' | asset_url }}" defer></script>
 {%- endif -%}
 {%- if cart_style == 'drawer' -%}
-  <script src="{{ 'cart-drawer.js' | asset_url }}" defer></script>
+  <script src="{{ 'component-cart-drawer.js' | asset_url }}" defer></script>
+  <script src="{{ 'component-cart-items.js' | asset_url }}" defer></script>
+  <script src="{{ 'component-quantity-input.js' | asset_url }}" defer></script>
+  <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="{{ 'component-quantity-input.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
 {% schema %}

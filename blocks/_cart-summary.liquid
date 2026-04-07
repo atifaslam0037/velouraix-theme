@@ -1,0 +1,146 @@
+{%- comment -%}
+  Block: _cart-summary.liquid
+  Path: blocks/_cart-summary.liquid
+  Description: Private theme block. Renders the order summary panel on the cart page.
+    Contains subtotal (formatted with currency), tax note, and checkout CTA.
+    The #cart-page-subtotal span is read by CartItemsComponent._syncGlobalUI()
+    to keep the subtotal value in sync after AJAX mutations.
+    Statically rendered by sections/main-cart.liquid via content_for 'block'.
+
+  @example
+  {%- content_for 'block', id: 'cart-page-summary', type: '_cart-summary' -%}
+{%- endcomment -%}
+
+{%- unless cart.empty? -%}
+  <div class="cart-summary" id="cart-page-summary-panel">
+
+    <div class="cart-summary__row">
+      <span class="cart-summary__label">{{- 'cart.subtotal' | t | upcase -}}</span>
+      <span class="cart-summary__value" id="cart-page-subtotal">
+        {{- cart.total_price | money_with_currency -}}
+      </span>
+    </div>
+
+    <p class="cart-summary__tax-note">
+      {{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}
+    </p>
+
+    <div class="cart-summary__actions">
+      <a
+        href="{{ routes.checkout_url }}"
+        class="cart-summary__checkout"
+        id="cart-checkout-button"
+        aria-label="{{ 'cart.checkout' | t }}"
+      >
+        {{- 'cart.checkout' | t | upcase -}}
+      </a>
+
+      <a href="{{ routes.cart_url }}" class="cart-summary__view-cart">
+        {{- 'cart.view_cart' | t -}}
+      </a>
+    </div>
+
+  </div>
+{%- endunless -%}
+
+{% stylesheet %}
+/* ── Cart page summary block ── */
+.cart-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-7);
+  background: oklch(from var(--color-text) l c h / 0.04);
+  position: sticky;
+  top: calc(var(--header-offset, var(--space-14)) + var(--space-6));
+}
+
+.cart-summary__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.cart-summary__label {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.cart-summary__value {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.cart-summary__tax-note {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.cart-summary__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Checkout button ── */
+.cart-summary__checkout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-text);
+  color: var(--color-background);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  min-height: 52px;
+  border-radius: var(--button-radius);
+  transition: opacity var(--transition-base);
+}
+
+.cart-summary__checkout:hover { opacity: 0.7; }
+
+.cart-summary__checkout:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ── View cart link ── */
+.cart-summary__view-cart {
+  display: block;
+  text-align: center;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-base);
+  padding-block: var(--space-1);
+}
+
+.cart-summary__view-cart:hover { color: var(--color-text); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Cart summary"
+}
+{% endschema %}

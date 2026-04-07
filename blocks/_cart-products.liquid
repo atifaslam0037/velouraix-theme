@@ -1,0 +1,66 @@
+{%- comment -%}
+  Block: _cart-products.liquid
+  Path: blocks/_cart-products.liquid
+  Description: Private theme block. Renders cart line items on the cart page,
+    or the empty state when the cart has no items.
+    Statically rendered by sections/main-cart.liquid via content_for 'block'.
+
+  @example
+  {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
+{%- endcomment -%}
+
+{%- if cart.empty? -%}
+  <div class="cart-empty">
+    <p class="cart-empty__message">{{- 'cart.empty' | t -}}</p>
+    <a
+      href="{{ routes.all_products_collection_url }}"
+      class="cart-empty__cta"
+    >
+      {{- 'cart.continue_shopping' | t -}}
+    </a>
+  </div>
+{%- else -%}
+  {%- render 'cart-items', context: 'page' -%}
+{%- endif -%}
+
+{% stylesheet %}
+/* ── Cart page empty state ── */
+.cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+  padding-block: var(--space-16);
+}
+
+.cart-empty__message {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.cart-empty__cta {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: opacity var(--transition-base);
+}
+
+.cart-empty__cta:hover { opacity: 0.45; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Cart items"
+}
+{% endschema %}
