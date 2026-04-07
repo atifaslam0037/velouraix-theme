@@ -1,0 +1,48 @@
+{%- comment -%}
+  Block: divider
+  Path: blocks/divider.liquid
+  Description: Reusable spacing divider block with optional line.
+  Used in sections that support @theme blocks.
+{%- endcomment -%}
+
+<div class="block-divider" {{ block.shopify_attributes }} style="--block-divider-space: var(--space-{{ block.settings.spacing }});">
+  {%- if block.settings.show_line -%}
+    <div class="block-divider__line" aria-hidden="true"></div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+.block-divider {
+  display: block;
+  padding-block: var(--block-divider-space);
+}
+
+.block-divider__line {
+  width: 100%;
+  border-top: 1px solid oklch(from var(--color-text) l c h / 0.12);
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Divider",
+  "settings": [
+    {
+      "type": "range",
+      "id": "spacing",
+      "label": "t:blocks.divider.settings.spacing.label",
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_line",
+      "label": "t:blocks.divider.settings.show_line.label",
+      "default": true
+    }
+  ],
+  "presets": [{ "name": "t:blocks.divider.presets.name" }]
+}
+{% endschema %}

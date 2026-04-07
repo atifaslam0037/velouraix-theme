@@ -7,13 +7,20 @@
     quantity-input component, line total, and remove button.
 
   @param {string} [context]  - 'drawer' or 'page'. Controls layout density.
+  @param {boolean} [show_vendor] - Show item vendor on cart page.
+  @param {boolean} [show_dividers] - Show divider lines between items.
+  @param {number} [image_size] - Image size in pixels for page context.
+  @param {string} [aspect_ratio] - auto | portrait | square.
 
   @example
   {% render 'cart-items', context: 'drawer' %}
 {%- endcomment -%}
 
 <cart-items-component
-  class="cart-items{% if context == 'drawer' %} cart-items--drawer{% endif %}"
+  class="cart-items{% if context == 'drawer' %} cart-items--drawer{% endif %}{% unless show_dividers %} cart-items--no-dividers{% endunless %}{% if aspect_ratio == 'square' %} cart-items--ratio-square{% elsif aspect_ratio == 'portrait' %} cart-items--ratio-portrait{% endif %}"
+  style="
+    --cart-item-image-size: {{ image_size | default: 96 }}px;
+  "
   {% if context == 'drawer' %}data-drawer{% endif %}
   data-section-id="main-cart"
 >
@@ -63,6 +70,9 @@
               <a href="{{ item.url }}" class="cart-item__name">
                 {{- item.product.title | escape -}}
               </a>
+              {%- if show_vendor -%}
+                <p class="cart-item__vendor">{{- item.product.vendor | escape -}}</p>
+              {%- endif -%}
 
               {%- unless item.product.has_only_default_variant -%}
                 <p class="cart-item__variant">{{- item.variant.title | escape -}}</p>

@@ -10,12 +10,28 @@
   {%- content_for 'block', id: 'cart-page-title', type: '_cart-title' %}
 {%- endcomment -%}
 
-<header class="cart-title" role="banner">
+{%- liquid
+  assign heading_text = block.settings.title
+  if heading_text == blank
+    assign heading_text = 'cart.title' | t
+  endif
+-%}
+
+<header
+  class="cart-title cart-title--{{ block.settings.alignment }} cart-title--{{ block.settings.typography }}"
+  role="banner"
+  style="
+    --cart-title-padding-top: {{ block.settings.padding_top }}px;
+    --cart-title-padding-bottom: {{ block.settings.padding_bottom }}px;
+    --cart-title-padding-left: {{ block.settings.padding_left }}px;
+    --cart-title-padding-right: {{ block.settings.padding_right }}px;
+  "
+>
   <h1 class="cart-title__heading" id="cart-page-heading">
-    {{- 'cart.title' | t -}}
+    {{- heading_text -}}
   </h1>
 
-  {%- unless cart.empty? -%}
+  {%- if block.settings.show_count and cart.empty? == false -%}
     <span
       class="cart-title__pill"
       id="cart-page-count"
@@ -25,49 +41,154 @@
     >
       {{- cart.item_count -}}
     </span>
-  {%- endunless -%}
+  {%- endif -%}
 </header>
 
 {% stylesheet %}
-/* ── Cart page title block ── */
-.cart-title {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-4);
-  padding-bottom: var(--space-5);
-  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.1);
-}
+  /* ── Cart page title block ── */
+  .cart-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding-top: var(--cart-title-padding-top);
+    padding-right: var(--cart-title-padding-right);
+    padding-bottom: var(--cart-title-padding-bottom);
+    padding-left: var(--cart-title-padding-left);
+    border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.1);
+  }
 
-.cart-title__heading {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  margin: 0;
-}
+  .cart-title__heading {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    margin: 0;
+  }
 
-.cart-title__pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--space-5);
-  height: var(--space-5);
-  padding-inline: var(--space-2);
-  background: oklch(from var(--color-text) l c h / 0.08);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--color-text);
-  line-height: 1;
-  border-radius: var(--radius-full);
-}
+  .cart-title--heading-2 .cart-title__heading {
+    font-size: var(--font-h2-size);
+  }
+  .cart-title--heading-3 .cart-title__heading {
+    font-size: var(--font-h3-size);
+  }
+  .cart-title--heading-4 .cart-title__heading {
+    font-size: var(--font-h4-size);
+  }
+
+  .cart-title--left .cart-title__heading {
+    text-align: left;
+  }
+  .cart-title--center .cart-title__heading {
+    text-align: center;
+    width: 100%;
+  }
+  .cart-title--right .cart-title__heading {
+    text-align: right;
+    width: 100%;
+  }
+
+  .cart-title__pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--space-5);
+    height: var(--space-5);
+    padding-inline: var(--space-2);
+    background: oklch(from var(--color-text) l c h / 0.08);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--color-text);
+    line-height: 1;
+    border-radius: var(--radius-full);
+  }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "Cart title"
+  "name": "Cart title",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "Cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Cart count",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "typography",
+      "label": "Preset",
+      "options": [
+        { "value": "heading-2", "label": "Heading 2" },
+        { "value": "heading-3", "label": "Heading 3" },
+        { "value": "heading-4", "label": "Heading 4" }
+      ],
+      "default": "heading-3"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ]
 }
 {% endschema %}

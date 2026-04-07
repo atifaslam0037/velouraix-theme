@@ -73,9 +73,10 @@ class CartDrawerComponent extends HTMLElement {
     await this._refreshDrawer();
   }
 
-  _onCartUpdated(event) {
+  async _onCartUpdated(event) {
     const count = event.detail?.cart?.item_count;
     if (typeof count !== 'undefined') this._updateCountBadge(count);
+    await this._refreshDrawer();
   }
 
   _onCartSynced(event) {

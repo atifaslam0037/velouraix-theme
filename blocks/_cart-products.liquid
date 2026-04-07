@@ -9,6 +9,16 @@
   {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
 {%- endcomment -%}
 
+<div
+  class="cart-products-block"
+  style="
+    --cart-products-padding-top: {{ block.settings.padding_top }}px;
+    --cart-products-padding-bottom: {{ block.settings.padding_bottom }}px;
+    --cart-products-padding-left: {{ block.settings.padding_left }}px;
+    --cart-products-padding-right: {{ block.settings.padding_right }}px;
+    --cart-products-image-size: {{ block.settings.product_image_size }}px;
+  "
+>
 {%- if cart.empty? -%}
   <div class="cart-empty">
     <p class="cart-empty__message">{{- 'cart.empty' | t -}}</p>
@@ -20,8 +30,15 @@
     </a>
   </div>
 {%- else -%}
-  {%- render 'cart-items', context: 'page' -%}
+  {%- render 'cart-items',
+    context: 'page',
+    show_vendor: block.settings.show_vendor,
+    show_dividers: block.settings.show_dividers,
+    image_size: block.settings.product_image_size,
+    aspect_ratio: block.settings.aspect_ratio
+  -%}
 {%- endif -%}
+</div>
 
 {% stylesheet %}
 /* ── Cart page empty state ── */
@@ -31,6 +48,13 @@
   align-items: flex-start;
   gap: var(--space-6);
   padding-block: var(--space-16);
+}
+
+.cart-products-block {
+  padding-top: var(--cart-products-padding-top);
+  padding-right: var(--cart-products-padding-right);
+  padding-bottom: var(--cart-products-padding-bottom);
+  padding-left: var(--cart-products-padding-left);
 }
 
 .cart-empty__message {
@@ -61,6 +85,85 @@
 
 {% schema %}
 {
-  "name": "Cart items"
+  "name": "Cart products",
+  "settings": [
+    {
+      "type": "range",
+      "id": "product_image_size",
+      "label": "Product image size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "Dividers",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Vendor",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ]
 }
 {% endschema %}

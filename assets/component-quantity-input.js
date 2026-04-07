@@ -38,24 +38,42 @@ class QuantityInput extends HTMLElement {
     event.preventDefault();
     if (!this._input) return;
 
-    const prev = this._input.value;
+    const prev = this.getValue();
+    const step = this._readNumber(this._input.step, 1);
+    const min = this._input.min !== '' ? this._readNumber(this._input.min, 0) : null;
+    const max = this._input.max !== '' ? this._readNumber(this._input.max, Infinity) : null;
+    let next = prev;
 
     if (event.currentTarget === this._plusBtn) {
-      this._input.stepUp();
+      next += step;
     } else {
-      this._input.stepDown();
+      next -= step;
     }
 
+    if (min !== null) next = Math.max(min, next);
+    if (max !== null) next = Math.min(max, next);
+
+    this._input.value = String(next);
+
     this._syncMinusState();
+    this._syncPlusState();
 
     // Only fire if value actually changed
-    if (prev !== this._input.value) {
+    if (prev !== this.getValue()) {
       this._input.dispatchEvent(new Event('change', { bubbles: true }));
+      this.dispatchEvent(
+        new CustomEvent('quantity:changed', {
+          bubbles: true,
+          detail: { value: this.getValue(), input: this._input },
+        })
+      );
     }
   }
 
   _onInputChange() {
+    this._normalize();
     this._syncMinusState();
+    this._syncPlusState();
   }
 
   // ── Helpers ─────────────────────────────────────────────
@@ -65,9 +83,30 @@ class QuantityInput extends HTMLElement {
    */
   _syncMinusState() {
     if (!this._input || !this._minusBtn) return;
-    const val = parseInt(this._input.value, 10);
-    const min = parseInt(this._input.min ?? '0', 10);
+    const val = this._readNumber(this._input.value, 0);
+    const min = this._readNumber(this._input.min ?? '0', 0);
     this._minusBtn.disabled = val <= min;
+  }
+
+  _syncPlusState() {
+    if (!this._input || !this._plusBtn) return;
+    if (this._input.max === '') {
+      this._plusBtn.disabled = false;
+      return;
+    }
+    const val = this._readNumber(this._input.value, 0);
+    const max = this._readNumber(this._input.max, Infinity);
+    this._plusBtn.disabled = val >= max;
+  }
+
+  _normalize() {
+    if (!this._input) return;
+    const min = this._input.min !== '' ? this._readNumber(this._input.min, 0) : null;
+    const max = this._input.max !== '' ? this._readNumber(this._input.max, Infinity) : null;
+    let value = this._readNumber(this._input.value, min ?? 0);
+    if (min !== null) value = Math.max(min, value);
+    if (max !== null) value = Math.min(max, value);
+    this._input.value = String(value);
   }
 
   /**
@@ -77,7 +116,9 @@ class QuantityInput extends HTMLElement {
   setValue(value) {
     if (!this._input) return;
     this._input.value = String(value);
+    this._normalize();
     this._syncMinusState();
+    this._syncPlusState();
   }
 
   /**
@@ -85,7 +126,12 @@ class QuantityInput extends HTMLElement {
    * @returns {number}
    */
   getValue() {
-    return parseInt(this._input?.value ?? '1', 10) || 1;
+    return this._readNumber(this._input?.value ?? '1', 1);
+  }
+
+  _readNumber(value, fallback = 0) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : fallback;
   }
 }
 

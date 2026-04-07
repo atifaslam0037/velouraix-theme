@@ -16,7 +16,96 @@
     "colors": "Colors",
     "branding": "Branding",
     "search": "Search",
-    "cart": "Cart"
+    "cart": "Cart",
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "blocks": {
+    "text": {
+      "name": "Text",
+      "settings": {
+        "text": { "label": "Text", "default": "Add your text" },
+        "alignment": {
+          "label": "Alignment",
+          "options": { "left": "Left", "center": "Center", "right": "Right" }
+        }
+      },
+      "presets": { "name": "Text" }
+    },
+    "heading": {
+      "name": "Heading",
+      "settings": {
+        "text": { "label": "Heading", "default": "Section heading" },
+        "heading_tag": { "label": "Heading tag" },
+        "alignment": {
+          "label": "Alignment",
+          "options": { "left": "Left", "center": "Center", "right": "Right" }
+        },
+        "size": {
+          "label": "Size",
+          "options": { "sm": "Small", "md": "Medium", "lg": "Large" }
+        }
+      },
+      "presets": { "name": "Heading" }
+    },
+    "image": {
+      "name": "Image",
+      "settings": {
+        "image": { "label": "Image" },
+        "alt_text": { "label": "Alt text override" },
+        "link": { "label": "Link" },
+        "width": {
+          "label": "Width",
+          "options": { "narrow": "Narrow", "default": "Default", "wide": "Wide" }
+        }
+      },
+      "presets": { "name": "Image" }
+    },
+    "button": {
+      "name": "Button",
+      "settings": {
+        "label": { "label": "Label", "default": "Shop now" },
+        "url": { "label": "Link" },
+        "style": {
+          "label": "Style",
+          "options": { "primary": "Primary", "secondary": "Secondary", "ghost": "Ghost" }
+        },
+        "size": {
+          "label": "Size",
+          "options": { "sm": "Small", "md": "Medium", "lg": "Large" }
+        },
+        "new_tab": { "label": "Open in new tab" }
+      },
+      "presets": { "name": "Button" }
+    },
+    "divider": {
+      "name": "Divider",
+      "settings": {
+        "spacing": { "label": "Spacing" },
+        "show_line": { "label": "Show divider line" }
+      },
+      "presets": { "name": "Divider" }
+    },
+    "group": {
+      "name": "Group",
+      "settings": {
+        "text": { "label": "Content", "default": "Add grouped content" },
+        "layout": {
+          "label": "Layout",
+          "options": { "row": "Row", "column": "Column" }
+        },
+        "alignment": {
+          "label": "Alignment",
+          "options": { "start": "Start", "center": "Center", "end": "End" }
+        },
+        "gap": { "label": "Gap" },
+        "padding": { "label": "Padding" }
+      },
+      "presets": { "name": "Group" }
+    }
   },
   "labels": {
     "page_width": "Page width",
@@ -96,7 +185,19 @@
     }
   },
   "products": {
+    "badges": {
+      "sale": "Sale",
+      "new": "New",
+      "sold_out": "Sold out"
+    },
     "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "variant": "Variant",
+      "include_taxes_and_shipping_policy_html": "Taxes included. <a href=\"{{ link }}\">Shipping policy</a>.",
+      "include_taxes": "Taxes included.",
+      "shipping_policy_html": "<a href=\"{{ link }}\">Shipping policy</a>.",
+      "taxes_at_checkout": "Taxes and shipping calculated at checkout.",
       "quantity": {
         "decrease": "Decrease quantity",
         "increase": "Increase quantity",

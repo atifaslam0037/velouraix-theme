@@ -1,0 +1,95 @@
+{%- comment -%}
+  Block: image
+  Path: blocks/image.liquid
+  Description: Reusable image block with optional link and width control.
+  Used in sections that support @theme blocks.
+{%- endcomment -%}
+
+{%- liquid
+  assign image_object = block.settings.image
+  assign image_alt = block.settings.alt_text | escape
+  if image_alt == blank and image_object != blank
+    assign image_alt = image_object.alt | escape
+  endif
+-%}
+
+<div class="block-image block-image--{{ block.settings.width }}" {{ block.shopify_attributes }}>
+  {%- if block.settings.link != blank -%}
+    <a href="{{ block.settings.link }}" class="block-image__link">
+  {%- endif -%}
+
+  {%- if image_object != blank -%}
+    <img
+      class="block-image__img"
+      src="{{ image_object | image_url: width: 800 }}"
+      srcset="
+        {{ image_object | image_url: width: 400 }} 400w,
+        {{ image_object | image_url: width: 800 }} 800w,
+        {{ image_object | image_url: width: 1200 }} 1200w
+      "
+      sizes="(min-width: 990px) 50vw, 100vw"
+      width="{{ image_object.width }}"
+      height="{{ image_object.height }}"
+      alt="{{ image_alt }}"
+      loading="lazy"
+      decoding="async"
+    >
+  {%- endif -%}
+
+  {%- if block.settings.link != blank -%}
+    </a>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+.block-image {
+  display: block;
+}
+
+.block-image__img {
+  width: 100%;
+  height: auto;
+  border: 1px solid oklch(from var(--color-text) l c h / 0.12);
+  border-radius: var(--radius-md);
+}
+
+.block-image--narrow { max-width: var(--content-narrow); }
+.block-image--default { max-width: var(--content-default); }
+.block-image--wide { max-width: var(--content-wide); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Image",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:blocks.image.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "alt_text",
+      "label": "t:blocks.image.settings.alt_text.label",
+      "default": ""
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:blocks.image.settings.link.label"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:blocks.image.settings.width.label",
+      "options": [
+        { "value": "narrow", "label": "t:blocks.image.settings.width.options.narrow" },
+        { "value": "default", "label": "t:blocks.image.settings.width.options.default" },
+        { "value": "wide", "label": "t:blocks.image.settings.width.options.wide" }
+      ],
+      "default": "default"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.image.presets.name" }]
+}
+{% endschema %}

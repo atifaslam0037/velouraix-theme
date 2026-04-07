@@ -1,0 +1,29 @@
+{%- comment -%}
+  Snippet: badge
+  Path: snippets/badge.liquid
+  Description: Renders sale, new, or sold-out badge.
+  Parameters:
+    - type {string} required: sale | new | sold_out
+    - label {string} optional, default: translated label for type
+  Example:
+    {% render 'badge', type: 'sale' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign badge_type = type | default: 'new'
+  assign badge_label = label | default: ''
+  if badge_label == blank
+    case badge_type
+      when 'sale'
+        assign badge_label = 'products.badges.sale' | t
+      when 'sold_out'
+        assign badge_label = 'products.badges.sold_out' | t
+      else
+        assign badge_label = 'products.badges.new' | t
+    endcase
+  endif
+-%}
+
+<span class="badge badge--{{ badge_type }}">
+  {{- badge_label | escape -}}
+</span>

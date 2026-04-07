@@ -1,0 +1,91 @@
+{%- comment -%}
+  Block: group
+  Path: blocks/group.liquid
+  Description: Reusable group container block for spacing and alignment.
+  Used in sections that support @theme blocks.
+{%- endcomment -%}
+
+<div
+  class="block-group block-group--{{ block.settings.layout }} block-group--{{ block.settings.alignment }}"
+  style="
+    --block-group-gap: var(--space-{{ block.settings.gap }});
+    --block-group-padding: var(--space-{{ block.settings.padding }});
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.text != blank -%}
+    <div class="block-group__text">{{ block.settings.text }}</div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+.block-group {
+  display: flex;
+  gap: var(--block-group-gap);
+  padding: var(--block-group-padding);
+  border: 1px solid oklch(from var(--color-text) l c h / 0.12);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.block-group--row { flex-direction: row; }
+.block-group--column { flex-direction: column; }
+
+.block-group--start { align-items: flex-start; }
+.block-group--center { align-items: center; }
+.block-group--end { align-items: flex-end; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Group",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:blocks.group.settings.text.label",
+      "default": "<p>t:blocks.group.settings.text.default</p>"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:blocks.group.settings.layout.label",
+      "options": [
+        { "value": "row", "label": "t:blocks.group.settings.layout.options.row" },
+        { "value": "column", "label": "t:blocks.group.settings.layout.options.column" }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:blocks.group.settings.alignment.label",
+      "options": [
+        { "value": "start", "label": "t:blocks.group.settings.alignment.options.start" },
+        { "value": "center", "label": "t:blocks.group.settings.alignment.options.center" },
+        { "value": "end", "label": "t:blocks.group.settings.alignment.options.end" }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:blocks.group.settings.gap.label",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "t:blocks.group.settings.padding.label",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "presets": [{ "name": "t:blocks.group.presets.name" }]
+}
+{% endschema %}

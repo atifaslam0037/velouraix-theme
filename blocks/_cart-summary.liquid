@@ -12,7 +12,19 @@
 {%- endcomment -%}
 
 {%- unless cart.empty? -%}
-  <div class="cart-summary" id="cart-page-summary-panel">
+  <div
+    class="cart-summary cart-summary--border-{{ block.settings.border_style }}{% unless block.settings.enable_sticky %} cart-summary--static{% endunless %}"
+    id="cart-page-summary-panel"
+    style="
+      --cart-summary-padding-top: {{ block.settings.padding_top }}px;
+      --cart-summary-padding-bottom: {{ block.settings.padding_bottom }}px;
+      --cart-summary-padding-left: {{ block.settings.padding_left }}px;
+      --cart-summary-padding-right: {{ block.settings.padding_right }}px;
+      --cart-summary-border-thickness: {{ block.settings.border_thickness }}px;
+      --cart-summary-border-opacity: {{ block.settings.border_opacity | divided_by: 100.0 }};
+      --cart-summary-radius: {{ block.settings.corner_radius }}px;
+    "
+  >
 
     <div class="cart-summary__row">
       <span class="cart-summary__label">{{- 'cart.subtotal' | t | upcase -}}</span>
@@ -21,9 +33,11 @@
       </span>
     </div>
 
-    <p class="cart-summary__tax-note">
-      {{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}
-    </p>
+    {%- if block.settings.show_tax_note -%}
+      <p class="cart-summary__tax-note">
+        {{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}
+      </p>
+    {%- endif -%}
 
     <div class="cart-summary__actions">
       <a
@@ -49,11 +63,21 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  padding: var(--space-7);
+  padding-top: var(--cart-summary-padding-top);
+  padding-right: var(--cart-summary-padding-right);
+  padding-bottom: var(--cart-summary-padding-bottom);
+  padding-left: var(--cart-summary-padding-left);
   background: oklch(from var(--color-text) l c h / 0.04);
   position: sticky;
   top: calc(var(--header-offset, var(--space-14)) + var(--space-6));
+  border-radius: var(--cart-summary-radius);
 }
+
+.cart-summary--static { position: relative; top: auto; }
+.cart-summary--border-solid {
+  border: var(--cart-summary-border-thickness) solid oklch(from var(--color-text) l c h / var(--cart-summary-border-opacity));
+}
+.cart-summary--border-none { border: 0; }
 
 .cart-summary__row {
   display: flex;
@@ -141,6 +165,108 @@
 
 {% schema %}
 {
-  "name": "Cart summary"
+  "name": "Summary",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky summary",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tax_note",
+      "label": "Show tax note",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Borders"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "solid", "label": "Solid" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "label": "Thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    }
+  ]
 }
 {% endschema %}

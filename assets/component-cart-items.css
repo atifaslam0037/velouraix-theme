@@ -7,6 +7,9 @@
 /* ── Component root ── */
 .cart-items {
   display: block;
+  --cart-item-image-size: 96px;
+  --cart-item-aspect-ratio: 3 / 4;
+  --cart-item-divider-opacity: 0.08;
 }
 
 /* ── List ── */
@@ -21,10 +24,10 @@
    ══════════════════════════════════════ */
 .cart-item {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: var(--cart-item-image-size) 1fr;
   gap: var(--space-5);
   padding-block: var(--space-6);
-  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.08);
+  border-bottom: 1px solid oklch(from var(--color-text) l c h / var(--cart-item-divider-opacity));
   transition: opacity var(--transition-base);
   position: relative;
 }
@@ -41,11 +44,15 @@
 /* ── Image wrapper ── */
 .cart-item__image-wrap {
   display: block;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: var(--cart-item-aspect-ratio);
   overflow: hidden;
   background: var(--color-surface-2);
   flex-shrink: 0;
 }
+
+.cart-items--ratio-square { --cart-item-aspect-ratio: 1 / 1; }
+.cart-items--ratio-portrait { --cart-item-aspect-ratio: 3 / 4; }
+.cart-items--no-dividers { --cart-item-divider-opacity: 0; }
 
 .cart-item__image {
   width: 100%;
@@ -107,6 +114,14 @@
 .cart-item__name:hover { opacity: 0.45; }
 
 .cart-item__variant {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.cart-item__vendor {
   font-family: var(--font-primary);
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
@@ -230,7 +245,7 @@
    DRAWER CONTEXT — tighter density
    ══════════════════════════════════════ */
 .cart-items--drawer .cart-item {
-  grid-template-columns: 80px 1fr;
+  --cart-item-image-size: 80px;
   gap: var(--space-4);
   padding-block: var(--space-5);
 }
@@ -240,7 +255,7 @@
 }
 
 .cart-items--drawer .cart-item__image-wrap {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: var(--cart-item-aspect-ratio);
 }
 
 /* ══════════════════════════════════════
@@ -248,7 +263,7 @@
    ══════════════════════════════════════ */
 @media screen and (min-width: 750px) {
   .cart-items:not(.cart-items--drawer) .cart-item {
-    grid-template-columns: 120px 1fr;
+    grid-template-columns: max(var(--cart-item-image-size), 120px) 1fr;
     gap: var(--space-8);
     padding-block: var(--space-8);
   }

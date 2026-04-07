@@ -1,0 +1,41 @@
+{%- liquid
+  assign heading_tag = block.settings.heading_tag | default: 'h1'
+-%}
+
+<div class="product-title-block" {{ block.shopify_attributes }}>
+  <{{ heading_tag }} class="product-title-block__heading">
+    {{- product.title -}}
+  </{{ heading_tag }}>
+</div>
+
+{% stylesheet %}
+.product-title-block__heading {
+  margin: 0;
+  font-size: var(--font-h2-size);
+  line-height: var(--font-heading-line-height);
+  color: var(--color-heading);
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 960px) {
+  .product-title-block__heading { font-size: var(--font-h1-size); }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product title",
+  "settings": [
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" }
+      ],
+      "default": "h1"
+    }
+  ]
+}
+{% endschema %}
