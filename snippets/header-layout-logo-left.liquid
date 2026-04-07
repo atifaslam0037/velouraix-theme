@@ -1,0 +1,87 @@
+{% doc %}
+  Layout: [LOGO + MENU LEFT] — [NAV CENTER] — [ICONS RIGHT]
+  Professional logo-left variation.
+
+  @param {block} logo_block - Logo block
+  @param {block} nav_left_block - Navigation block
+  @param {block} nav_right_block - Icons/actions block
+  @param section_blocks - The section blocks for dynamic child elements
+  @param {string} search_style - 'inline_bar' or 'modal'
+  @param {string} cart_style - 'drawer' or 'page'
+
+  @example
+  {% render 'header-layout-logo-left', logo_block: logo_block, nav_left_block: nav_left_block, nav_right_block: nav_right_block, section_blocks: section_blocks, search_style: 'modal', cart_style: 'drawer' %}
+{% enddoc %}
+
+<div class="header-layout header-layout--logo-left page-width">
+  <div class="header-layout__start">
+    <button
+      class="header__mobile-toggle"
+      type="button"
+      aria-label="{{ 'sections.header.mobile_menu_label' | t }}"
+      aria-expanded="false"
+      aria-controls="mobile-menu-drawer"
+      data-mobile-menu-toggle
+    >
+      <span class="visually-hidden">{{ 'sections.header.menu_label' | t }}</span>
+      {%- render 'icon', name: 'hamburger' -%}
+    </button>
+    <div class="header__logo--desktop-only">
+      {%- if logo_block != null -%}
+        {%- render 'header-logo', block: logo_block -%}
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="header-layout__center">
+    <div class="header__logo--mobile-only">
+      {%- if logo_block != null -%}
+        {%- render 'header-logo', block: logo_block -%}
+      {%- endif -%}
+    </div>
+    {%- if nav_left_block != null -%}
+      <nav class="header__nav header__nav--desktop" aria-label="{{ 'sections.header.nav_aria_label' | t }}">
+        {%- render 'header-nav', block: nav_left_block, nav_style: 'mega_menu', section_blocks: section_blocks -%}
+      </nav>
+    {%- endif -%}
+  </div>
+
+  <div class="header-layout__end">
+    <div class="header-end--mobile">
+      {%- if nav_right_block != null and nav_right_block.settings.show_cart -%}
+        {%- if cart_style == 'drawer' -%}
+          <button
+            class="header-action-text"
+            type="button"
+            aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+            data-cart-toggle
+          >
+            <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
+            {%- render 'icon', name: 'cart' -%}
+            <span class="header-action-text__badge{% if cart.item_count == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+          </button>
+        {%- else -%}
+          <a
+            href="{{ routes.cart_url }}"
+            class="header-action-text"
+            aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+          >
+            <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
+            {%- render 'icon', name: 'cart' -%}
+            <span class="header-action-text__badge{% if cart.item_count == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+          </a>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    <div class="header-end--desktop">
+      {%- if nav_right_block != null -%}
+        {%- render 'header-icons',
+          block: nav_right_block,
+          search_style: search_style,
+          cart_style: cart_style
+        -%}
+      {%- endif -%}
+    </div>
+  </div>
+</div>

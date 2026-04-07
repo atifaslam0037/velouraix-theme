@@ -121,7 +121,7 @@ textarea,
 select {
   background-color: var(--color-input-background);
   color: var(--color-input-text);
-  border: 1px solid var(--color-input-border);
+  border: var(--space-1) solid var(--color-input-border);
   border-radius: var(--style-border-radius-inputs);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -129,7 +129,9 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  outline: none;
+  outline: 2px solid var(--color-primary, var(--color-input-focus));
+  outline-offset: var(--space-1);
+  border-radius: var(--radius-sm, var(--style-border-radius-inputs));
   border-color: var(--color-input-focus);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-focus) 20%, transparent);
 }
@@ -140,7 +142,7 @@ button[type="submit"],
 .shopify-payment-button__button {
   background-color: var(--color-btn-primary-bg);
   color: var(--color-btn-primary-text);
-  border: 2px solid var(--color-btn-primary-bg);
+  border: calc(var(--space-1) * 2) solid var(--color-btn-primary-bg);
   border-radius: var(--style-border-radius-buttons);
   padding: 0.75rem 1.5rem;
   font-family: inherit;
@@ -159,7 +161,7 @@ button[type="submit"]:hover {
 .btn--secondary {
   background-color: var(--color-btn-secondary-bg);
   color: var(--color-btn-secondary-text);
-  border: 2px solid var(--color-btn-secondary-text);
+  border: calc(var(--space-1) * 2) solid var(--color-btn-secondary-text);
 }
 
 .btn--secondary:hover {
@@ -220,4 +222,23 @@ hr,
 /* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section>.full-width {
   grid-column: 1 / -1;
+}
+
+.visually-hidden-focusable {
+  position: absolute;
+  top: -100%;
+  left: var(--space-4);
+  z-index: 1000;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  border: var(--space-1) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+.visually-hidden-focusable:focus-visible {
+  top: 0;
+  outline: 2px solid var(--color-primary);
+  outline-offset: var(--space-1);
 }

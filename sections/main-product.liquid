@@ -1,50 +1,206 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_form_id = 'ProductForm-' | append: section.id
+  assign has_variant_picker = section.blocks | where: 'type', 'variant-picker' | size
+-%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+<section class="product page-width" id="MainProduct-{{ section.id }}">
+  <script src="{{ 'component-variant-picker.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'component-quantity-selector.js' | asset_url }}" defer="defer"></script>
+  <div class="product__grid">
+    <div class="product__media">
+      {%- for image in product.images -%}
+        {% render 'image', class: 'product__image', image: image %}
+      {%- endfor -%}
+    </div>
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+    <div class="product__content">
+      {%- content_for 'blocks' -%}
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+      <div class="product__description rte">
+        {{ product.description }}
+      </div>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+      {%- form 'product', product, id: product_form_id, class: 'product__form' -%}
+        {%- if has_variant_picker == 0 -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {%- endif -%}
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+        <div class="product__purchase-actions">
+          <label for="Quantity-{{ section.id }}" class="product__quantity-label">
+            {{- 'products.product.quantity.input_label' | t -}}
+          </label>
+          <quantity-selector-component class="product__quantity-selector">
+            <button
+              class="product__quantity-btn product__quantity-btn--minus"
+              type="button"
+              name="minus"
+              aria-label="{{ 'products.product.quantity.decrease' | t }}"
+            >
+              {%- render 'icon', name: 'minus' -%}
+            </button>
+            <input
+              id="Quantity-{{ section.id }}"
+              class="product__quantity-input"
+              type="number"
+              name="quantity"
+              min="1"
+              step="1"
+              value="1"
+              form="{{ product_form_id }}"
+            >
+            <button
+              class="product__quantity-btn product__quantity-btn--plus"
+              type="button"
+              name="plus"
+              aria-label="{{ 'products.product.quantity.increase' | t }}"
+            >
+              {%- render 'icon', name: 'plus' -%}
+            </button>
+          </quantity-selector-component>
 
-    <input type="text" name="quantity" min="1" value="1">
+          <button
+            type="submit"
+            name="add"
+            class="product__add-button"
+            {% unless current_variant.available %}
+              disabled
+            {% endunless %}
+          >
+            {%- if current_variant.available -%}
+              {{ 'products.product.add_to_cart' | t }}
+            {%- else -%}
+              {{ 'products.product.sold_out' | t }}
+            {%- endif -%}
+          </button>
+        </div>
+        {{ form | payment_button }}
+      {%- endform -%}
+    </div>
+  </div>
+</section>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+{% stylesheet %}
+.product__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+  padding-block: var(--space-8) var(--space-12);
+  transition: opacity var(--transition-base), filter var(--transition-base);
+}
+
+.product.is-variant-loading .product__grid {
+  opacity: 0.55;
+  filter: saturate(0.82);
+  pointer-events: none;
+}
+
+.product__media {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.product__image {
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.product__content {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.product__description {
+  color: var(--color-text);
+  opacity: 0.88;
+}
+
+.product__purchase-actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.product__quantity-label {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.product__quantity-input {
+  width: 100%;
+  min-height: 2.8rem;
+  border: 0;
+  text-align: center;
+  background: var(--color-input-background);
+  color: var(--color-input-text);
+  padding-inline: var(--space-4);
+}
+
+.product__quantity-selector {
+  width: 100%;
+  max-width: 10rem;
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr) 2.6rem;
+  align-items: center;
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--style-border-radius-inputs);
+  overflow: hidden;
+}
+
+.product__quantity-btn {
+  min-height: 2.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.product__quantity-btn:hover { background: oklch(from var(--color-text) l c h / 0.04); }
+
+.product__add-button {
+  min-height: 3rem;
+  border: 0;
+  border-radius: var(--button-radius);
+  background: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+}
+
+.product__add-button:hover { opacity: 0.85; }
+.product__add-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (min-width: 960px) {
+  .product__grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.product",
   "settings": [],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ],
+  "max_blocks": 12,
+  "default": {
+    "blocks": [
+      { "type": "product-title" },
+      { "type": "price" },
+      { "type": "variant-picker" }
+    ]
+  },
   "disabled_on": {
     "groups": ["header", "footer"]
   }

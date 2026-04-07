@@ -1,0 +1,60 @@
+{%- comment -%}
+  Snippet: product-card
+  Path: snippets/product-card.liquid
+  Description: Reusable product card with image, title, badges, and price.
+  Parameters:
+    - product {product} required
+    - show_badges {boolean} optional, default: true
+    - show_vendor {boolean} optional, default: false
+  Example:
+    {% render 'product-card', product: product, show_badges: true %}
+{%- endcomment -%}
+
+{%- liquid
+  assign card_product = product
+  assign display_badges = show_badges | default: true
+  assign display_vendor = show_vendor | default: false
+  assign featured_image = card_product.featured_image
+  assign target_variant = card_product.selected_or_first_available_variant
+-%}
+
+{%- if card_product != blank -%}
+  <article class="product-card">
+    <a class="product-card__media" href="{{ card_product.url }}">
+      {%- if featured_image != blank -%}
+        <img
+          class="product-card__image"
+          src="{{ featured_image | image_url: width: 800 }}"
+          srcset="
+            {{ featured_image | image_url: width: 200 }} 200w,
+            {{ featured_image | image_url: width: 400 }} 400w,
+            {{ featured_image | image_url: width: 800 }} 800w,
+            {{ featured_image | image_url: width: 1200 }} 1200w
+          "
+          sizes="(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw"
+          width="{{ featured_image.width }}"
+          height="{{ featured_image.height }}"
+          alt="{{ featured_image.alt | escape | default: card_product.title | escape }}"
+          loading="lazy"
+          decoding="async"
+        >
+      {%- endif -%}
+
+      {%- if display_badges and target_variant.available == false -%}
+        <span class="product-card__badge">{% render 'badge', type: 'sold_out' %}</span>
+      {%- elsif display_badges and target_variant.compare_at_price > target_variant.price -%}
+        <span class="product-card__badge">{% render 'badge', type: 'sale' %}</span>
+      {%- endif -%}
+    </a>
+
+    <div class="product-card__body">
+      <h3 class="product-card__title">
+        <a href="{{ card_product.url }}">{{ card_product.title | escape }}</a>
+      </h3>
+      {%- if display_vendor -%}
+        <p class="product-card__vendor">{{ card_product.vendor | escape }}</p>
+      {%- endif -%}
+      {% render 'price', product: card_product, variant: target_variant, show_badge: false %}
+    </div>
+  </article>
+{%- endif -%}

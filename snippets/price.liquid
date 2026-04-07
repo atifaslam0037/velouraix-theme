@@ -1,0 +1,42 @@
+{%- comment -%}
+  Snippet: price
+  Path: snippets/price.liquid
+  Description: Renders product or variant pricing with sale state and unit price.
+  Parameters:
+    - product {product} optional
+    - variant {variant} optional
+    - show_badge {boolean} optional, default: true
+  Example:
+    {% render 'price', product: product, variant: product.selected_or_first_available_variant %}
+{%- endcomment -%}
+
+{%- liquid
+  assign target_variant = variant | default: product.selected_or_first_available_variant
+  assign compare_at = target_variant.compare_at_price | default: 0
+  assign current_price = target_variant.price | default: 0
+  assign display_badge = show_badge | default: true
+-%}
+
+<div class="price-snippet">
+  <span class="price-snippet__current">{{ current_price | money }}</span>
+
+  {%- if compare_at > current_price -%}
+    <s class="price-snippet__compare">{{ compare_at | money }}</s>
+    {%- if display_badge -%}
+      {% render 'badge', type: 'sale' %}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if target_variant.unit_price_measurement -%}
+    <small class="price-snippet__unit-price">
+      {{ target_variant.unit_price | money }}
+      <span aria-hidden="true">/</span>
+      <span>
+        {%- if target_variant.unit_price_measurement.reference_value != 1 -%}
+          {{ target_variant.unit_price_measurement.reference_value }}
+        {%- endif -%}
+        {{ target_variant.unit_price_measurement.reference_unit }}
+      </span>
+    </small>
+  {%- endif -%}
+</div>

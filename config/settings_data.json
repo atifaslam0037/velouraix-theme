@@ -8,5 +8,14 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "foreground_color": "#FFFFFF",
+    "color_input_text": "#333333",
+    "color_input_border": "#e0e0e0",
+    "input_corner_radius": 4,
+    "button_corner_radius": 8,
+    "icon_weight": "2.0",
+    "search_style": "modal",
+    "content_for_index": []
+  }
 }

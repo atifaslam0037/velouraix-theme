@@ -1,0 +1,50 @@
+{%- comment -%}
+  Block: text
+  Path: blocks/text.liquid
+  Description: Reusable rich text block with alignment control.
+  Used in sections that support @theme blocks.
+{%- endcomment -%}
+
+<div class="block-text block-text--{{ block.settings.alignment }}" {{ block.shopify_attributes }}>
+  <div class="block-text__content rte">{{ block.settings.text }}</div>
+</div>
+
+{% stylesheet %}
+.block-text {
+  display: block;
+}
+
+.block-text__content {
+  color: var(--color-text);
+}
+
+.block-text--left .block-text__content { text-align: left; }
+.block-text--center .block-text__content { text-align: center; }
+.block-text--right .block-text__content { text-align: right; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Text",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:blocks.text.settings.text.label",
+      "default": "<p>t:blocks.text.settings.text.default</p>"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:blocks.text.settings.alignment.label",
+      "options": [
+        { "value": "left", "label": "t:blocks.text.settings.alignment.options.left" },
+        { "value": "center", "label": "t:blocks.text.settings.alignment.options.center" },
+        { "value": "right", "label": "t:blocks.text.settings.alignment.options.right" }
+      ],
+      "default": "left"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.text.presets.name" }]
+}
+{% endschema %}

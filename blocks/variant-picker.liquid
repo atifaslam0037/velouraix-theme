@@ -1,0 +1,111 @@
+{%- liquid
+  assign product_form_id = 'ProductForm-' | append: section.id
+-%}
+
+<div class="variant-picker-block" {{ block.shopify_attributes }}>
+  {%- render 'product-variant-picker',
+    product: product,
+    section: section,
+    form_id: product_form_id,
+    picker_style: block.settings.picker_style,
+    show_availability: block.settings.show_availability
+  -%}
+</div>
+
+{% stylesheet %}
+.variant-picker-block .product-variant-picker-snippet {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.variant-picker-block .product-variant-picker-snippet__fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.variant-picker-block .product-variant-picker-snippet__label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.variant-picker-block .product-variant-picker-snippet__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.variant-picker-block .product-variant-picker-snippet__button-wrapper {
+  position: relative;
+}
+
+.variant-picker-block .product-variant-picker-snippet__radio {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.variant-picker-block .product-variant-picker-snippet__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.variant-picker-block .product-variant-picker-snippet__radio:checked + .product-variant-picker-snippet__button {
+  border-color: var(--color-text);
+  background: oklch(from var(--color-text) l c h / 0.06);
+}
+
+.variant-picker-block .product-variant-picker-snippet__radio:disabled + .product-variant-picker-snippet__button {
+  opacity: 0.45;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.variant-picker-block .product-variant-picker-snippet__select {
+  width: 100%;
+  min-height: 2.8rem;
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--style-border-radius-inputs);
+  background: var(--color-input-background);
+  color: var(--color-input-text);
+  padding-inline: var(--space-4);
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Variant picker",
+  "settings": [
+    {
+      "type": "select",
+      "id": "picker_style",
+      "label": "Picker style",
+      "options": [
+        { "value": "buttons", "label": "Buttons" },
+        { "value": "dropdown", "label": "Dropdown" }
+      ],
+      "default": "buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_availability",
+      "label": "Show sold out labels",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

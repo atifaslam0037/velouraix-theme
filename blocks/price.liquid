@@ -1,0 +1,71 @@
+<div class="price-block" {{ block.shopify_attributes }}>
+  {%- form 'product', product, id: 'PriceInstallments-' | append: section.id -%}
+    {%- render 'product-price',
+      product: product,
+      form: form,
+      show_compare_at: block.settings.show_compare_at,
+      show_installments: block.settings.show_installments,
+      show_tax_notice: block.settings.show_tax_notice
+    -%}
+  {%- endform -%}
+</div>
+
+{% stylesheet %}
+.price-block .product-price-snippet {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.price-block .product-price-snippet__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.price-block .product-price-snippet__current {
+  font-size: var(--font-size-xl);
+  color: var(--color-text);
+}
+
+.price-block .product-price-snippet__compare {
+  color: var(--color-price-compare);
+  opacity: 0.8;
+}
+
+.price-block .product-price-snippet__installments {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.price-block .product-price-snippet__tax {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Price",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_compare_at",
+      "label": "Show compare-at price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "Show installment information",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tax_notice",
+      "label": "Show tax and shipping notice",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

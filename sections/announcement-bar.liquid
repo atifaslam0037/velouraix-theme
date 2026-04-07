@@ -1,0 +1,115 @@
+{%- if section.settings.show_announcement -%}
+  <div
+    class="announcement-bar"
+    role="region"
+    aria-label="{{ 'sections.announcement_bar.aria_label' | t }}"
+    style="
+      --ann-bg: {{ section.settings.bg_color }};
+      --ann-color: {{ section.settings.text_color }};
+    "
+  >
+    <div class="announcement-bar__inner page-width">
+      <div class="announcement-bar__slot announcement-bar__slot--start">
+        {%- if section.settings.start_text != blank -%}
+          {%- if section.settings.start_link != blank -%}
+            <a href="{{ section.settings.start_link }}" class="announcement-bar__link">
+              {{- section.settings.start_text -}}
+            </a>
+          {%- else -%}
+            <span>{{- section.settings.start_text -}}</span>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+
+      <div class="announcement-bar__slot announcement-bar__slot--center">
+        {%- if section.settings.center_text != blank -%}
+          {%- if section.settings.center_link != blank -%}
+            <a href="{{ section.settings.center_link }}" class="announcement-bar__link">
+              {{- section.settings.center_text -}}
+            </a>
+          {%- else -%}
+            <span>{{- section.settings.center_text -}}</span>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+
+      <div class="announcement-bar__slot announcement-bar__slot--end">
+        {%- if section.settings.end_text != blank -%}
+          <span>{{- section.settings.end_text -}}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{{ 'component-announcement-bar.css' | asset_url | stylesheet_tag }}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "t:sections.announcement_bar.settings.show.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.center_header"
+    },
+    {
+      "type": "text",
+      "id": "center_text",
+      "label": "t:sections.announcement_bar.settings.center_text.label",
+      "default": "Free shipping on orders over $100"
+    },
+    {
+      "type": "url",
+      "id": "center_link",
+      "label": "t:sections.announcement_bar.settings.center_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.start_header"
+    },
+    {
+      "type": "text",
+      "id": "start_text",
+      "label": "t:sections.announcement_bar.settings.start_text.label"
+    },
+    {
+      "type": "url",
+      "id": "start_link",
+      "label": "t:sections.announcement_bar.settings.start_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.end_header"
+    },
+    {
+      "type": "text",
+      "id": "end_text",
+      "label": "t:sections.announcement_bar.settings.end_text.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.colors_header"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "t:sections.announcement_bar.settings.bg_color.label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:sections.announcement_bar.settings.text_color.label",
+      "default": "#000000"
+    }
+  ],
+  "presets": [{ "name": "t:sections.announcement_bar.name" }]
+}
+{% endschema %}

@@ -26,13 +26,18 @@
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
     {{ content_for_header }}
   </head>
 
   <body>
+    <a class="skip-link visually-hidden-focusable" href="#main-content">{{ 'accessibility.skip_to_content' | t }}</a>
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="main-content" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
   </body>

@@ -1,0 +1,56 @@
+{% doc %}
+  Renders the site logo as an image or text fallback.
+  Supports transparent-mode logo swap via CSS class toggle.
+
+  @param {block} block - The logo block with image, transparent image, and width settings
+
+  @example
+  {% render 'header-logo', block: logo_block, section: section %}
+{% enddoc %}
+
+{%- liquid
+  assign logo_img = block.settings.logo | default: settings.logo
+  assign logo_transparent = block.settings.logo_transparent
+  assign logo_width = block.settings.logo_width | default: settings.logo_width | default: 80
+  assign store_name = settings.logo_alt | default: shop.name
+  assign logo_height = logo_width | divided_by: 2
+  if logo_img != blank
+    assign logo_height = logo_width | divided_by: logo_img.aspect_ratio | round
+  endif
+  assign logo_transparent_height = logo_width | divided_by: 2
+  if logo_transparent != blank
+    assign logo_transparent_height = logo_width | divided_by: logo_transparent.aspect_ratio | round
+  endif
+-%}
+
+<a
+  href="{{ routes.root_url }}"
+  class="header-logo"
+  aria-label="{{ 'sections.header.logo_aria_label' | t: store: store_name }}"
+>
+  {%- if logo_img != blank -%}
+    <img
+      class="header-logo__img header-logo__img--default"
+      src="{{ logo_img | image_url: width: 600 }}"
+      alt="{{ logo_img.alt | default: store_name | escape }}"
+      width="{{ logo_width }}"
+      height="{{ logo_height }}"
+      loading="eager"
+      fetchpriority="high"
+      style="width:calc(var(--space-1) * {{ logo_width | divided_by: 4.0 }});height:auto;"
+    >
+    {%- if logo_transparent != blank -%}
+      <img
+        class="header-logo__img header-logo__img--transparent"
+        src="{{ logo_transparent | image_url: width: 600 }}"
+        alt="{{ logo_transparent.alt | default: store_name | escape }}"
+        width="{{ logo_width }}"
+        height="{{ logo_transparent_height }}"
+        loading="eager"
+        style="width:calc(var(--space-1) * {{ logo_width | divided_by: 4.0 }});height:auto;"
+      >
+    {%- endif -%}
+  {%- else -%}
+    <span class="header-logo__text">{{ store_name }}</span>
+  {%- endif -%}
+</a>

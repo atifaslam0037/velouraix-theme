@@ -1,0 +1,549 @@
+{%- comment -%}
+  Snippet: header-mobile-menu.liquid
+  Path: snippets/header-mobile-menu.liquid
+  Description: Full-screen mobile navigation modal matching editorial reference.
+    Structure: topbar (CLOSE × | ACCOUNT | CART) → search row → nav list → bottom (footer links | brand).
+    Search row tap closes menu and opens the search modal.
+    Cart respects global cart_style: 'drawer' opens drawer, 'page' navigates to cart page.
+
+  @param {block} block             - Required. nav_left block (menu + show_shop_name settings).
+  @param {block} nav_right_block   - Optional. nav_right block (show_wishlist, wishlist_url, show_cart).
+  @param {string} cart_style       - Required. Global cart style: 'drawer' or 'page'.
+
+  @example
+  {% render 'header-mobile-menu', block: nav_left_block, nav_right_block: nav_right_block, cart_style: cart_style %}
+{%- endcomment -%}
+
+{%- liquid
+  assign nav_menu = linklists[block.settings.menu]
+  if nav_menu == blank
+    assign nav_menu = linklists['main-menu']
+  endif
+
+  assign show_shop_name = block.settings.show_shop_name | default: true
+
+  assign account_url = routes.account_login_url
+  if customer
+    assign account_url = routes.account_url
+  endif
+
+  assign show_wishlist = false
+  assign wishlist_url = routes.root_url
+  if nav_right_block != null and nav_right_block.settings.show_wishlist
+    assign show_wishlist = true
+    assign wishlist_url = nav_right_block.settings.wishlist_url | default: routes.root_url
+  endif
+
+  assign show_cart = true
+  if nav_right_block != null
+    assign show_cart = nav_right_block.settings.show_cart
+  endif
+-%}
+
+<mobile-menu-drawer
+  id="mobile-menu-drawer"
+  class="mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="mobile-menu-title"
+  aria-hidden="true"
+>
+
+  {%- comment -%} ── TOP BAR: CLOSE × | ACCOUNT | CART ── {%- endcomment -%}
+  <div class="mobile-menu__topbar">
+
+    <button
+      class="mobile-menu__topbar-btn mobile-menu__topbar-close"
+      type="button"
+      data-mobile-menu-close
+      aria-label="{{ 'accessibility.close' | t }}"
+    >
+      <span aria-hidden="true">{{ 'sections.header.menu_close_label' | t | upcase }}</span>
+      {%- render 'icon', name: 'close' -%}
+    </button>
+
+    <a
+      href="{{ account_url }}"
+      class="mobile-menu__topbar-btn mobile-menu__topbar-account"
+      aria-label="{{ 'sections.header.account_aria_label' | t }}"
+    >
+      {{ 'sections.header.account_label' | t | upcase }}
+    </a>
+
+    {%- if show_cart -%}
+      {%- if cart_style == 'drawer' -%}
+        <button
+          class="mobile-menu__topbar-btn mobile-menu__topbar-cart"
+          type="button"
+          data-cart-toggle
+          aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+        >
+          {{ 'sections.header.cart_label' | t | upcase }}
+          <span class="mobile-menu__topbar-cart-badge{% if cart.item_count == 0 %} hidden{% endif %}" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+        </button>
+      {%- else -%}
+        <a
+          href="{{ routes.cart_url }}"
+          class="mobile-menu__topbar-btn mobile-menu__topbar-cart"
+          aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+        >
+          {{ 'sections.header.cart_label' | t | upcase }}
+          <span class="mobile-menu__topbar-cart-badge{% if cart.item_count == 0 %} hidden{% endif %}" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+        </a>
+      {%- endif -%}
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} ── SEARCH ROW ── {%- endcomment -%}
+  <div class="mobile-menu__search-row">
+    <button
+      class="mobile-menu__search-trigger"
+      type="button"
+      data-mobile-search-trigger
+      aria-label="{{ 'sections.header.search_aria_label' | t }}"
+    >
+      <span class="mobile-menu__search-bar">
+        <span class="mobile-menu__search-indicator" aria-hidden="true"></span>
+        <span id="mobile-menu-title" class="mobile-menu__search-placeholder">
+          {{- 'sections.header.mobile_search_placeholder' | t | upcase -}}
+        </span>
+      </span>
+      {%- render 'icon', name: 'search' -%}
+    </button>
+  </div>
+
+  {%- comment -%} ── NAV LIST ── {%- endcomment -%}
+  <nav class="mobile-menu__body" aria-label="{{ 'sections.header.nav_aria_label' | t }}">
+    <ul class="mobile-menu__list" role="list">
+      {%- for link in nav_menu.links -%}
+        {%- liquid
+          if link.links.size > 0
+            assign has_children = true
+          else
+            assign has_children = false
+          endif
+        -%}
+
+        <li class="mobile-menu__item">
+          {%- if has_children -%}
+            <div class="mobile-menu__item-row">
+              <a
+                href="{{ link.url }}"
+                class="mobile-menu__link{% if link.active %} is-active{% endif %}"
+                {% if link.active %}aria-current="page"{% endif %}
+              >
+                {{- link.title -}}
+              </a>
+              <button
+                class="mobile-menu__accordion-toggle"
+                type="button"
+                data-mobile-accordion="mobile-sub-{{ link.title | handle }}"
+                aria-expanded="false"
+                aria-controls="mobile-sub-{{ link.title | handle }}"
+                aria-label="{{ 'accessibility.expand_submenu' | t }}: {{ link.title | escape }}"
+              >
+                {%- render 'icon', name: 'chevron-right' -%}
+              </button>
+            </div>
+
+            <ul
+              class="mobile-menu__sub-list"
+              id="mobile-sub-{{ link.title | handle }}"
+              role="list"
+              aria-hidden="true"
+            >
+              {%- for child in link.links -%}
+                {%- liquid
+                  if child.links.size > 0
+                    assign child_has_children = true
+                  else
+                    assign child_has_children = false
+                  endif
+                -%}
+                <li class="mobile-menu__sub-item">
+                  {%- if child_has_children -%}
+                    <div class="mobile-menu__item-row">
+                      <a
+                        href="{{ child.url }}"
+                        class="mobile-menu__sub-link{% if child.active %} is-active{% endif %}"
+                        {% if child.active %}aria-current="page"{% endif %}
+                      >
+                        {{- child.title -}}
+                      </a>
+                      <button
+                        class="mobile-menu__accordion-toggle"
+                        type="button"
+                        data-mobile-accordion="mobile-sub-{{ child.title | handle }}"
+                        aria-expanded="false"
+                        aria-controls="mobile-sub-{{ child.title | handle }}"
+                        aria-label="{{ 'accessibility.expand_submenu' | t }}: {{ child.title | escape }}"
+                      >
+                        {%- render 'icon', name: 'chevron-right' -%}
+                      </button>
+                    </div>
+                    <ul
+                      class="mobile-menu__sub-list mobile-menu__sub-list--nested"
+                      id="mobile-sub-{{ child.title | handle }}"
+                      role="list"
+                      aria-hidden="true"
+                    >
+                      {%- for grandchild in child.links -%}
+                        <li>
+                          <a
+                            href="{{ grandchild.url }}"
+                            class="mobile-menu__sub-link mobile-menu__sub-link--nested{% if grandchild.active %} is-active{% endif %}"
+                            {% if grandchild.active %}aria-current="page"{% endif %}
+                          >
+                            {{- grandchild.title -}}
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- else -%}
+                    <a
+                      href="{{ child.url }}"
+                      class="mobile-menu__sub-link{% if child.active %} is-active{% endif %}"
+                      {% if child.active %}aria-current="page"{% endif %}
+                    >
+                      {{- child.title -}}
+                    </a>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- else -%}
+            <a
+              href="{{ link.url }}"
+              class="mobile-menu__link{% if link.active %} is-active{% endif %}"
+              {% if link.active %}aria-current="page"{% endif %}
+            >
+              {{- link.title -}}
+            </a>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+
+  {%- comment -%} ── BOTTOM: footer links (left) + brand vertical (right) ── {%- endcomment -%}
+  <div class="mobile-menu__bottom">
+    <div class="mobile-menu__footer">
+      {%- if show_wishlist -%}
+        <a href="{{ wishlist_url }}" class="mobile-menu__footer-link">
+          {{- 'sections.header.wishlist_label' | t -}}
+        </a>
+      {%- endif -%}
+      <a href="{{ account_url }}" class="mobile-menu__footer-link">
+        {{- 'sections.header.mobile_register_label' | t -}}
+      </a>
+      <a href="{{ routes.root_url }}" class="mobile-menu__footer-link">
+        {{- 'sections.header.mobile_contacts_label' | t -}}
+      </a>
+    </div>
+
+    {%- if show_shop_name -%}
+      <div class="mobile-menu__brand" aria-hidden="true">
+        <span class="mobile-menu__brand-text">{{ shop.name }}</span>
+      </div>
+    {%- endif -%}
+  </div>
+
+</mobile-menu-drawer>
+
+{% stylesheet %}
+/* ── Full-screen mobile menu modal ── */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-slow), visibility 0s linear var(--transition-slow);
+}
+
+.mobile-menu[open] {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--transition-slow), visibility 0s linear 0s;
+}
+
+@media screen and (min-width: 990px) {
+  .mobile-menu { display: none !important; }
+}
+
+/* ── Top bar ── */
+.mobile-menu__topbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding: 0 var(--space-5);
+  height: var(--header-height, var(--space-14));
+  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.12);
+  flex-shrink: 0;
+}
+
+.mobile-menu__topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition-base);
+  min-height: 44px;
+}
+.mobile-menu__topbar-btn:hover { opacity: 0.5; }
+.mobile-menu__topbar-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.mobile-menu__topbar-close  { justify-self: start; }
+.mobile-menu__topbar-account { justify-self: center; }
+.mobile-menu__topbar-cart   { justify-self: end; }
+
+.mobile-menu__topbar-cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--space-5);
+  height: var(--space-5);
+  background: var(--color-text);
+  color: var(--color-background);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-primary);
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 0 var(--space-1);
+}
+.mobile-menu__topbar-cart-badge.hidden { display: none; }
+
+/* ── Search row ── */
+.mobile-menu__search-row {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.12);
+  flex-shrink: 0;
+}
+
+.mobile-menu__search-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color-text);
+  min-height: 44px;
+  gap: var(--space-3);
+}
+.mobile-menu__search-trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.mobile-menu__search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.3);
+  padding-bottom: var(--space-2);
+}
+
+.mobile-menu__search-indicator {
+  display: block;
+  width: 3px;
+  height: var(--space-4);
+  background: var(--color-text);
+  flex-shrink: 0;
+}
+
+.mobile-menu__search-placeholder {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+/* ── Nav body ── */
+.mobile-menu__body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.mobile-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mobile-menu__item {
+  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.08);
+}
+
+.mobile-menu__item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-menu__link {
+  display: block;
+  flex: 1;
+  padding: var(--space-5);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: opacity var(--transition-base);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.mobile-menu__link:hover,
+.mobile-menu__link.is-active { opacity: 0.45; }
+
+.mobile-menu__accordion-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform var(--transition-base);
+  min-height: 44px;
+  min-width: 44px;
+}
+.mobile-menu__accordion-toggle[aria-expanded="true"] {
+  transform: rotate(90deg);
+}
+.mobile-menu__accordion-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.mobile-menu__sub-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.mobile-menu__sub-list.is-open {
+  max-height: calc(var(--space-16) * 25);
+}
+
+.mobile-menu__sub-link {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-5) var(--space-3) var(--space-10);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity var(--transition-base);
+  min-height: 44px;
+}
+.mobile-menu__sub-link:hover { opacity: 0.4; }
+.mobile-menu__sub-link.is-active { opacity: 0.4; }
+
+.mobile-menu__sub-link--nested {
+  padding-left: calc(var(--space-12) + var(--space-2));
+  opacity: 0.55;
+}
+
+/* ── Bottom row ── */
+.mobile-menu__bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-5);
+  border-top: 1px solid oklch(from var(--color-text) l c h / 0.12);
+  flex-shrink: 0;
+  min-height: calc(var(--space-16) * 3);
+  gap: var(--space-4);
+}
+
+.mobile-menu__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mobile-menu__footer-link {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.07em;
+  text-transform: none;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: opacity var(--transition-base);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.mobile-menu__footer-link:hover { opacity: 0.5; }
+.mobile-menu__footer-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Brand — vertical text, bottom right */
+.mobile-menu__brand { flex-shrink: 0; }
+
+.mobile-menu__brand-text {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+  font-weight: 400;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+/* ── Reduced motion ── */
+@media screen and (prefers-reduced-motion: reduce) {
+  .mobile-menu, .mobile-menu * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+{% endstylesheet %}

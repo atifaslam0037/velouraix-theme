@@ -1,0 +1,215 @@
+{%- comment -%}
+  Mega menu — 3-zone layout:
+  [LINK COLUMNS] [CENTER LOGO] [RIGHT IMAGES]
+
+  @param {block} block - The nav_left block containing general menu settings
+  @param {array} section_blocks - The blocks from the main header section
+{%- endcomment -%}
+{%- liquid
+  assign nav_menu = linklists[block.settings.menu]
+  if nav_menu == blank
+    assign nav_menu = linklists['main-menu']
+  endif
+-%}
+
+<mega-menu-panel class="mega-menu" id="mega-menu" aria-hidden="true" data-mega-menu>
+  <div class="mega-menu__backdrop" data-mega-close></div>
+
+  {%- for link in nav_menu.links -%}
+    {%- if link.links.size > 0 -%}
+      {%- assign panel_id = link.title | handle -%}
+
+      {%- liquid
+        assign mega_menu_block = null
+        for block in section_blocks
+          if block.type == 'mega_menu' and block.settings.menu_item == link.title
+            assign mega_menu_block = block
+            break
+          endif
+        endfor
+      -%}
+
+      {%- if mega_menu_block != null -%}
+        <div
+          class="mega-menu__panel"
+          id="mega-panel-{{ panel_id }}"
+          data-mega-panel="{{ panel_id }}"
+          role="region"
+          aria-label="{{ link.title }}"
+          aria-hidden="true"
+        >
+          <div class="mega-menu__inner page-width">
+          {%- comment -%} ZONE 1: Link columns {%- endcomment -%}
+          <div class="mega-menu__columns">
+            {%- liquid
+              assign has_groups = false
+              for child in link.links
+                if child.links.size > 0
+                  assign has_groups = true
+                endif
+              endfor
+            -%}
+
+            {%- if has_groups -%}
+              {%- for child in link.links -%}
+                {%- if child.links.size > 0 -%}
+                  <div class="mega-menu__column">
+                    <a href="{{ child.url }}" class="mega-menu__column-heading">
+                      {{- child.title -}}
+                    </a>
+                    <ul class="mega-menu__list" role="list">
+                      {%- for grandchild in child.links -%}
+                        <li>
+                          <a
+                            href="{{ grandchild.url }}"
+                            class="mega-menu__link{% if grandchild.active %} mega-menu__link--active{% endif %}"
+                            {% if grandchild.active %}
+                              aria-current="page"
+                            {% endif %}
+                          >
+                            {{- grandchild.title -}}
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- else -%}
+                  <div class="mega-menu__column">
+                    <ul class="mega-menu__list" role="list">
+                      <li>
+                        <a
+                          href="{{ child.url }}"
+                          class="mega-menu__link{% if child.active %} mega-menu__link--active{% endif %}"
+                          {% if child.active %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          {{- child.title -}}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- else -%}
+              <div class="mega-menu__column">
+                <ul class="mega-menu__list" role="list">
+                  {%- for child in link.links -%}
+                    <li>
+                      <a
+                        href="{{ child.url }}"
+                        class="mega-menu__link{% if child.active %} mega-menu__link--active{% endif %}"
+                        {% if child.active %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{- child.title -}}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- liquid
+            assign show_shop_name = true
+            assign mega_image_1 = null
+            assign mega_image_2 = null
+            if mega_menu_block != null
+              assign show_shop_name = mega_menu_block.settings.show_shop_name
+              assign mega_image_1 = mega_menu_block.settings.mega_image_1
+              assign mega_image_1_link = mega_menu_block.settings.mega_image_1_link
+              assign mega_image_2 = mega_menu_block.settings.mega_image_2
+              assign mega_image_2_link = mega_menu_block.settings.mega_image_2_link
+            endif
+          -%}
+
+          {%- if show_shop_name -%}
+            <div class="mega-menu__brand" aria-hidden="false">
+              <a
+                class="mega-menu__brand-link"
+                href="{{ routes.root_url }}"
+                aria-label="{{ 'sections.header.logo_aria_label' | t: store: shop.name }}"
+              >
+                <span class="mega-menu__brand-text">{{ shop.name }}</span>
+              </a>
+            </div>
+          {%- endif -%}
+          {%- if mega_image_1 != blank or mega_image_2 != blank -%}
+            <div class="mega-menu__media">
+              {%- if mega_image_1 != blank -%}
+                <div class="mega-menu__media-item">
+                  {%- assign img = mega_image_1 -%}
+                  {%- if mega_image_1_link != blank -%}
+                    <a
+                      class="mega-menu__media-link"
+                      href="{{ mega_image_1_link | escape }}"
+                    >
+                  {%- endif -%}
+
+                  <img
+                    src="{{ img | image_url: width: 400 }}"
+                    srcset="
+                      {{ img | image_url: width: 200 }} 200w,
+                      {{ img | image_url: width: 400 }} 400w,
+                      {{ img | image_url: width: 800 }} 800w,
+                      {{ img | image_url: width: 1200 }} 1200w
+                    "
+                    sizes="(max-width: 989px) 100vw, 188px"
+                    alt="{{ img.alt | escape | default: shop.name | escape }}"
+                    class="mega-menu__media-img"
+                    width="400"
+                    height="{{ 400 | divided_by: img.aspect_ratio | round }}"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                  >
+
+                  {%- if mega_image_1_link != blank -%}
+                    </a>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if mega_image_2 != blank -%}
+                <div class="mega-menu__media-item">
+                  {%- assign img = mega_image_2 -%}
+                  {%- if mega_image_2_link != blank -%}
+                    <a
+                      class="mega-menu__media-link"
+                      href="{{ mega_image_2_link | escape }}"
+                    >
+                  {%- endif -%}
+
+                  <img
+                    src="{{ img | image_url: width: 400 }}"
+                    srcset="
+                      {{ img | image_url: width: 200 }} 200w,
+                      {{ img | image_url: width: 400 }} 400w,
+                      {{ img | image_url: width: 800 }} 800w,
+                      {{ img | image_url: width: 1200 }} 1200w
+                    "
+                    sizes="(max-width: 989px) 100vw, 188px"
+                    alt="{{ img.alt | escape | default: shop.name | escape }}"
+                    class="mega-menu__media-img"
+                    width="400"
+                    height="{{ 400 | divided_by: img.aspect_ratio | round }}"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                  >
+
+                  {%- if mega_image_2_link != blank -%}
+                    </a>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+</mega-menu-panel>

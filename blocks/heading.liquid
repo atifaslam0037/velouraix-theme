@@ -1,0 +1,86 @@
+{%- comment -%}
+  Block: heading
+  Path: blocks/heading.liquid
+  Description: Reusable heading block with tag, alignment, and size controls.
+  Used in sections that support @theme blocks.
+{%- endcomment -%}
+
+{%- liquid
+  assign heading_tag = block.settings.heading_tag | default: 'h2'
+-%}
+
+<div class="block-heading block-heading--{{ block.settings.alignment }}" {{ block.shopify_attributes }}>
+  <{{ heading_tag }} class="block-heading__title block-heading__title--{{ block.settings.size }}">
+    {{- block.settings.text | escape -}}
+  </{{ heading_tag }}>
+</div>
+
+{% stylesheet %}
+.block-heading {
+  display: block;
+}
+
+.block-heading__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+.block-heading__title--sm { font-size: var(--font-size-lg); }
+.block-heading__title--md { font-size: var(--font-size-xl); }
+.block-heading__title--lg { font-size: var(--font-size-2xl); }
+
+.block-heading--left .block-heading__title { text-align: left; }
+.block-heading--center .block-heading__title { text-align: center; }
+.block-heading--right .block-heading__title { text-align: right; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Heading",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:blocks.heading.settings.text.label",
+      "default": "t:blocks.heading.settings.text.default"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "t:blocks.heading.settings.heading_tag.label",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:blocks.heading.settings.alignment.label",
+      "options": [
+        { "value": "left", "label": "t:blocks.heading.settings.alignment.options.left" },
+        { "value": "center", "label": "t:blocks.heading.settings.alignment.options.center" },
+        { "value": "right", "label": "t:blocks.heading.settings.alignment.options.right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "t:blocks.heading.settings.size.label",
+      "options": [
+        { "value": "sm", "label": "t:blocks.heading.settings.size.options.sm" },
+        { "value": "md", "label": "t:blocks.heading.settings.size.options.md" },
+        { "value": "lg", "label": "t:blocks.heading.settings.size.options.lg" }
+      ],
+      "default": "md"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.heading.presets.name" }]
+}
+{% endschema %}

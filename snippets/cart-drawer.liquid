@@ -1,0 +1,361 @@
+{%- comment -%}
+  Snippet: cart-drawer.liquid
+  Path: snippets/cart-drawer.liquid
+  Description: VELOURAIX editorial cart drawer. Slides in from the right.
+    Header: title + item count. Body: cart-items snippet. Footer: subtotal + checkout.
+    Driven by the cart-drawer-component custom element.
+    Loading CSS + JS loaded conditionally in sections/header.liquid when cart_style == 'drawer'.
+
+  @example
+  {% render 'cart-drawer' %}
+{%- endcomment -%}
+
+<cart-drawer-component
+  id="cart-drawer"
+  class="cart-drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="cart-drawer-title"
+  aria-hidden="true"
+  data-money-format="{{ shop.money_format | json }}"
+>
+  {%- comment -%} Screen-reader live region for cart updates {%- endcomment -%}
+  <span
+    id="cart-live-region"
+    class="visually-hidden"
+    aria-live="polite"
+    aria-atomic="true"
+  ></span>
+
+  <div class="cart-drawer__overlay" data-cart-close aria-hidden="true"></div>
+
+  <div class="cart-drawer__panel">
+
+    {%- comment -%} ── HEADER ── {%- endcomment -%}
+    <div class="cart-drawer__header">
+      <div class="cart-drawer__header-inner">
+        <h2 class="cart-drawer__title" id="cart-drawer-title">
+          {{- 'sections.header.summary_items' | t | upcase -}}
+        </h2>
+        <span
+          class="cart-drawer__count"
+          id="cart-drawer-count"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {{- cart.item_count -}}
+        </span>
+      </div>
+      <button
+        class="cart-drawer__close"
+        type="button"
+        data-cart-close
+        aria-label="{{ 'accessibility.close' | t }}"
+      >
+        {%- render 'icon', name: 'close' -%}
+      </button>
+    </div>
+
+    {%- comment -%} ── BODY ── {%- endcomment -%}
+    <div class="cart-drawer__body" id="cart-drawer-items">
+      {%- if cart.item_count > 0 -%}
+        {%- render 'cart-items', context: 'drawer' -%}
+      {%- else -%}
+        <div class="cart-drawer__empty">
+          <p class="cart-drawer__empty-msg">{{- 'cart.empty' | t -}}</p>
+          <a
+            href="{{ routes.all_products_collection_url }}"
+            class="cart-drawer__empty-link"
+            data-cart-close
+          >
+            {{- 'cart.continue_shopping' | t -}}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── FOOTER ── {%- endcomment -%}
+    <div
+      class="cart-drawer__footer{% if cart.item_count == 0 %} is-hidden{% endif %}"
+      id="cart-drawer-footer"
+    >
+      <div class="cart-drawer__subtotal-row">
+        <span class="cart-drawer__subtotal-label">{{- 'cart.subtotal' | t | upcase -}}</span>
+        <span
+          class="cart-drawer__subtotal-value"
+          id="cart-drawer-subtotal"
+          data-raw="{{ cart.total_price }}"
+        >
+          {{- cart.total_price | money -}}
+        </span>
+      </div>
+
+      <p class="cart-drawer__tax-note">{{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}</p>
+
+      <form action="{{ routes.checkout_url }}" method="post" class="cart-drawer__checkout-form">
+        <input type="hidden" name="checkout" value="1">
+        <button type="submit" class="cart-drawer__checkout-btn">
+          {{- 'cart.checkout' | t | upcase -}}
+        </button>
+      </form>
+
+      <a href="{{ routes.cart_url }}" class="cart-drawer__view-all">
+        {{- 'cart.view_cart' | t -}}
+      </a>
+    </div>
+
+  </div>
+</cart-drawer-component>
+
+{% stylesheet %}
+/* ═══════════════════════════════════════════════════════════
+   CART DRAWER — VELOURAIX editorial style
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Container ── */
+.cart-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cart-drawer[open] {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ── Overlay ── */
+.cart-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  background: oklch(from var(--color-text) l c h / 0);
+  transition: background var(--transition-slow);
+  cursor: pointer;
+}
+
+.cart-drawer[open] .cart-drawer__overlay {
+  background: oklch(from var(--color-text) l c h / 0.35);
+}
+
+/* ── Panel ── */
+.cart-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(480px, 100vw);
+  background: var(--color-background);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--transition-slow);
+  border-left: 1px solid oklch(from var(--color-text) l c h / 0.08);
+}
+
+.cart-drawer[open] .cart-drawer__panel {
+  transform: translateX(0);
+}
+
+/* ── Header ── */
+.cart-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-7);
+  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.1);
+  flex-shrink: 0;
+}
+
+.cart-drawer__header-inner {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.cart-drawer__title {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.cart-drawer__count {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-text-muted);
+}
+
+.cart-drawer__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: var(--space-1);
+  transition: opacity var(--transition-base);
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.cart-drawer__close:hover { opacity: 0.4; }
+
+.cart-drawer__close:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Body ── */
+.cart-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 0 var(--space-7);
+}
+
+/* ── Empty state ── */
+.cart-drawer__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-6);
+  padding-block: var(--space-16);
+  min-height: 40vh;
+}
+
+.cart-drawer__empty-msg {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.cart-drawer__empty-link {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: opacity var(--transition-base);
+}
+
+.cart-drawer__empty-link:hover { opacity: 0.45; }
+
+/* ── Footer ── */
+.cart-drawer__footer {
+  padding: var(--space-6) var(--space-7);
+  border-top: 1px solid oklch(from var(--color-text) l c h / 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.cart-drawer__footer.is-hidden { display: none; }
+
+.cart-drawer__subtotal-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.cart-drawer__subtotal-label {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.cart-drawer__subtotal-value {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.cart-drawer__tax-note {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* ── Checkout button — full-width, no radius, uppercase ── */
+.cart-drawer__checkout-form { margin: 0; }
+
+.cart-drawer__checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-text);
+  color: var(--color-background);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+  min-height: 52px;
+  border-radius: var(--button-radius);
+}
+
+.cart-drawer__checkout-btn:hover { opacity: 0.75; }
+
+.cart-drawer__checkout-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ── View cart link ── */
+.cart-drawer__view-all {
+  display: block;
+  text-align: center;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition-base);
+  padding-block: var(--space-1);
+}
+
+.cart-drawer__view-all:hover { color: var(--color-text); }
+
+/* ── Reduced motion ── */
+@media screen and (prefers-reduced-motion: reduce) {
+  .cart-drawer__panel,
+  .cart-drawer__overlay {
+    transition-duration: 0.001ms !important;
+  }
+}
+{% endstylesheet %}

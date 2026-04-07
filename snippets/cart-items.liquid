@@ -1,0 +1,153 @@
+{%- comment -%}
+  Snippet: cart-items.liquid
+  Path: snippets/cart-items.liquid
+  Description: Renders cart line items for the drawer and cart page.
+    Used by blocks/_cart-products.liquid (page) and snippets/cart-drawer.liquid (drawer).
+    Each item: product image, title, variant, custom properties, unit price,
+    quantity-input component, line total, and remove button.
+
+  @param {string} [context]  - 'drawer' or 'page'. Controls layout density.
+  @param {boolean} [show_vendor] - Show item vendor on cart page.
+  @param {boolean} [show_dividers] - Show divider lines between items.
+  @param {number} [image_size] - Image size in pixels for page context.
+  @param {string} [aspect_ratio] - auto | portrait | square.
+
+  @example
+  {% render 'cart-items', context: 'drawer' %}
+{%- endcomment -%}
+
+<cart-items-component
+  class="cart-items{% if context == 'drawer' %} cart-items--drawer{% endif %}{% unless show_dividers %} cart-items--no-dividers{% endunless %}{% if aspect_ratio == 'square' %} cart-items--ratio-square{% elsif aspect_ratio == 'portrait' %} cart-items--ratio-portrait{% endif %}"
+  style="
+    --cart-item-image-size: {{ image_size | default: 96 }}px;
+  "
+  {% if context == 'drawer' %}data-drawer{% endif %}
+  data-section-id="main-cart"
+>
+  {%- if cart.item_count > 0 -%}
+    <ul class="cart-items__list" role="list" aria-label="{{ 'cart.title' | t }}">
+      {%- for item in cart.items -%}
+        <li
+          class="cart-item"
+          data-cart-item="{{ item.key }}"
+          id="cart-item-{{ item.key }}"
+        >
+
+          {%- comment -%} ── IMAGE ── {%- endcomment -%}
+          <a
+            href="{{ item.url }}"
+            class="cart-item__image-wrap"
+            tabindex="-1"
+            aria-hidden="true"
+          >
+            {%- if item.image != blank -%}
+              <img
+                class="cart-item__image"
+                src="{{ item.image | image_url: width: 300 }}"
+                srcset="
+                  {{ item.image | image_url: width: 150 }} 150w,
+                  {{ item.image | image_url: width: 300 }} 300w,
+                  {{ item.image | image_url: width: 600 }} 600w
+                "
+                sizes="(min-width: 990px) 120px, 96px"
+                alt="{{ item.image.alt | escape | default: item.title | escape }}"
+                width="150"
+                height="{{ 150 | divided_by: item.image.aspect_ratio | round }}"
+                loading="lazy"
+                decoding="async"
+              >
+            {%- else -%}
+              <span class="cart-item__image-placeholder" aria-hidden="true">
+                {{- 'product-1' | placeholder_svg_tag: 'cart-item__placeholder-svg' -}}
+              </span>
+            {%- endif -%}
+          </a>
+
+          {%- comment -%} ── DETAILS ── {%- endcomment -%}
+          <div class="cart-item__body">
+
+            <div class="cart-item__meta">
+              <a href="{{ item.url }}" class="cart-item__name">
+                {{- item.product.title | escape -}}
+              </a>
+              {%- if show_vendor -%}
+                <p class="cart-item__vendor">{{- item.product.vendor | escape -}}</p>
+              {%- endif -%}
+
+              {%- unless item.product.has_only_default_variant -%}
+                <p class="cart-item__variant">{{- item.variant.title | escape -}}</p>
+              {%- endunless -%}
+
+              {%- comment -%} Custom line item properties {%- endcomment -%}
+              {%- if item.properties.size > 0 -%}
+                {%- for property in item.properties -%}
+                  {%- assign first_char = property.first | slice: 0 -%}
+                  {%- if property.last != blank and first_char != '_' -%}
+                    <p class="cart-item__property">
+                      <span class="cart-item__property-key">{{ property.first | escape }}:</span>
+                      <span class="cart-item__property-val">
+                        {%- if property.last contains '/uploads/' -%}
+                          <a href="{{ property.last }}" target="_blank" rel="noopener noreferrer">
+                            {{- property.last | split: '/' | last -}}
+                          </a>
+                        {%- else -%}
+                          {{- property.last | escape -}}
+                        {%- endif -%}
+                      </span>
+                    </p>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} ── PRICE ROW ── {%- endcomment -%}
+            <div class="cart-item__price-row">
+              <div class="cart-item__unit-price">
+                {%- if item.original_price > item.price -%}
+                  <s class="cart-item__original-price">{{- item.original_price | money -}}</s>
+                {%- endif -%}
+                <span class="cart-item__price{% if item.original_price > item.price %} cart-item__price--sale{% endif %}">
+                  {{- item.price | money -}}
+                </span>
+              </div>
+
+              <span class="cart-item__line-total" id="cart-item-total-{{ item.key }}">
+                {{- item.final_line_price | money -}}
+              </span>
+            </div>
+
+            {%- comment -%} ── CONTROLS: quantity + remove ── {%- endcomment -%}
+            <div class="cart-item__controls">
+              {%- render 'quantity-input',
+                id: item.key,
+                name: 'updates[]',
+                value: item.quantity,
+                min: 0,
+                index: forloop.index
+              -%}
+
+              <button
+                class="cart-item__remove"
+                type="button"
+                data-cart-remove="{{ item.key }}"
+                aria-label="{{ 'cart.remove' | t }}: {{ item.title | escape }}"
+              >
+                <span class="visually-hidden">{{- 'cart.remove' | t -}}</span>
+                {%- render 'icon', name: 'trash' -%}
+              </button>
+            </div>
+
+            {%- comment -%} Validation error region for this line {%- endcomment -%}
+            <p
+              class="cart-item__error"
+              id="Line-item-error-{{ item.key }}"
+              role="alert"
+              aria-live="assertive"
+            ></p>
+
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</cart-items-component>

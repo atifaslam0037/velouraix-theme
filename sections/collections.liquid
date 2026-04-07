@@ -9,7 +9,7 @@
 
 <div
   class="collections {{ section.settings.grid_item_width }}"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
+  style="--grid-gap: calc(var(--space-1) * {{ section.settings.grid_gap | divided_by: 4.0 }})"
 >
   {% for collection in collections %}
     <a class="collection-card" href="{{ collection.url }}">
@@ -41,10 +41,10 @@
     gap: var(--grid-gap);
   }
   .collections--compact {
-    --collection-card-size: 160px;
+    --collection-card-size: calc(var(--space-16) * 2 + var(--space-8));
   }
   .collections--full {
-    --collection-card-size: 280px;
+    --collection-card-size: calc(var(--space-16) * 4 + var(--space-8) + var(--space-6));
   }
   .collection-card {
     display: flex;

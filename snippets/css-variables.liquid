@@ -3,85 +3,220 @@
   Inject this snippet inside <head> so every page has access to design tokens.
 {% enddoc %}
 
+{%- liquid
+  assign body_font = settings.type_primary_font
+  assign body_font_bold = body_font | font_modify: 'weight', 'bold'
+-%}
+
+{%- unless body_font.system? -%}
+  {{ body_font | font_face: font_display: 'swap' }}
+  {%- if body_font_bold -%}
+    {{ body_font_bold | font_face: font_display: 'swap' }}
+  {%- endif -%}
+{%- endunless -%}
+
 <style>
   :root {
-    {%- comment -%} ── Layout ── {%- endcomment -%}
-    --page-width: {{ settings.max_page_width }};
-    --page-margin: {{ settings.min_page_margin }}px;
+    /* ── Layout ── */
+    --page-width:  {{ settings.max_page_width }};
+    --page-margin: calc(var(--space-1) * {{ settings.min_page_margin | divided_by: 4.0 }});
 
-    {%- comment -%} ── Branding ── {%- endcomment -%}
-    --logo-width: {{ settings.logo_width }}px;
+    /* ── Branding ── */
+    --logo-width: calc(var(--space-1) * {{ settings.logo_width | divided_by: 4.0 }});
 
-    {%- comment -%} ── Brand Colors ── {%- endcomment -%}
-    --color-primary: {{ settings.color_primary }};
-    --color-primary-hover: {{ settings.color_primary_hover }};
-    --color-secondary: {{ settings.color_secondary }};
-    --color-secondary-hover: {{ settings.color_secondary_hover }};
-    --color-accent: {{ settings.color_accent }};
-    --color-accent-hover: {{ settings.color_accent_hover }};
-
-    {%- comment -%} ── Background & Foreground ── {%- endcomment -%}
+    /* ── Base ── */
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
 
-    {%- comment -%} ── Text ── {%- endcomment -%}
-    --color-text: {{ settings.color_text }};
+    /* ── Text ── */
+    --color-text:       {{ settings.color_text }};
     --color-text-muted: {{ settings.color_text_muted }};
+    --color-heading:    {{ settings.color_heading }};
 
-    {%- comment -%} ── Borders & Inputs ── {%- endcomment -%}
-    --color-border: {{ settings.color_border }};
+    /* ── Borders & Inputs ── */
+    --color-border:           {{ settings.color_border }};
     --color-input-background: {{ settings.color_input_background }};
-    --color-input-text: {{ settings.color_input_text }};
-    --color-input-border: {{ settings.color_input_border }};
-    --color-input-focus: {{ settings.color_input_focus }};
+    --color-input-text:       {{ settings.color_input_text }};
+    --color-input-border:     {{ settings.color_input_border }};
+    --color-input-focus:      {{ settings.color_input_focus }};
 
-    {%- comment -%} ── Buttons ── {%- endcomment -%}
-    --color-btn-primary-bg: {{ settings.color_btn_primary_bg }};
-    --color-btn-primary-text: {{ settings.color_btn_primary_text }};
-    --color-btn-primary-bg-hover: {{ settings.color_btn_primary_bg_hover }};
+    /* ── Buttons ── */
+    --color-btn-primary-bg:         {{ settings.color_btn_primary_bg }};
+    --color-btn-primary-text:       {{ settings.color_btn_primary_text }};
+    --color-btn-primary-bg-hover:   {{ settings.color_btn_primary_bg_hover }};
     --color-btn-primary-text-hover: {{ settings.color_btn_primary_text_hover }};
 
-    --color-btn-secondary-bg: {{ settings.color_btn_secondary_bg }};
-    --color-btn-secondary-text: {{ settings.color_btn_secondary_text }};
-    --color-btn-secondary-bg-hover: {{ settings.color_btn_secondary_bg_hover }};
+    --color-btn-secondary-bg:         {{ settings.color_btn_secondary_bg }};
+    --color-btn-secondary-text:       {{ settings.color_btn_secondary_text }};
+    --color-btn-secondary-bg-hover:   {{ settings.color_btn_secondary_bg_hover }};
     --color-btn-secondary-text-hover: {{ settings.color_btn_secondary_text_hover }};
 
-    {%- comment -%} ── Pricing ── {%- endcomment -%}
-    --color-price-sale: {{ settings.color_price_sale }};
+    /* ── Pricing ── */
+    --color-price-sale:    {{ settings.color_price_sale }};
     --color-price-compare: {{ settings.color_price_compare }};
 
-    {%- comment -%} ── Border radius ── {%- endcomment -%}
-    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
-    --style-border-radius-buttons: {{ settings.button_corner_radius }}px;
+    /* ── Radius & Icons ── */
+    --style-border-radius-inputs:  calc(var(--space-1) * {{ settings.input_corner_radius | divided_by: 4.0 }});
+    --style-border-radius-buttons: calc(var(--space-1) * {{ settings.button_corner_radius | divided_by: 4.0 }});
+    --icon-weight: {{ settings.icon_weight | default: 1.5 }};
 
-    {%- comment -%} ── Typography – Primary font ── {%- endcomment -%}
-    --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
-    --font-primary--style: {{ settings.type_primary_font.style }};
-    --font-primary--weight: {{ settings.type_primary_font.weight }};
+    /* ── Typography ── */
+    {%- if body_font != blank -%}
+      --font-primary: {{ body_font.family }}, {{ body_font.fallback_families }}, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-primary--style:  {{ body_font.style }};
+      --font-primary--weight: {{ body_font.weight }};
+    {%- else -%}
+      --font-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-primary--style:  normal;
+      --font-primary--weight: 400;
+    {%- endif -%}
 
-    {%- comment -%} ── Body text ── {%- endcomment -%}
-    --font-body-size: {{ settings.font_body_size }}px;
-    --font-body-weight: {{ settings.font_body_weight }};
+    /* ── Body ── */
+    --font-body-size:        calc(var(--space-1) * {{ settings.font_body_size | divided_by: 4.0 }});
+    --font-body-weight:      {{ settings.font_body_weight }};
     --font-body-line-height: {{ settings.font_body_line_height }};
 
-    {%- comment -%} ── Heading sizes ── {%- endcomment -%}
-    --font-h1-size: {{ settings.font_h1_size }}px;
-    --font-h2-size: {{ settings.font_h2_size }}px;
-    --font-h3-size: {{ settings.font_h3_size }}px;
-    --font-h4-size: {{ settings.font_h4_size }}px;
-    --font-h5-size: {{ settings.font_h5_size }}px;
-    --font-h6-size: {{ settings.font_h6_size }}px;
-
-    {%- comment -%} ── Heading weights ── {%- endcomment -%}
-    --font-heading-weight: {{ settings.font_heading_weight }};
+    /* ── Headings ── */
+    --font-heading-weight:      {{ settings.font_heading_weight }};
     --font-heading-line-height: {{ settings.font_heading_line_height }};
+    --font-h1-size: calc(var(--space-1) * {{ settings.font_h1_size | divided_by: 4.0 }});
+    --font-h2-size: calc(var(--space-1) * {{ settings.font_h2_size | divided_by: 4.0 }});
+    --font-h3-size: calc(var(--space-1) * {{ settings.font_h3_size | divided_by: 4.0 }});
+    --font-h4-size: calc(var(--space-1) * {{ settings.font_h4_size | divided_by: 4.0 }});
+    --font-h5-size: calc(var(--space-1) * {{ settings.font_h5_size | divided_by: 4.0 }});
+    --font-h6-size: calc(var(--space-1) * {{ settings.font_h6_size | divided_by: 4.0 }});
 
-    {%- comment -%} ── Heading color ── {%- endcomment -%}
-    --color-heading: {{ settings.color_heading }};
+    /* ── Header (set defaults, overridden per section inline style) ── */
+    --header-height: var(--space-14);
+    --header-offset: var(--space-14);
+    --header-bg:     {{ settings.background_color }};
+    --header-color:  {{ settings.color_text }};
+    --header-border: {{ settings.color_border }};
+
+    /* Required VELOURAIX token aliases */
+    --color-bg: var(--color-background);
+    --color-surface: var(--color-background);
+    --color-surface-2: color-mix(in srgb, var(--color-background) 92%, var(--color-text) 8%);
+    --color-surface-offset: color-mix(in srgb, var(--color-background) 85%, var(--color-text) 15%);
+    --color-text-faint: color-mix(in srgb, var(--color-text) 70%, transparent);
+    --color-text-inverse: var(--color-background);
+    --color-primary: {{ settings.color_btn_primary_bg }};
+    --color-primary-hover: {{ settings.color_btn_primary_bg_hover }};
+    --color-primary-active: color-mix(in srgb, {{ settings.color_btn_primary_bg_hover }} 85%, var(--color-text) 15%);
+    --color-primary-highlight: color-mix(in srgb, {{ settings.color_btn_primary_bg }} 18%, transparent);
+    --color-button: var(--color-btn-primary-bg);
+    --color-button-text: var(--color-btn-primary-text);
+    --color-error: #b91c1c;
+    --color-success: #166534;
+    --color-sale: var(--color-price-sale);
+
+    --font-body: var(--font-primary);
+    --font-display: var(--font-primary);
+    --font-size-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+    --font-size-sm: clamp(0.875rem, 0.84rem + 0.2vw, 0.9375rem);
+    --font-size-md: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+    --font-size-lg: clamp(1.125rem, 1.02rem + 0.5vw, 1.25rem);
+    --font-size-xl: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+    --font-size-2xl: clamp(1.75rem, 1.3rem + 1.7vw, 3.5rem);
+
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-7: 1.75rem;
+    --space-8: 2rem;
+    --space-9: 2.25rem;
+    --space-10: 2.5rem;
+    --space-11: 2.75rem;
+    --space-12: 3rem;
+    --space-13: 3.25rem;
+    --space-14: 3.5rem;
+    --space-15: 3.75rem;
+    --space-16: 4rem;
+
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 100vmax;
+    --button-radius: var(--style-border-radius-buttons);
+
+    --shadow-sm: 0 1px 2px oklch(35% 0.02 40 / 0.08);
+    --shadow-md: 0 6px 20px oklch(30% 0.02 40 / 0.12);
+    --shadow-lg: 0 14px 36px oklch(25% 0.03 40 / 0.18);
+    --transition-base: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-slow: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+    --content-narrow: 60rem;
+    --content-default: 80rem;
+    --content-wide: 110rem;
   }
 
-  {%- comment -%} ── Font Face injection ── {%- endcomment -%}
-  {% unless settings.type_primary_font.system? %}
-    {{ settings.type_primary_font | font_face: font_display: 'swap' }}
-  {% endunless %}
+  [data-theme="dark"] {
+    --color-background: #101114;
+    --color-bg: #101114;
+    --color-surface: #171a1f;
+    --color-surface-2: #1d2128;
+    --color-surface-offset: #242a33;
+    --color-text: #f5f7fb;
+    --color-text-muted: #c7ced9;
+    --color-text-faint: #9aa5b4;
+    --color-text-inverse: #101114;
+    --color-heading: #ffffff;
+    --color-border: #2b313b;
+    --color-input-background: #171a1f;
+    --color-input-text: #f5f7fb;
+    --color-input-border: #3a4250;
+    --color-input-focus: #93c5fd;
+  }
+
+  /* ── Base resets that use design tokens ── */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    font-family: var(--font-primary);
+    font-size: var(--font-body-size);
+    font-weight: var(--font-body-weight);
+    line-height: var(--font-body-line-height);
+    color: var(--color-text);
+    background-color: var(--color-background);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body { margin: 0; }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    font-weight: var(--font-heading-weight);
+    line-height: var(--font-heading-line-height);
+    color: var(--color-heading);
+    margin: 0;
+  }
+
+  h1 { font-size: var(--font-h1-size); }
+  h2 { font-size: var(--font-h2-size); }
+  h3 { font-size: var(--font-h3-size); }
+  h4 { font-size: var(--font-h4-size); }
+  h5 { font-size: var(--font-h5-size); }
+  h6 { font-size: var(--font-h6-size); }
+
+  a { color: inherit; }
+
+  .page-width {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .hidden { display: none !important; }
+  .visually-hidden {
+    position: absolute;
+    width: var(--space-1); height: var(--space-1);
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+  .overflow-hidden { overflow: hidden !important; }
 </style>
