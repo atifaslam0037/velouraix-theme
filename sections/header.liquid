@@ -21,6 +21,23 @@
 
 {{ 'component-header.css' | asset_url | stylesheet_tag }}
 
+{%- comment -%}
+  Sticky must apply to the outer #shopify-section wrapper: an inner grid child
+  (grid-column 2) does not stick reliably to the viewport in this layout.
+{%- endcomment -%}
+{%- if section.settings.sticky -%}
+  <style>
+    #shopify-section-{{ section.id }} {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      align-self: flex-start;
+      width: 100%;
+      flex-shrink: 0;
+    }
+  </style>
+{%- endif -%}
+
 <sticky-header
   class="site-header"
   data-sticky="{{ section.settings.sticky }}"
@@ -97,6 +114,8 @@
   <script src="{{ 'component-cart-drawer.js' | asset_url }}" defer></script>
   <script src="{{ 'component-cart-items.js' | asset_url }}" defer></script>
   <script src="{{ 'component-quantity-input.js' | asset_url }}" defer></script>
+  <script src="{{ 'cart-drawer-recommendations.js' | asset_url }}" defer></script>
+  {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
   <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{ 'component-quantity-input.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}

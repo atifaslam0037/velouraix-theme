@@ -1,3 +1,9 @@
+{%- liquid
+  assign cart_qty_sum = 0
+  for item in cart.items
+    assign cart_qty_sum = cart_qty_sum | plus: item.quantity
+  endfor
+-%}
 {% doc %}
   Snippet: header-icons.liquid
   Path: snippets/header-icons.liquid
@@ -71,18 +77,18 @@
       <button
         class="header-icons__btn header-icons__cart"
         type="button"
-        aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+        aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart_qty_sum }}"
         data-cart-toggle
       >
         <span class="cart-icon-group">
           {%- render 'icon', name: 'cart' -%}
           <span
-            class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
+            class="header-icons__cart-badge{% if cart_qty_sum == 0 %} hidden{% endif %}"
             id="cart-count"
             aria-live="polite"
             aria-atomic="true"
           >
-            {{- cart.item_count -}}
+            {{- cart_qty_sum -}}
           </span>
         </span>
         <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
@@ -91,17 +97,17 @@
       <a
         href="{{ routes.cart_url }}"
         class="header-icons__btn header-icons__cart"
-        aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+        aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart_qty_sum }}"
       >
         <span class="cart-icon-group">
           {%- render 'icon', name: 'cart' -%}
           <span
-            class="header-icons__cart-badge{% if cart.item_count == 0 %} hidden{% endif %}"
+            class="header-icons__cart-badge{% if cart_qty_sum == 0 %} hidden{% endif %}"
             id="cart-count"
             aria-live="polite"
             aria-atomic="true"
           >
-            {{- cart.item_count -}}
+            {{- cart_qty_sum -}}
           </span>
         </span>
         <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>

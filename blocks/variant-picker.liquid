@@ -88,22 +88,22 @@
 
 {% schema %}
 {
-  "name": "Variant picker",
+  "name": "t:blocks.variant_picker.name",
   "settings": [
     {
       "type": "select",
       "id": "picker_style",
-      "label": "Picker style",
+      "label": "t:blocks.variant_picker.settings.picker_style.label",
       "options": [
-        { "value": "buttons", "label": "Buttons" },
-        { "value": "dropdown", "label": "Dropdown" }
+        { "value": "buttons", "label": "t:blocks.variant_picker.settings.picker_style.options.buttons" },
+        { "value": "dropdown", "label": "t:blocks.variant_picker.settings.picker_style.options.dropdown" }
       ],
       "default": "buttons"
     },
     {
       "type": "checkbox",
       "id": "show_availability",
-      "label": "Show sold out labels",
+      "label": "t:blocks.variant_picker.settings.show_availability.label",
       "default": true
     }
   ]

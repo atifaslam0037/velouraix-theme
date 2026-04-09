@@ -155,7 +155,13 @@
     "predictive_search": "Enable predictive search",
     "cart_style": "Cart style",
     "cart_auto_open": "Auto-open cart after adding items",
-    "cart_notes": "Enable cart notes",
+    "cart_drawer_header": "Drawer options",
+    "cart_show_view_cart": "Show \"View cart\" link",
+    "cart_show_view_cart_info": "Displays a text link to the full cart page below the checkout button",
+    "cart_show_upsell": "Show \"You might also like\" recommendations",
+    "cart_show_upsell_info": "Shows product recommendations inside the cart drawer",
+    "cart_features_header": "Features",
+    "cart_notes": "Enable order instructions",
     "free_shipping_bar": "Show free shipping progress bar",
     "free_shipping_threshold": "Free shipping threshold"
   },
@@ -268,6 +274,12 @@
   },
   "cart": {
     "checkout": "Checkout",
+    "total": "Total",
+    "discount_codes_label": "Discount codes",
+    "discount_code_placeholder": "Discount code",
+    "apply_discount": "Apply",
+    "save_note": "Save",
+    "drawer_heading_aria": "Cart, {{ count }} items",
     "title": "Cart",
     "update": "Update",
     "remove": "Remove",
@@ -279,7 +291,15 @@
     "increase_quantity": "Increase quantity",
     "items_count": "items",
     "discounts": "Discounts",
-    "taxes_and_shipping_policy_at_checkout_html": "Taxes and shipping calculated at checkout."
+    "taxes_and_shipping_policy_at_checkout_html": "Taxes and shipping calculated at checkout.",
+    "column_product": "Product",
+    "column_quantity": "Quantity",
+    "column_total": "Total",
+    "free_shipping_reached": "You've unlocked free shipping!",
+    "free_shipping_remaining_html": "Add {{ amount }} more for free shipping",
+    "order_instructions_label": "Order instructions",
+    "order_instructions_placeholder": "Special requests, notes, etc.",
+    "upsell_label": "You might also like"
   },
   "sections": {
     "header": {

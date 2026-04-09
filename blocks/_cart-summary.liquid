@@ -1,20 +1,17 @@
-{%- comment -%}
-  Block: _cart-summary.liquid
-  Path: blocks/_cart-summary.liquid
-  Description: Private theme block. Renders the order summary panel on the cart page.
-    Contains subtotal (formatted with currency), tax note, and checkout CTA.
-    The #cart-page-subtotal span is read by CartItemsComponent._syncGlobalUI()
-    to keep the subtotal value in sync after AJAX mutations.
-    Statically rendered by sections/main-cart.liquid via content_for 'block'.
+{% doc %}
+  @name _cart-summary
+
+  @description Private theme block. Renders the order summary panel on the cart page. Matches the cart drawer styling patterns. Visibility of optional elements is controlled via CSS inside sections/main-cart.liquid using the section-level toggles.
 
   @example
-  {%- content_for 'block', id: 'cart-page-summary', type: '_cart-summary' -%}
-{%- endcomment -%}
+  Rendered from sections/main-cart.liquid via content_for (cart-page-summary).
+{% enddoc %}
 
 {%- unless cart.empty? -%}
   <div
     class="cart-summary cart-summary--border-{{ block.settings.border_style }}{% unless block.settings.enable_sticky %} cart-summary--static{% endunless %}"
     id="cart-page-summary-panel"
+    {{ block.shopify_attributes }}
     style="
       --cart-summary-padding-top: {{ block.settings.padding_top }}px;
       --cart-summary-padding-bottom: {{ block.settings.padding_bottom }}px;
@@ -25,178 +22,349 @@
       --cart-summary-radius: {{ block.settings.corner_radius }}px;
     "
   >
+    {%- if section.settings.allow_note -%}
+      <cart-note>
+        <details
+          class="cart-summary__accordion cart-summary__accordion--note"
+          {% if cart.note != blank %}
+            open
+          {% endif %}
+        >
+          <summary class="cart-summary__accordion-trigger">
+            <span class="cart-summary__accordion-label">{{- 'cart.order_instructions_label' | t -}}</span>
+            <span class="cart-summary__accordion-icon" aria-hidden="true">
+              {%- render 'icon', name: 'chevron-down' -%}
+            </span>
+          </summary>
+          <div class="cart-summary__accordion-body">
+            <label for="cart-page-note" class="visually-hidden">
+              {{- 'cart.order_instructions_label' | t -}}
+            </label>
+            <textarea
+              id="cart-page-note"
+              class="cart-summary__note-textarea"
+              name="note"
+              form="cart-page-note-form"
+              rows="3"
+              placeholder="{{ 'cart.order_instructions_placeholder' | t }}"
+            >{{- cart.note -}}</textarea>
+          </div>
+        </details>
+        {%- form 'cart', id: 'cart-page-note-form' -%}{%- endform -%}
+      </cart-note>
+      <script src="{{ 'cart-note.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
 
-    <div class="cart-summary__row">
-      <span class="cart-summary__label">{{- 'cart.subtotal' | t | upcase -}}</span>
-      <span class="cart-summary__value" id="cart-page-subtotal">
-        {{- cart.total_price | money_with_currency -}}
-      </span>
-    </div>
+    {%- if section.settings.allow_discounts -%}
+      <details class="cart-summary__accordion cart-summary__accordion--discount">
+        <summary class="cart-summary__accordion-trigger">
+          <span class="cart-summary__accordion-label">{{- 'cart.discount_codes_label' | t -}}</span>
+          <span class="cart-summary__accordion-icon" aria-hidden="true">
+            {%- render 'icon', name: 'chevron-down' -%}
+          </span>
+        </summary>
+        <div class="cart-summary__accordion-body">
+          <div class="cart-summary__discount-row" role="group" aria-label="{{ 'cart.discount_codes_label' | t }}">
+            <label for="cart-page-discount" class="visually-hidden">{{- 'cart.discount_codes_label' | t -}}</label>
+            <input
+              id="cart-page-discount"
+              class="cart-summary__discount-input"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="{{ 'cart.discount_code_placeholder' | t }}"
+              data-discount-code
+            >
+            <button type="button" class="cart-summary__discount-apply" data-discount-apply>
+              {{- 'cart.apply_discount' | t | upcase -}}
+            </button>
+          </div>
+        </div>
+      </details>
+    {%- endif -%}
 
-    {%- if block.settings.show_tax_note -%}
+    {%- if section.settings.cart_total -%}
+      <div class="cart-summary__row cart-summary__row--total">
+        <span class="cart-summary__label cart-summary__label--total">{{- 'cart.total' | t | upcase -}}</span>
+        <span
+          class="cart-summary__value cart-summary__value--total"
+          id="cart-page-subtotal"
+          data-raw="{{ cart.total_price }}"
+        >
+          {{- cart.total_price | money -}}
+        </span>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.installments -%}
       <p class="cart-summary__tax-note">
         {{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}
       </p>
     {%- endif -%}
 
     <div class="cart-summary__actions">
-      <a
-        href="{{ routes.checkout_url }}"
-        class="cart-summary__checkout"
-        id="cart-checkout-button"
-        aria-label="{{ 'cart.checkout' | t }}"
-      >
-        {{- 'cart.checkout' | t | upcase -}}
-      </a>
-
-      <a href="{{ routes.cart_url }}" class="cart-summary__view-cart">
-        {{- 'cart.view_cart' | t -}}
-      </a>
+      <form action="{{ routes.cart_url }}" method="post" class="cart-summary__checkout-form">
+        <button
+          type="submit"
+          name="checkout"
+          class="cart-summary__checkout"
+          id="cart-page-checkout-btn"
+          data-checkout-label="{{- 'cart.checkout' | t | upcase }} —"
+        >
+          {{- 'cart.checkout' | t | upcase }} — {{ cart.total_price | money -}}
+        </button>
+      </form>
     </div>
-
   </div>
 {%- endunless -%}
 
 {% stylesheet %}
-/* ── Cart page summary block ── */
-.cart-summary {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  padding-top: var(--cart-summary-padding-top);
-  padding-right: var(--cart-summary-padding-right);
-  padding-bottom: var(--cart-summary-padding-bottom);
-  padding-left: var(--cart-summary-padding-left);
-  background: oklch(from var(--color-text) l c h / 0.04);
-  position: sticky;
-  top: calc(var(--header-offset, var(--space-14)) + var(--space-6));
-  border-radius: var(--cart-summary-radius);
-}
+  /* ── Cart page summary block ── */
+  .cart-summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-top: var(--cart-summary-padding-top);
+    padding-right: var(--cart-summary-padding-right);
+    padding-bottom: var(--cart-summary-padding-bottom);
+    padding-left: var(--cart-summary-padding-left);
+    background: oklch(from var(--color-text) l c h / 0.04);
+    position: sticky;
+    top: calc(var(--header-offset, var(--space-14)) + var(--space-6));
+    border-radius: var(--cart-summary-radius);
+  }
 
-.cart-summary--static { position: relative; top: auto; }
-.cart-summary--border-solid {
-  border: var(--cart-summary-border-thickness) solid oklch(from var(--color-text) l c h / var(--cart-summary-border-opacity));
-}
-.cart-summary--border-none { border: 0; }
+  .cart-summary--static {
+    position: relative;
+    top: auto;
+  }
+  .cart-summary--border-solid {
+    border: var(--cart-summary-border-thickness) solid
+      oklch(from var(--color-text) l c h / var(--cart-summary-border-opacity));
+  }
+  .cart-summary--border-none {
+    border: 0;
+  }
 
-.cart-summary__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
+  .cart-summary__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
 
-.cart-summary__label {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
+  .cart-summary__label {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
 
-.cart-summary__value {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  color: var(--color-text);
-}
+  .cart-summary__value {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--color-text);
+  }
 
-.cart-summary__tax-note {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  letter-spacing: 0.04em;
-  margin: 0;
-  opacity: 0.7;
-}
+  .cart-summary__row--total {
+    margin-top: var(--space-1);
+    align-items: center;
+  }
+  .cart-summary__label--total {
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+  }
+  .cart-summary__value--total {
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
 
-.cart-summary__actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
+  .cart-summary__accordion {
+    border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.08);
+    padding-block: var(--space-4);
+  }
+  .cart-summary__accordion-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 var(--space-3);
+    cursor: pointer;
+    list-style: none;
+    gap: var(--space-3);
+  }
+  .cart-summary__accordion-trigger::-webkit-details-marker {
+    display: none;
+  }
+  .cart-summary__accordion-label {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text);
+  }
+  .cart-summary__accordion-icon {
+    display: flex;
+    color: var(--color-text);
+    transition: transform var(--transition-base);
+  }
+  .cart-summary__accordion[open] .cart-summary__accordion-icon {
+    transform: rotate(180deg);
+  }
+  .cart-summary__note-textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 80px;
+    padding: var(--space-3);
+    margin-bottom: var(--space-1);
+    background: var(--color-background);
+    border: 1px solid oklch(from var(--color-text) l c h / 0.15);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+    border-radius: var(--cart-summary-radius, 0);
+  }
+  .cart-summary__note-textarea:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
 
-/* ── Checkout button ── */
-.cart-summary__checkout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: var(--space-4) var(--space-6);
-  background: var(--color-text);
-  color: var(--color-background);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-decoration: none;
-  min-height: 52px;
-  border-radius: var(--button-radius);
-  transition: opacity var(--transition-base);
-}
+  .cart-summary__discount-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .cart-summary__discount-input {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--space-3) var(--space-3);
+    border: 1px solid oklch(from var(--color-text) l c h / 0.15);
+    border-radius: var(--cart-summary-radius, 0);
+    background: var(--color-background);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+  }
+  .cart-summary__discount-input:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+  .cart-summary__discount-apply {
+    display: flex;
+    min-width: 104px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-5);
+    border: 0;
+    border-radius: var(--button-radius);
+    background: var(--color-text);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-background);
+    cursor: pointer;
+    transition: opacity var(--transition-base);
+  }
+  .cart-summary__discount-apply:hover {
+    opacity: 0.75;
+  }
+  .cart-summary__discount-apply:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
 
-.cart-summary__checkout:hover { opacity: 0.7; }
+  .cart-summary__tax-note {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    letter-spacing: 0.04em;
+    margin: 0;
+    opacity: 0.7;
+  }
 
-.cart-summary__checkout:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
+  .cart-summary__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
 
-/* ── View cart link ── */
-.cart-summary__view-cart {
-  display: block;
-  text-align: center;
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  text-decoration: none;
-  transition: color var(--transition-base);
-  padding-block: var(--space-1);
-}
+  /* ── Checkout form & button ── */
+  .cart-summary__checkout-form {
+    margin: 0;
+    display: block;
+    width: 100%;
+  }
 
-.cart-summary__view-cart:hover { color: var(--color-text); }
+  .cart-summary__checkout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-text);
+    color: var(--color-background);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    min-height: 52px;
+    border: none;
+    border-radius: var(--button-radius);
+    transition: opacity var(--transition-base);
+    cursor: pointer;
+  }
+
+  .cart-summary__checkout:hover {
+    opacity: 0.7;
+  }
+
+  .cart-summary__checkout:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "Summary",
+  "name": "t:blocks.cart_summary.name",
   "settings": [
     {
       "type": "checkbox",
       "id": "enable_sticky",
-      "label": "Enable sticky summary",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_tax_note",
-      "label": "Show tax note",
+      "label": "t:blocks.cart_summary.settings.enable_sticky.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Borders"
+      "content": "t:blocks.cart_summary.settings.borders_header.content"
     },
     {
       "type": "select",
       "id": "border_style",
-      "label": "Style",
+      "label": "t:blocks.cart_summary.settings.border_style.label",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "solid", "label": "Solid" }
+        { "value": "none", "label": "t:blocks.cart_summary.settings.border_style.options.none" },
+        { "value": "solid", "label": "t:blocks.cart_summary.settings.border_style.options.solid" }
       ],
-      "default": "solid"
+      "default": "none"
     },
     {
       "type": "range",
       "id": "border_thickness",
-      "label": "Thickness",
+      "visible_if": "{{ block.settings.border_style == 'solid' }}",
+      "label": "t:blocks.cart_summary.settings.border_thickness.label",
       "min": 0,
       "max": 4,
       "step": 1,
@@ -206,7 +374,8 @@
     {
       "type": "range",
       "id": "border_opacity",
-      "label": "Opacity",
+      "visible_if": "{{ block.settings.border_style == 'solid' }}",
+      "label": "t:blocks.cart_summary.settings.border_opacity.label",
       "min": 0,
       "max": 100,
       "step": 5,
@@ -216,7 +385,8 @@
     {
       "type": "range",
       "id": "corner_radius",
-      "label": "Corner radius",
+      "visible_if": "{{ block.settings.border_style == 'solid' }}",
+      "label": "t:blocks.cart_summary.settings.corner_radius.label",
       "min": 0,
       "max": 40,
       "step": 2,
@@ -225,12 +395,12 @@
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "t:blocks.cart_summary.settings.padding_header.content"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Top",
+      "label": "t:blocks.cart_summary.settings.padding_top.label",
       "min": 0,
       "max": 80,
       "step": 4,
@@ -240,7 +410,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Bottom",
+      "label": "t:blocks.cart_summary.settings.padding_bottom.label",
       "min": 0,
       "max": 80,
       "step": 4,
@@ -250,7 +420,7 @@
     {
       "type": "range",
       "id": "padding_left",
-      "label": "Left",
+      "label": "t:blocks.cart_summary.settings.padding_left.label",
       "min": 0,
       "max": 80,
       "step": 4,
@@ -260,7 +430,7 @@
     {
       "type": "range",
       "id": "padding_right",
-      "label": "Right",
+      "label": "t:blocks.cart_summary.settings.padding_right.label",
       "min": 0,
       "max": 80,
       "step": 4,

@@ -38,6 +38,11 @@
   if nav_right_block != null
     assign show_cart = nav_right_block.settings.show_cart
   endif
+
+  assign cart_qty_sum = 0
+  for item in cart.items
+    assign cart_qty_sum = cart_qty_sum | plus: item.quantity
+  endfor
 -%}
 
 <mobile-menu-drawer
@@ -76,19 +81,19 @@
           class="mobile-menu__topbar-btn mobile-menu__topbar-cart"
           type="button"
           data-cart-toggle
-          aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+          aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart_qty_sum }}"
         >
           {{ 'sections.header.cart_label' | t | upcase }}
-          <span class="mobile-menu__topbar-cart-badge{% if cart.item_count == 0 %} hidden{% endif %}" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+          <span class="mobile-menu__topbar-cart-badge{% if cart_qty_sum == 0 %} hidden{% endif %}" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
         </button>
       {%- else -%}
         <a
           href="{{ routes.cart_url }}"
           class="mobile-menu__topbar-btn mobile-menu__topbar-cart"
-          aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+          aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart_qty_sum }}"
         >
           {{ 'sections.header.cart_label' | t | upcase }}
-          <span class="mobile-menu__topbar-cart-badge{% if cart.item_count == 0 %} hidden{% endif %}" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+          <span class="mobile-menu__topbar-cart-badge{% if cart_qty_sum == 0 %} hidden{% endif %}" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
         </a>
       {%- endif -%}
     {%- endif -%}

@@ -1,14 +1,49 @@
 {%- comment -%}
   Snippet: cart-drawer.liquid
   Path: snippets/cart-drawer.liquid
-  Description: VELOURAIX editorial cart drawer. Slides in from the right.
-    Header: title + item count. Body: cart-items snippet. Footer: subtotal + checkout.
-    Driven by the cart-drawer-component custom element.
-    Loading CSS + JS loaded conditionally in sections/header.liquid when cart_style == 'drawer'.
+  Description: VELOURAIX slide-in cart drawer.
+    Controlled by settings.cart_style — rendered only when set to 'drawer'.
+    Body: scrollable item list (cart-items, compact drawer layout).
+    Footer: "You might also like" upsell, optional notes, discount codes,
+            total row, View Cart + Checkout CTA buttons.
+    Empty state: centred message + full-width "Continue Shopping" CTA.
+  Global settings:
+    settings.cart_show_view_cart        → shows "View Cart" secondary button
+    settings.cart_notes_enabled         → order instructions textarea accordion
+    settings.cart_show_free_shipping    → free-shipping progress bar
+    settings.free_shipping_threshold    → threshold in whole currency units
+    settings.cart_show_upsell           → "You might also like" upsell carousel
 
   @example
   {% render 'cart-drawer' %}
 {%- endcomment -%}
+<script src="{{ 'component-cart-upsell.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign show_view_cart  = settings.cart_show_view_cart  | default: true
+  assign show_notes      = settings.cart_notes_enabled   | default: false
+  assign show_free_ship  = settings.cart_show_free_shipping | default: false
+  assign free_ship_thresh = settings.free_shipping_threshold | default: 100
+  assign show_upsell     = settings.cart_show_upsell     | default: true
+
+  assign cart_qty_total = 0
+  for item in cart.items
+    assign cart_qty_total = cart_qty_total | plus: item.quantity
+  endfor
+
+  assign free_ship_cents    = free_ship_thresh | times: 100
+  assign remaining_cents    = free_ship_cents | minus: cart.total_price
+  assign progress_pct       = cart.total_price | times: 100 | divided_by: free_ship_cents
+  if progress_pct > 100
+    assign progress_pct = 100
+  endif
+  assign free_ship_reached = false
+  if cart.total_price >= free_ship_cents
+    assign free_ship_reached = true
+  endif
+
+  assign first_product_id = cart.items.first.product_id | default: 0
+-%}
 
 <cart-drawer-component
   id="cart-drawer"
@@ -19,13 +54,7 @@
   aria-hidden="true"
   data-money-format="{{ shop.money_format | json }}"
 >
-  {%- comment -%} Screen-reader live region for cart updates {%- endcomment -%}
-  <span
-    id="cart-live-region"
-    class="visually-hidden"
-    aria-live="polite"
-    aria-atomic="true"
-  ></span>
+  <span id="cart-live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
 
   <div class="cart-drawer__overlay" data-cart-close aria-hidden="true"></div>
 
@@ -33,19 +62,16 @@
 
     {%- comment -%} ── HEADER ── {%- endcomment -%}
     <div class="cart-drawer__header">
-      <div class="cart-drawer__header-inner">
-        <h2 class="cart-drawer__title" id="cart-drawer-title">
-          {{- 'sections.header.summary_items' | t | upcase -}}
-        </h2>
-        <span
-          class="cart-drawer__count"
-          id="cart-drawer-count"
-          aria-live="polite"
-          aria-atomic="true"
+      <h2 class="cart-drawer__title" id="cart-drawer-title">
+        <span class="cart-drawer__title-text">{{- 'cart.title' | t -}}</span>
+        <span class="cart-drawer__title-count"
+          >&nbsp;(<span
+            id="cart-drawer-count"
+            aria-live="polite"
+            aria-atomic="true"
+          >{{- cart_qty_total -}}</span>)</span
         >
-          {{- cart.item_count -}}
-        </span>
-      </div>
+      </h2>
       <button
         class="cart-drawer__close"
         type="button"
@@ -56,7 +82,31 @@
       </button>
     </div>
 
-    {%- comment -%} ── BODY ── {%- endcomment -%}
+    {%- comment -%} ── FREE SHIPPING BAR ── {%- endcomment -%}
+    {%- if show_free_ship -%}
+      <div class="cart-drawer__shipping-bar" id="cart-shipping-bar">
+        {%- if free_ship_reached -%}
+          <p class="cart-drawer__shipping-msg cart-drawer__shipping-msg--reached">
+            {{- 'cart.free_shipping_reached' | t -}}
+          </p>
+        {%- else -%}
+          <p class="cart-drawer__shipping-msg">
+            {{- 'cart.free_shipping_remaining_html' | t: amount: remaining_cents | money -}}
+          </p>
+        {%- endif -%}
+        <div
+          class="cart-drawer__shipping-track"
+          role="progressbar"
+          aria-valuenow="{{ progress_pct }}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="cart-drawer__shipping-fill" style="width:{{ progress_pct }}%"></div>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ── BODY: items OR empty state ── {%- endcomment -%}
     <div class="cart-drawer__body" id="cart-drawer-items">
       {%- if cart.item_count > 0 -%}
         {%- render 'cart-items', context: 'drawer' -%}
@@ -65,297 +115,142 @@
           <p class="cart-drawer__empty-msg">{{- 'cart.empty' | t -}}</p>
           <a
             href="{{ routes.all_products_collection_url }}"
-            class="cart-drawer__empty-link"
+            class="cart-drawer__empty-cta"
             data-cart-close
           >
-            {{- 'cart.continue_shopping' | t -}}
+            {{- 'cart.continue_shopping' | t | upcase -}}
           </a>
         </div>
       {%- endif -%}
     </div>
 
-    {%- comment -%} ── FOOTER ── {%- endcomment -%}
+    {%- comment -%} ── FOOTER (hidden when empty) ── {%- endcomment -%}
     <div
       class="cart-drawer__footer{% if cart.item_count == 0 %} is-hidden{% endif %}"
       id="cart-drawer-footer"
     >
-      <div class="cart-drawer__subtotal-row">
-        <span class="cart-drawer__subtotal-label">{{- 'cart.subtotal' | t | upcase -}}</span>
-        <span
-          class="cart-drawer__subtotal-value"
-          id="cart-drawer-subtotal"
-          data-raw="{{ cart.total_price }}"
+
+      {%- comment -%} ── UPSELL: You might also like ── {%- endcomment -%}
+      {%- if show_upsell and cart.item_count > 0 -%}
+        <cart-upsell-component
+          class="cart-drawer__upsell"
+          id="cart-upsell"
+          data-product-id="{{ first_product_id }}"
+          data-recommendations-url="{{ routes.product_recommendations_url }}"
+          data-limit="4"
+          aria-label="{{ 'cart.upsell_label' | t }}"
         >
+          <div class="cart-drawer__upsell-header">
+            <span class="cart-drawer__upsell-label">{{- 'cart.upsell_label' | t | upcase -}}</span>
+            <div class="cart-drawer__upsell-nav" aria-hidden="true">
+              <button class="cart-drawer__upsell-prev" type="button" data-upsell-prev aria-label="{{ 'accessibility.expand' | t }}">
+                {%- render 'icon', name: 'chevron-left' -%}
+              </button>
+              <button class="cart-drawer__upsell-next" type="button" data-upsell-next aria-label="{{ 'accessibility.expand' | t }}">
+                {%- render 'icon', name: 'chevron-right' -%}
+              </button>
+            </div>
+          </div>
+          <div class="cart-drawer__upsell-track" role="list">
+            {%- comment -%} JS hydrates this with real product cards {%- endcomment -%}
+            {%- for i in (1..2) -%}
+              <div class="cart-upsell-item cart-upsell-item--skeleton" role="listitem" aria-hidden="true">
+                <span class="cart-upsell-item__image-ph"></span>
+                <span class="cart-upsell-item__body-ph"></span>
+                <span class="cart-upsell-item__body-ph cart-upsell-item__body-ph--sm"></span>
+              </div>
+            {%- endfor -%}
+          </div>
+        </cart-upsell-component>
+      {%- endif -%}
+
+      {%- comment -%} ── ORDER INSTRUCTIONS ── {%- endcomment -%}
+      {%- if show_notes -%}
+        <details class="cart-drawer__notes">
+          <summary class="cart-drawer__notes-trigger">
+            <span class="cart-drawer__notes-label">{{- 'cart.order_instructions_label' | t -}}</span>
+            <span class="cart-drawer__notes-icon" aria-hidden="true">
+              {%- render 'icon', name: 'chevron-down' -%}
+            </span>
+          </summary>
+          <div class="cart-drawer__notes-body">
+            <label for="cart-drawer-note" class="visually-hidden">
+              {{- 'cart.order_instructions_label' | t -}}
+            </label>
+            <textarea
+              id="cart-drawer-note"
+              class="cart-drawer__notes-textarea"
+              name="note"
+              form="cart-drawer-note-form"
+              rows="3"
+              placeholder="{{ 'cart.order_instructions_placeholder' | t }}"
+            >{{- cart.note -}}</textarea>
+          </div>
+        </details>
+        {%- form 'cart', id: 'cart-drawer-note-form' -%}{%- endform -%}
+      {%- endif -%}
+
+      {%- comment -%} ── DISCOUNT CODES ── {%- endcomment -%}
+      <details class="cart-drawer__notes">
+        <summary class="cart-drawer__notes-trigger">
+          <span class="cart-drawer__notes-label">{{- 'cart.discount_codes_label' | t -}}</span>
+          <span class="cart-drawer__notes-icon" aria-hidden="true">
+            {%- render 'icon', name: 'chevron-down' -%}
+          </span>
+        </summary>
+        <div class="cart-drawer__notes-body">
+          <div class="cart-drawer__discount-row" role="group" aria-label="{{ 'cart.discount_codes_label' | t }}">
+            <label for="cart-drawer-discount" class="visually-hidden">{{- 'cart.discount_codes_label' | t -}}</label>
+            <input
+              id="cart-drawer-discount"
+              class="cart-drawer__discount-input"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="{{ 'cart.discount_code_placeholder' | t }}"
+              data-discount-code
+            >
+            <button type="button" class="cart-drawer__discount-apply" data-discount-apply>
+              {{- 'cart.apply_discount' | t | upcase -}}
+            </button>
+          </div>
+        </div>
+      </details>
+
+      {%- comment -%} ── TOTAL ── {%- endcomment -%}
+      <div class="cart-drawer__subtotal-row">
+        <span class="cart-drawer__subtotal-label">{{- 'cart.total' | t | upcase -}}</span>
+        <span class="cart-drawer__subtotal-value" id="cart-drawer-subtotal" data-raw="{{ cart.total_price }}">
           {{- cart.total_price | money -}}
         </span>
       </div>
 
       <p class="cart-drawer__tax-note">{{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}</p>
 
-      <form action="{{ routes.checkout_url }}" method="post" class="cart-drawer__checkout-form">
-        <input type="hidden" name="checkout" value="1">
-        <button type="submit" class="cart-drawer__checkout-btn">
-          {{- 'cart.checkout' | t | upcase -}}
-        </button>
-      </form>
+      {%- comment -%} ── VIEW CART + CHECKOUT ── {%- endcomment -%}
+      <div class="cart-drawer__actions-row">
+        {%- if show_view_cart -%}
+          <a href="{{ routes.cart_url }}" class="cart-drawer__secondary-btn">
+            {{- 'cart.view_cart' | t | upcase -}}
+          </a>
+        {%- endif -%}
+        <form
+          action="{{ routes.cart_url }}"
+          method="post"
+          class="cart-drawer__checkout-form{% unless show_view_cart %} cart-drawer__checkout-form--full{% endunless %}"
+        >
+          <button
+            type="submit"
+            name="checkout"
+            class="cart-drawer__checkout-btn"
+            id="cart-drawer-checkout-btn"
+            data-checkout-label="{{ 'cart.checkout' | t | upcase }} —"
+          >
+            {{- 'cart.checkout' | t | upcase }} — {{ cart.total_price | money -}}
+          </button>
+        </form>
+      </div>
 
-      <a href="{{ routes.cart_url }}" class="cart-drawer__view-all">
-        {{- 'cart.view_cart' | t -}}
-      </a>
-    </div>
-
-  </div>
+    </div>{%- comment -%} /.cart-drawer__footer {%- endcomment -%}
+  </div>{%- comment -%} /.cart-drawer__panel {%- endcomment -%}
 </cart-drawer-component>
-
-{% stylesheet %}
-/* ═══════════════════════════════════════════════════════════
-   CART DRAWER — VELOURAIX editorial style
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── Container ── */
-.cart-drawer {
-  position: fixed;
-  inset: 0;
-  z-index: 400;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.cart-drawer[open] {
-  visibility: visible;
-  pointer-events: auto;
-}
-
-/* ── Overlay ── */
-.cart-drawer__overlay {
-  position: absolute;
-  inset: 0;
-  background: oklch(from var(--color-text) l c h / 0);
-  transition: background var(--transition-slow);
-  cursor: pointer;
-}
-
-.cart-drawer[open] .cart-drawer__overlay {
-  background: oklch(from var(--color-text) l c h / 0.35);
-}
-
-/* ── Panel ── */
-.cart-drawer__panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: min(480px, 100vw);
-  background: var(--color-background);
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform var(--transition-slow);
-  border-left: 1px solid oklch(from var(--color-text) l c h / 0.08);
-}
-
-.cart-drawer[open] .cart-drawer__panel {
-  transform: translateX(0);
-}
-
-/* ── Header ── */
-.cart-drawer__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-6) var(--space-7);
-  border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.1);
-  flex-shrink: 0;
-}
-
-.cart-drawer__header-inner {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-}
-
-.cart-drawer__title {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  margin: 0;
-}
-
-.cart-drawer__count {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--color-text-muted);
-}
-
-.cart-drawer__close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-text);
-  padding: var(--space-1);
-  transition: opacity var(--transition-base);
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.cart-drawer__close:hover { opacity: 0.4; }
-
-.cart-drawer__close:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-  border-radius: var(--radius-sm);
-}
-
-/* ── Body ── */
-.cart-drawer__body {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  padding: 0 var(--space-7);
-}
-
-/* ── Empty state ── */
-.cart-drawer__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: var(--space-6);
-  padding-block: var(--space-16);
-  min-height: 40vh;
-}
-
-.cart-drawer__empty-msg {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-.cart-drawer__empty-link {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text);
-  text-decoration: none;
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 2px;
-  transition: opacity var(--transition-base);
-}
-
-.cart-drawer__empty-link:hover { opacity: 0.45; }
-
-/* ── Footer ── */
-.cart-drawer__footer {
-  padding: var(--space-6) var(--space-7);
-  border-top: 1px solid oklch(from var(--color-text) l c h / 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  flex-shrink: 0;
-}
-
-.cart-drawer__footer.is-hidden { display: none; }
-
-.cart-drawer__subtotal-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
-
-.cart-drawer__subtotal-label {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.cart-drawer__subtotal-value {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  color: var(--color-text);
-}
-
-.cart-drawer__tax-note {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  letter-spacing: 0.04em;
-  margin: 0;
-  opacity: 0.7;
-}
-
-/* ── Checkout button — full-width, no radius, uppercase ── */
-.cart-drawer__checkout-form { margin: 0; }
-
-.cart-drawer__checkout-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: var(--space-4) var(--space-6);
-  background: var(--color-text);
-  color: var(--color-background);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border: none;
-  cursor: pointer;
-  transition: opacity var(--transition-base);
-  min-height: 52px;
-  border-radius: var(--button-radius);
-}
-
-.cart-drawer__checkout-btn:hover { opacity: 0.75; }
-
-.cart-drawer__checkout-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
-
-/* ── View cart link ── */
-.cart-drawer__view-all {
-  display: block;
-  text-align: center;
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  text-decoration: none;
-  transition: color var(--transition-base);
-  padding-block: var(--space-1);
-}
-
-.cart-drawer__view-all:hover { color: var(--color-text); }
-
-/* ── Reduced motion ── */
-@media screen and (prefers-reduced-motion: reduce) {
-  .cart-drawer__panel,
-  .cart-drawer__overlay {
-    transition-duration: 0.001ms !important;
-  }
-}
-{% endstylesheet %}

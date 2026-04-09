@@ -42,7 +42,7 @@ class VariantPicker extends HTMLElement {
       const mounted = document.querySelector(`#MainProduct-${sectionId}`);
       if (!incoming || !mounted) return;
 
-      mounted.innerHTML = incoming.innerHTML;
+      this._replaceChildren(mounted, incoming);
 
       const nextUrl = `${baseUrl}?variant=${encodeURIComponent(variantId)}`;
       window.history.replaceState({}, '', nextUrl);
@@ -59,6 +59,15 @@ class VariantPicker extends HTMLElement {
       }
       this._isFetching = false;
     }
+  }
+
+  _replaceChildren(target, source) {
+    if (!target || !source) return;
+    const fragment = document.createDocumentFragment();
+    Array.from(source.childNodes).forEach((node) => {
+      fragment.appendChild(node.cloneNode(true));
+    });
+    target.replaceChildren(fragment);
   }
 }
 

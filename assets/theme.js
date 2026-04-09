@@ -79,4 +79,25 @@
   window.trapFocus = trapFocus;
   window.removeTrapFocus = removeTrapFocus;
   window.themeDebounce = debounce;
+
+  function applyDiscountCode(code) {
+    const clean = String(code || '').trim();
+    if (!clean) return;
+
+    const root = window.Shopify?.routes?.root || '/';
+    const cartUrl = window.Shopify?.routes?.cart_url || '/cart';
+    const url = `${root}discount/${encodeURIComponent(clean)}?redirect=${encodeURIComponent(cartUrl)}`;
+    window.location.assign(url);
+  }
+
+  document.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-discount-apply]');
+    if (!btn) return;
+
+    const scope = btn.closest('[role="dialog"], .cart-summary, .cart-drawer') || document;
+    const input = scope.querySelector('[data-discount-code]');
+    if (!input) return;
+
+    applyDiscountCode(input.value);
+  });
 })();

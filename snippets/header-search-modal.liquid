@@ -151,7 +151,6 @@
     flex: 1;
     background: transparent;
     border: none;
-    outline: none;
     font-family: var(--font-primary);
     font-size: var(--font-size-sm);
     letter-spacing: 0.05em;
@@ -162,6 +161,12 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: var(--font-size-xs);
+  }
+
+  .search-modal__input:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
   }
 
   .search-modal__submit {

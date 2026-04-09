@@ -319,7 +319,7 @@
       {
         "type": "color",
         "id": "color_input_focus",
-        "default": "#000000",
+        "default": "transparent",
         "label": "t:labels.color_input_focus"
       },
       {
@@ -532,6 +532,28 @@
         "default": true
       },
       {
+        "type": "header",
+        "content": "t:labels.cart_drawer_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_view_cart",
+        "label": "t:labels.cart_show_view_cart",
+        "info": "t:labels.cart_show_view_cart_info",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_upsell",
+        "label": "t:labels.cart_show_upsell",
+        "info": "t:labels.cart_show_upsell_info",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:labels.cart_features_header"
+      },
+      {
         "type": "checkbox",
         "id": "cart_notes_enabled",
         "label": "t:labels.cart_notes",
@@ -539,9 +561,9 @@
       },
       {
         "type": "checkbox",
-        "id": "free_shipping_bar",
+        "id": "cart_show_free_shipping",
         "label": "t:labels.free_shipping_bar",
-        "default": true
+        "default": false
       },
       {
         "type": "number",
