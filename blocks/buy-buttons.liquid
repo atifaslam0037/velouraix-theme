@@ -1,0 +1,113 @@
+{% doc %}
+  Block: buy-buttons.liquid
+  Path: blocks/buy-buttons.liquid
+  Description: Wraps the Shopify product form with AJAX submission via <product-form>.
+    Accepts nested quantity, add-to-cart, and accelerated-checkout blocks.
+    Renders an error message region for AJAX feedback.
+  Blocks accepted: quantity, add-to-cart, accelerated-checkout.
+  Settings: show_dynamic_checkout (checkbox).
+{% enddoc %}
+
+<div class="product-form-block" {{ block.shopify_attributes }}>
+  <product-form class="product-form">
+    {%- assign product_form_id = 'ProductForm-' | append: section.id -%}
+    {%- form 'product', product,
+        id: product_form_id,
+        class: 'form',
+        novalidate: 'novalidate',
+        data-type: 'add-to-cart-form'
+    -%}
+      <input
+        type="hidden"
+        name="id"
+        value="{{ product.selected_or_first_available_variant.id }}"
+        disabled
+      >
+
+      <div
+        class="product-form__error-message-wrapper"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        hidden
+      >
+        <span class="visually-hidden">{{ 'general.error' | t }}</span>
+        <span class="product-form__error-message"></span>
+      </div>
+
+      <div class="product-form__buttons">
+        {% content_for "blocks" %}
+      </div>
+    {%- endform -%}
+  </product-form>
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.buy_buttons.name",
+  "blocks": [
+    { "type": "quantity" },
+    { "type": "add-to-cart" },
+    { "type": "accelerated-checkout" }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "default": true,
+      "label": "t:blocks.buy_buttons.settings.show_dynamic_checkout.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.buy_buttons.name",
+      "blocks": [
+        { "type": "quantity" },
+        { "type": "add-to-cart" },
+        { "type": "accelerated-checkout" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.product-form-block {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.product-form__error-message-wrapper {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background-color: color-mix(in srgb, var(--color-error) 8%, var(--color-background));
+  border: 1px solid color-mix(in srgb, var(--color-error) 40%, transparent);
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+}
+
+.product-form__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.product-form__buttons > * {
+  margin: 0;
+}
+
+.product-form__buttons > .product-form__quantity {
+  flex: 0 0 auto;
+}
+
+.product-form__buttons > .product-form__add-to-cart {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.product-form__buttons > .product-form__dynamic-checkout {
+  flex: 1 1 100%;
+}
+{% endstylesheet %}

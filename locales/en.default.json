@@ -21,7 +21,8 @@
       "label": "Pagination",
       "previous": "Previous",
       "next": "Next"
-    }
+    },
+    "error": "Error"
   },
   "blocks": {
     "text": {
@@ -105,6 +106,36 @@
         "padding": { "label": "Padding" }
       },
       "presets": { "name": "Group" }
+    },
+    "buy_buttons": {
+      "name": "Buy buttons",
+      "settings": {
+        "show_dynamic_checkout": {
+          "label": "Show dynamic checkout buttons"
+        }
+      },
+      "presets": { "name": "Buy buttons" }
+    },
+    "add_to_cart": {
+      "name": "Add to cart",
+      "settings": {
+        "button_style": {
+          "label": "Button style",
+          "options": {
+            "primary": "Primary",
+            "secondary": "Secondary"
+          }
+        }
+      },
+      "presets": { "name": "Add to cart" }
+    },
+    "quantity": {
+      "name": "Quantity",
+      "presets": { "name": "Quantity" }
+    },
+    "accelerated_checkout": {
+      "name": "Accelerated checkout",
+      "presets": { "name": "Accelerated checkout" }
     }
   },
   "labels": {
@@ -194,7 +225,14 @@
     "badges": {
       "sale": "Sale",
       "new": "New",
-      "sold_out": "Sold out"
+      "sold_out": "Sold out",
+      "save": "Save {{ percent }}%"
+    },
+    "media": {
+      "play_video": "Play video",
+      "view_3d": "View in 3D",
+      "gallery": "Media gallery",
+      "view_in_space": "View in your space"
     },
     "product": {
       "add_to_cart": "Add to cart",
@@ -208,6 +246,16 @@
         "decrease": "Decrease quantity",
         "increase": "Increase quantity",
         "input_label": "Quantity"
+      },
+      "adding": "Adding to cart...",
+      "expected_delivery": "Expected delivery 3-5 working days.",
+      "unavailable": "Unavailable",
+      "quick_add": "Quick add",
+      "available_sizes": "Available sizes",
+      "add_to_wishlist": "Add to wishlist",
+      "buy_it_now": "Buy it now",
+      "price": {
+        "regular_price": "Regular price"
       }
     }
   },

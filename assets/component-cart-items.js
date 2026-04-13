@@ -51,7 +51,10 @@ class CartItemsComponent extends HTMLElement {
     const btn = event.target.closest('[data-cart-remove]');
     if (!btn) return;
     event.preventDefault();
-    this._updateQuantity(btn.dataset.cartRemove, 0);
+    const item = btn.closest('[data-cart-item]');
+    const line = item ? parseInt(item.dataset.line, 10) : null;
+    if (!line) return;
+    this._updateQuantity(line, 0, item?.dataset.cartItem);
   }
 
   _onChange(event) {
@@ -60,151 +63,133 @@ class CartItemsComponent extends HTMLElement {
     const item = input.closest('[data-cart-item]');
     if (!item) return;
     const qty = Math.max(0, parseInt(input.value, 10) || 0);
-    this._updateQuantity(item.dataset.cartItem, qty);
+    const line = parseInt(item.dataset.line, 10);
+    if (!line) return;
+
+    // Sync paired input (mobile ↔ desktop mirror)
+    const allInputs = item.querySelectorAll('input[type="number"]');
+    allInputs.forEach((inp) => { if (inp !== input) inp.value = String(qty); });
+
+    this._updateQuantity(line, qty, item.dataset.cartItem);
   }
 
   // ─── Core update ─────────────────────────────────────────
 
-  async _updateQuantity(key, quantity) {
+  async _updateQuantity(line, quantity, key) {
     const reqId  = ++this._reqId;
-    const itemEl = this.querySelector(`[data-cart-item="${key}"]`);
+    const itemEl = key
+      ? this.querySelector(`[data-cart-item="${key}"]`)
+      : this.querySelector(`[data-line="${line}"]`);
     if (itemEl) itemEl.classList.add('is-loading');
 
     try {
-      // ── 1. Mutate the server cart ──
-      const changeRes = await fetch('/cart/change.js', {
+      // POST to /cart/change.js — Shopify returns the FULL cart on success
+      const res = await fetch('/cart/change.js', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body:    JSON.stringify({ id: key, quantity }),
+        body:    JSON.stringify({ line, quantity }),
       });
-      const changeData = await changeRes.json();
+      const cart = await res.json();
 
-      if (changeData.status === 422 || changeData.errors || changeData.description) {
-        this._showError(key, changeData.description || changeData.message || 'Could not update cart.');
+      // Non-2xx or Shopify error body
+      if (!res.ok || cart.status) {
+        this._showError(key, cart.description || cart.message || 'Could not update cart.');
         if (itemEl) itemEl.classList.remove('is-loading');
         return;
       }
+
+      if (reqId !== this._reqId) return; // stale — newer request in flight
+
       this._hideError(key);
 
-      document.dispatchEvent(
-        new CustomEvent('cart:updated', { bubbles: true, detail: { cart: changeData } })
-      );
-
-      // ── 2. Fetch source-of-truth from /cart.js ──
-      const cartRes  = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
-      const cartData = await cartRes.json();
-
-      // If a newer request has already started, abort to avoid stale UI updates
-      if (reqId !== this._reqId) return;
-
-      const itemCount      = parseInt(cartData.item_count, 10) || 0;
-      const formattedTotal = this._formatMoney(cartData.total_price ?? 0);
-
-      // ── 3. Immediately sync ALL count badges and subtotals ──
+      // Sync badges and totals immediately from the returned cart
+      const itemCount      = parseInt(cart.item_count, 10) || 0;
+      const formattedTotal = this._formatMoney(cart.total_price ?? 0);
       this._syncAllCountBadges(itemCount);
-      this._syncAllSubtotals(formattedTotal, cartData.total_price ?? 0);
+      this._syncAllSubtotals(formattedTotal, cart.total_price ?? 0);
       this._announce('Cart updated.');
 
-      // ── 4. Re-render item list HTML via Section Rendering API ──
-      await this._reRenderItems(itemCount);
+      // Reconcile DOM directly — no section API round-trip needed
+      this._reconcileItemsFromCart(cart);
 
       document.dispatchEvent(
         new CustomEvent('cart:synced', {
           bubbles: true,
-          detail:  { itemCount, formattedTotal, cart: cartData },
+          detail:  { itemCount, formattedTotal, cart },
         })
       );
 
     } catch (err) {
       console.error('[CartItems] Update failed:', err);
     } finally {
-      // Always remove loading state from the item — use fresh querySelector
-      // in case the element was replaced by re-render
-      const el = this.querySelector(`[data-cart-item="${key}"]`) ?? itemEl;
+      const el = key ? (this.querySelector(`[data-cart-item="${key}"]`) ?? itemEl) : itemEl;
       if (el) el.classList.remove('is-loading');
     }
   }
 
-  // ─── Section re-render ────────────────────────────────────
-
-  async _reRenderItems(itemCount) {
-    const parse = (html) => new DOMParser().parseFromString(html, 'text/html');
-    const isDrawer = this.hasAttribute('data-drawer');
-
-    try {
-      if (isDrawer) {
-        // ── Drawer: re-fetch header section ──
-        const res  = await fetch(`${window.location.pathname}?sections=header`, {
-          headers: { Accept: 'application/json' },
-        });
-        if (!res.ok) return;
-
-        const json = await res.json();
-        const html = json['header'] ?? json['header-group'] ?? null;
-        if (!html) return;
-
-        const doc     = parse(html);
-        const curBody = document.getElementById('cart-drawer-items');
-        if (!curBody) return;
-
-        if (itemCount === 0) {
-          curBody.replaceChildren(this._buildDrawerEmptyNode());
-        } else {
-          const freshComp = doc.querySelector('cart-items-component[data-drawer]');
-          if (freshComp) {
-            // Replace children of THIS component, preserving the wrapper and its CSS classes
-            this.innerHTML = '';
-            Array.from(freshComp.childNodes)
-              .forEach((n) => this.appendChild(n.cloneNode(true)));
-          }
-        }
-
-        const drawerFooter = document.getElementById('cart-drawer-footer');
-        if (drawerFooter) drawerFooter.classList.toggle('is-hidden', itemCount === 0);
-
-      } else {
-        // ── Cart page: Shopify Sections API ──
-        // Walk up to the shopify-section wrapper to get the real dynamic ID
-        const sectionEl = this.closest('[id^="shopify-section-"]');
-        const sectionId = sectionEl
-          ? sectionEl.id.replace('shopify-section-', '')
-          : 'main-cart';
-
-        const res = await fetch(`/cart?sections=${encodeURIComponent(sectionId)}`, {
-          headers: { Accept: 'application/json' },
-        });
-        if (!res.ok) return;
-
-        const json = await res.json();
-        const html = json[sectionId];
-        if (!html) return;
-
-        this._swapCartPageItems(parse(html), itemCount);
-      }
-
-    } catch (err) {
-      console.error('[CartItems] Re-render failed:', err);
-    }
-  }
+  // ─── Direct DOM reconciliation from cart JSON ─────────────
 
   /**
-   * Swaps cart item rows on the cart page after a re-render.
-   * We replace only the <ul> list inside this component so the component
-   * element itself is not removed (its event listeners remain intact).
+   * Reconciles the rendered cart-item rows against the cart object
+   * returned by /cart/change.js (which IS the full cart — no extra fetch needed).
+   *
+   * - Removes <li> rows for items no longer in the cart.
+   * - Updates quantity inputs and line-price cells for remaining items.
+   * - Refreshes data-line attributes so subsequent changes use correct line#.
+   * - Shows empty state when cart is fully cleared.
    */
-  _swapCartPageItems(doc, itemCount) {
-    if (itemCount === 0) {
-      // Swap the entire page region to empty state
-      const freshPage = doc.querySelector('.cart-page');
-      const curPage   = this.closest('.cart-page');
-      if (freshPage && curPage) curPage.replaceWith(freshPage.cloneNode(true));
-      return;
-    }
+  _reconcileItemsFromCart(cart) {
+    const remainingByKey = new Map(cart.items.map((item) => [String(item.key), item]));
 
-    const freshList = doc.querySelector('.cart-items__list');
-    // Target the list inside this specific component (not the drawer's list)
-    const curList = this.querySelector('.cart-items__list');
-    if (freshList && curList) curList.replaceWith(freshList.cloneNode(true));
+    this.querySelectorAll('[data-cart-item]').forEach((el) => {
+      const elKey = el.dataset.cartItem;
+      if (!remainingByKey.has(elKey)) {
+        el.remove();
+        return;
+      }
+
+      // Update displayed quantity and line totals for items that remain
+      const item = remainingByKey.get(elKey);
+      el.querySelectorAll('input[type="number"]').forEach((inp) => {
+        inp.value = String(item.quantity);
+      });
+
+      const lineTotal = document.getElementById(`cart-item-total-${elKey}`);
+      if (lineTotal) lineTotal.textContent = this._formatMoney(item.final_line_price);
+
+      const desktopTotal = document.getElementById(`cart-item-total-desktop-${elKey}`);
+      if (desktopTotal) desktopTotal.textContent = this._formatMoney(item.final_line_price);
+    });
+
+    // Re-index data-line so subsequent mutations use accurate line numbers
+    let idx = 1;
+    this.querySelectorAll('[data-cart-item]').forEach((el) => {
+      el.dataset.line = String(idx++);
+    });
+
+    // Empty-state handling
+    if (cart.item_count === 0) {
+      if (this.hasAttribute('data-drawer')) {
+        const curBody = document.getElementById('cart-drawer-items');
+        if (curBody) curBody.replaceChildren(this._buildDrawerEmptyNode());
+        const footer = document.getElementById('cart-drawer-footer');
+        if (footer) footer.classList.add('is-hidden');
+      } else {
+        const list = this.querySelector('.cart-items__list');
+        if (list) list.remove();
+        const cartPage = this.closest('.cart-page');
+        if (cartPage) {
+          cartPage.classList.add('cart-page--empty');
+          const header = cartPage.closest('.main-cart')?.querySelector('.cart-page__table-header');
+          if (header) header.style.display = 'none';
+          const summary = cartPage.querySelector('.cart-page__summary');
+          if (summary) summary.style.display = 'none';
+        }
+      }
+    } else if (this.hasAttribute('data-drawer')) {
+      const footer = document.getElementById('cart-drawer-footer');
+      if (footer) footer.classList.remove('is-hidden');
+    }
   }
 
   // ─── Sync helpers ─────────────────────────────────────────

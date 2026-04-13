@@ -56,6 +56,12 @@
         "label": "t:general.primary"
       },
       {
+        "type": "font_picker",
+        "id": "type_heading_font",
+        "label": "t:labels.heading_font",
+        "default": "work_sans_n6"
+      },
+      {
         "type": "header",
         "content": "t:labels.body_text"
       },
@@ -319,7 +325,7 @@
       {
         "type": "color",
         "id": "color_input_focus",
-        "default": "transparent",
+        "default": "#00000000",
         "label": "t:labels.color_input_focus"
       },
       {
@@ -502,6 +508,58 @@
         "type": "checkbox",
         "id": "predictive_search_enabled",
         "label": "t:labels.predictive_search",
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "select",
+        "id": "card_image_ratio",
+        "label": "Image ratio",
+        "options": [
+          {
+            "value": "1/1",
+            "label": "Square"
+          },
+          {
+            "value": "3/4",
+            "label": "Portrait"
+          },
+          {
+            "value": "4/5",
+            "label": "Tall"
+          },
+          {
+            "value": "16/9",
+            "label": "Landscape"
+          }
+        ],
+        "default": "3/4"
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_vendor",
+        "label": "Show vendor",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_wishlist",
+        "label": "Show wishlist button",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "quick_add",
+        "label": "Quick add",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_quick_add",
+        "label": "Mobile quick add",
         "default": true
       }
     ]

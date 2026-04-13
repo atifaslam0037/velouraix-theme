@@ -31,7 +31,12 @@
           {% endif %}
         >
           <summary class="cart-summary__accordion-trigger">
-            <span class="cart-summary__accordion-label">{{- 'cart.order_instructions_label' | t -}}</span>
+            <span class="cart-summary__accordion-title-wrap">
+              <span class="cart-summary__accordion-icon-left" aria-hidden="true">
+                {%- render 'icon', name: 'note' -%}
+              </span>
+              <span class="cart-summary__accordion-label">{{- 'cart.order_instructions_label' | t -}}</span>
+            </span>
             <span class="cart-summary__accordion-icon" aria-hidden="true">
               {%- render 'icon', name: 'chevron-down' -%}
             </span>
@@ -58,7 +63,12 @@
     {%- if section.settings.allow_discounts -%}
       <details class="cart-summary__accordion cart-summary__accordion--discount">
         <summary class="cart-summary__accordion-trigger">
-          <span class="cart-summary__accordion-label">{{- 'cart.discount_codes_label' | t -}}</span>
+          <span class="cart-summary__accordion-title-wrap">
+            <span class="cart-summary__accordion-icon-left" aria-hidden="true">
+              {%- render 'icon', name: 'discount' -%}
+            </span>
+            <span class="cart-summary__accordion-label">{{- 'cart.discount_codes_label' | t -}}</span>
+          </span>
           <span class="cart-summary__accordion-icon" aria-hidden="true">
             {%- render 'icon', name: 'chevron-down' -%}
           </span>
@@ -103,17 +113,16 @@
     {%- endif -%}
 
     <div class="cart-summary__actions">
-      <form action="{{ routes.cart_url }}" method="post" class="cart-summary__checkout-form">
+      {% form 'cart', cart, class: 'cart-summary__checkout-form' %}
         <button
           type="submit"
           name="checkout"
           class="cart-summary__checkout"
           id="cart-page-checkout-btn"
-          data-checkout-label="{{- 'cart.checkout' | t | upcase }} —"
         >
-          {{- 'cart.checkout' | t | upcase }} — {{ cart.total_price | money -}}
+          {{- 'cart.checkout' | t | upcase -}}
         </button>
-      </form>
+      {% endform %}
     </div>
   </div>
 {%- endunless -%}
@@ -199,6 +208,15 @@
   }
   .cart-summary__accordion-trigger::-webkit-details-marker {
     display: none;
+  }
+  .cart-summary__accordion-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .cart-summary__accordion-icon-left {
+    display: flex;
+    color: var(--color-text);
   }
   .cart-summary__accordion-label {
     font-family: var(--font-primary);

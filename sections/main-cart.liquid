@@ -17,10 +17,25 @@
   Line-item AJAX lives in cart-items-component inside the products block only. One layout tree so static block ids
   (cart-page-title, cart-page-items) are not duplicated.
 {%- endcomment -%}
-<div
-  class="main-cart"
-  style="--main-cart-padding-top: {{ section.settings.padding_top }}px; --main-cart-padding-bottom: {{ section.settings.padding_bottom }}px;"
->
+<div class="main-cart" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <style>
+    .cart-page__summary {
+      --button-radius: {{ section.settings.corner_radius }}px;
+      --cart-summary-radius: {{ section.settings.corner_radius }}px;
+    }
+    {%- unless section.settings.allow_note -%}
+      cart-note, .cart-summary__accordion--note { display: none; }
+    {%- endunless -%}
+    {%- unless section.settings.allow_discounts -%}
+      .cart-summary__accordion--discount { display: none; }
+    {%- endunless -%}
+    {%- unless section.settings.cart_total -%}
+      .cart-summary__row--total { display: none; }
+    {%- endunless -%}
+    {%- unless section.settings.installments -%}
+      .cart-summary__tax-note { display: none; }
+    {%- endunless -%}
+  </style>
   <div class="cart-page page-width{% if cart.empty? %} cart-page--empty{% endif %}">
     <div class="cart-page__title">
       {%- content_for 'block', id: 'cart-page-title', type: '_cart-title' %}
@@ -58,42 +73,61 @@
   },
   "settings": [
     {
-      "type": "header",
-      "content": "Layout configuration"
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "page", "label": "Page" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "page"
     },
     {
       "type": "select",
-      "id": "width",
-      "label": "Section width",
+      "id": "color_scheme",
+      "label": "Color scheme",
       "options": [
-        { "value": "page", "label": "Page width" },
-        { "value": "full", "label": "Full width" }
+        { "value": "scheme-1", "label": "Scheme 1" }
       ],
-      "default": "page"
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
     },
     {
       "type": "range",
       "id": "padding_top",
       "min": 0,
       "max": 100,
-      "step": 4,
+      "step": 2,
       "unit": "px",
-      "label": "Top padding",
-      "default": 36
+      "label": "Top",
+      "default": 58
     },
     {
       "type": "range",
       "id": "padding_bottom",
       "min": 0,
       "max": 100,
-      "step": 4,
+      "step": 2,
       "unit": "px",
-      "label": "Bottom padding",
-      "default": 36
+      "label": "Bottom",
+      "default": 54
     },
     {
       "type": "header",
-      "content": "Summary Box Appearance"
+      "content": "Theme Settings"
+    },
+    {
+      "type": "select",
+      "id": "product_title_case",
+      "label": "Product title case",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "uppercase", "label": "Uppercase" }
+      ],
+      "default": "default"
     },
     {
       "type": "select",
@@ -110,39 +144,39 @@
       "id": "corner_radius",
       "min": 0,
       "max": 40,
-      "step": 4,
+      "step": 2,
       "unit": "px",
-      "label": "Border radius",
-      "default": 8
+      "label": "Corner radius",
+      "default": 0
     },
     {
-      "type": "header",
-      "content": "Cart Options"
+      "type": "checkbox",
+      "id": "cart_items",
+      "label": "Cart items",
+      "default": true
     },
     {
       "type": "checkbox",
       "id": "allow_note",
-      "label": "Enable order notes",
-      "info": "Allow customers to add specialized instructions.",
+      "label": "Allow note to seller",
       "default": false
     },
     {
       "type": "checkbox",
       "id": "allow_discounts",
-      "label": "Enable discount codes",
-      "info": "Allow customers to apply a discount before checkout.",
+      "label": "Allow discounts in cart",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "cart_total",
-      "label": "Show cart subtotal",
+      "label": "Cart total",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "installments",
-      "label": "Show shipping and taxes notice",
+      "label": "Installments",
       "default": true
     }
   ],

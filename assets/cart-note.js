@@ -1,44 +1,20 @@
 /**
  * @element cart-note
- * @description VELOURAIX cart note custom element to auto-save contents on input.
- *
- * @fires cart:updated  detail: { cart } after update is successful
- * @listens input
+ * @description Debounced auto-saving order instructions textarea for the cart.
+ * @fires cart:updated - Fired when the cart note is successfully updated.
  */
 class CartNote extends HTMLElement {
   connectedCallback() {
-    this.textarea = this.querySelector('[data-cart-note]');
-    
+    this.textarea = this.querySelector('textarea');
     if (!this.textarea) return;
 
-    this._onInputBound = this._debounce(this._onInput.bind(this), 300);
-    this.textarea.addEventListener('input', this._onInputBound);
+    this._handler = this._debounce(this._saveNote.bind(this), 500);
+    this.textarea.addEventListener('input', this._handler);
   }
 
   disconnectedCallback() {
-    if (!this.textarea) return;
-    this.textarea.removeEventListener('input', this._onInputBound);
-  }
-
-  async _onInput(event) {
-    try {
-      const note = event.target.value;
-      const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart/update.js`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify({ note })
-      });
-
-      const cart = await response.json();
-      
-      document.dispatchEvent(
-        new CustomEvent('cart:updated', { bubbles: true, detail: { cart } })
-      );
-    } catch (error) {
-      console.error('Failed to update cart note:', error);
+    if (this.textarea && this._handler) {
+      this.textarea.removeEventListener('input', this._handler);
     }
   }
 
@@ -48,6 +24,35 @@ class CartNote extends HTMLElement {
       clearTimeout(t);
       t = setTimeout(() => fn.apply(this, args), wait);
     };
+  }
+
+  async _saveNote(event) {
+    try {
+      const body = JSON.stringify({ note: event.target.value });
+      const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart/update.js`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body
+      });
+      
+      if (!response.ok) throw new Error('Network response was not ok');
+      const cart = await response.json();
+      
+      document.dispatchEvent(new CustomEvent('cart:updated', {
+        bubbles: true,
+        detail: { cart }
+      }));
+    } catch (error) {
+      console.error('Failed to update cart note:', error);
+      // Fallback for an aria-live region if present
+      const liveRegion = document.getElementById('cart-live-region');
+      if (liveRegion) {
+        liveRegion.textContent = 'Failed to save note.';
+      }
+    }
   }
 }
 

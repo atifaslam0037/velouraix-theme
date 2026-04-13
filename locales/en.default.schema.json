@@ -191,6 +191,18 @@
     "logo_alt": "Enter a description of your logo"
   },
   "blocks": {
+    "buy_buttons": {
+      "name": "Buy buttons"
+    },
+    "quantity": {
+      "name": "Quantity selector"
+    },
+    "add_to_cart": {
+      "name": "Add to cart button"
+    },
+    "accelerated_checkout": {
+      "name": "Dynamic checkout buttons"
+    },
     "text": {
       "name": "Text",
       "settings": {
@@ -1163,6 +1175,9 @@
           "name": "Comments"
         }
       }
+    },
+    "main-product": {
+      "name": "Main product"
     }
   }
 }

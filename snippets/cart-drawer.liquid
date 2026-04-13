@@ -1,42 +1,30 @@
 {%- comment -%}
   Snippet: cart-drawer.liquid
   Path: snippets/cart-drawer.liquid
-  Description: VELOURAIX slide-in cart drawer.
-    Controlled by settings.cart_style — rendered only when set to 'drawer'.
-    Body: scrollable item list (cart-items, compact drawer layout).
-    Footer: "You might also like" upsell, optional notes, discount codes,
-            total row, View Cart + Checkout CTA buttons.
-    Empty state: centred message + full-width "Continue Shopping" CTA.
-  Global settings:
-    settings.cart_show_view_cart        → shows "View Cart" secondary button
-    settings.cart_notes_enabled         → order instructions textarea accordion
-    settings.cart_show_free_shipping    → free-shipping progress bar
-    settings.free_shipping_threshold    → threshold in whole currency units
-    settings.cart_show_upsell           → "You might also like" upsell carousel
-
-  @example
-  {% render 'cart-drawer' %}
+  Description: VELOURAIX slide-in cart drawer
 {%- endcomment -%}
-<script src="{{ 'component-cart-upsell.js' | asset_url }}" defer="defer"></script>
+
+
 
 {%- liquid
-  assign show_view_cart  = settings.cart_show_view_cart  | default: true
-  assign show_notes      = settings.cart_notes_enabled   | default: false
-  assign show_free_ship  = settings.cart_show_free_shipping | default: false
+  assign show_view_cart = settings.cart_show_view_cart
+  assign show_notes = settings.cart_notes_enabled
+  assign show_free_ship = settings.cart_show_free_shipping
   assign free_ship_thresh = settings.free_shipping_threshold | default: 100
-  assign show_upsell     = settings.cart_show_upsell     | default: true
+  assign show_upsell = settings.cart_show_upsell
 
   assign cart_qty_total = 0
   for item in cart.items
     assign cart_qty_total = cart_qty_total | plus: item.quantity
   endfor
 
-  assign free_ship_cents    = free_ship_thresh | times: 100
-  assign remaining_cents    = free_ship_cents | minus: cart.total_price
-  assign progress_pct       = cart.total_price | times: 100 | divided_by: free_ship_cents
+  assign free_ship_cents = free_ship_thresh | times: 100
+  assign remaining_cents = free_ship_cents | minus: cart.total_price
+  assign progress_pct = cart.total_price | times: 100 | divided_by: free_ship_cents
   if progress_pct > 100
     assign progress_pct = 100
   endif
+
   assign free_ship_reached = false
   if cart.total_price >= free_ship_cents
     assign free_ship_reached = true
@@ -54,35 +42,30 @@
   aria-hidden="true"
   data-money-format="{{ shop.money_format | json }}"
 >
-  <span id="cart-live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
+  <span
+    id="cart-live-region"
+    class="visually-hidden"
+    aria-live="polite"
+    aria-atomic="true"
+  ></span>
 
   <div class="cart-drawer__overlay" data-cart-close aria-hidden="true"></div>
 
   <div class="cart-drawer__panel">
-
-    {%- comment -%} ── HEADER ── {%- endcomment -%}
     <div class="cart-drawer__header">
       <h2 class="cart-drawer__title" id="cart-drawer-title">
         <span class="cart-drawer__title-text">{{- 'cart.title' | t -}}</span>
-        <span class="cart-drawer__title-count"
-          >&nbsp;(<span
-            id="cart-drawer-count"
-            aria-live="polite"
-            aria-atomic="true"
-          >{{- cart_qty_total -}}</span>)</span
-        >
+        <span class="cart-drawer__title-count">
+          &nbsp;(<span id="cart-drawer-count" aria-live="polite" aria-atomic="true">{{- cart_qty_total -}}</span>)
+        </span>
       </h2>
-      <button
-        class="cart-drawer__close"
-        type="button"
-        data-cart-close
-        aria-label="{{ 'accessibility.close' | t }}"
-      >
+
+      <button type="button" class="cart-drawer__close" data-cart-close>
+        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
         {%- render 'icon', name: 'close' -%}
       </button>
     </div>
 
-    {%- comment -%} ── FREE SHIPPING BAR ── {%- endcomment -%}
     {%- if show_free_ship -%}
       <div class="cart-drawer__shipping-bar" id="cart-shipping-bar">
         {%- if free_ship_reached -%}
@@ -94,6 +77,7 @@
             {{- 'cart.free_shipping_remaining_html' | t: amount: remaining_cents | money -}}
           </p>
         {%- endif -%}
+
         <div
           class="cart-drawer__shipping-track"
           role="progressbar"
@@ -106,7 +90,6 @@
       </div>
     {%- endif -%}
 
-    {%- comment -%} ── BODY: items OR empty state ── {%- endcomment -%}
     <div class="cart-drawer__body" id="cart-drawer-items">
       {%- if cart.item_count > 0 -%}
         {%- render 'cart-items', context: 'drawer' -%}
@@ -124,59 +107,74 @@
       {%- endif -%}
     </div>
 
-    {%- comment -%} ── FOOTER (hidden when empty) ── {%- endcomment -%}
     <div
       class="cart-drawer__footer{% if cart.item_count == 0 %} is-hidden{% endif %}"
       id="cart-drawer-footer"
     >
-
-      {%- comment -%} ── UPSELL: You might also like ── {%- endcomment -%}
       {%- if show_upsell and cart.item_count > 0 -%}
         <cart-upsell-component
-          class="cart-drawer__upsell"
           id="cart-upsell"
           data-product-id="{{ first_product_id }}"
-          data-recommendations-url="{{ routes.product_recommendations_url }}"
           data-limit="4"
           aria-label="{{ 'cart.upsell_label' | t }}"
         >
-          <div class="cart-drawer__upsell-header">
-            <span class="cart-drawer__upsell-label">{{- 'cart.upsell_label' | t | upcase -}}</span>
-            <div class="cart-drawer__upsell-nav" aria-hidden="true">
-              <button class="cart-drawer__upsell-prev" type="button" data-upsell-prev aria-label="{{ 'accessibility.expand' | t }}">
+          <div class="cart-upsell__header">
+            <span class="cart-upsell__label">{{- 'cart.upsell_label' | t | upcase -}}</span>
+
+            <div class="cart-upsell__nav" aria-hidden="true">
+              <button
+                class="cart-upsell__prev"
+                type="button"
+                data-upsell-prev
+                aria-label="Previous"
+              >
                 {%- render 'icon', name: 'chevron-left' -%}
               </button>
-              <button class="cart-drawer__upsell-next" type="button" data-upsell-next aria-label="{{ 'accessibility.expand' | t }}">
+              <button
+                class="cart-upsell__next"
+                type="button"
+                data-upsell-next
+                aria-label="Next"
+              >
                 {%- render 'icon', name: 'chevron-right' -%}
               </button>
             </div>
           </div>
-          <div class="cart-drawer__upsell-track" role="list">
-            {%- comment -%} JS hydrates this with real product cards {%- endcomment -%}
+
+          <div class="cart-upsell__track" role="list">
             {%- for i in (1..2) -%}
-              <div class="cart-upsell-item cart-upsell-item--skeleton" role="listitem" aria-hidden="true">
-                <span class="cart-upsell-item__image-ph"></span>
-                <span class="cart-upsell-item__body-ph"></span>
-                <span class="cart-upsell-item__body-ph cart-upsell-item__body-ph--sm"></span>
+              <div class="cart-upsell__skeleton" aria-hidden="true">
+                <div class="cart-upsell__skel-img"></div>
+                <div class="cart-upsell__skel-body">
+                  <div class="cart-upsell__skel-line"></div>
+                  <div class="cart-upsell__skel-line cart-upsell__skel-line--sm"></div>
+                  <div class="cart-upsell__skel-btn"></div>
+                </div>
               </div>
             {%- endfor -%}
           </div>
         </cart-upsell-component>
       {%- endif -%}
 
-      {%- comment -%} ── ORDER INSTRUCTIONS ── {%- endcomment -%}
       {%- if show_notes -%}
         <details class="cart-drawer__notes">
           <summary class="cart-drawer__notes-trigger">
-            <span class="cart-drawer__notes-label">{{- 'cart.order_instructions_label' | t -}}</span>
+            <span class="cart-drawer__notes-title-wrap">
+              <span class="cart-drawer__notes-icon-left" aria-hidden="true">
+                {%- render 'icon', name: 'note' -%}
+              </span>
+              <span class="cart-drawer__notes-label">{{- 'cart.order_instructions_label' | t -}}</span>
+            </span>
             <span class="cart-drawer__notes-icon" aria-hidden="true">
               {%- render 'icon', name: 'chevron-down' -%}
             </span>
           </summary>
+
           <div class="cart-drawer__notes-body">
             <label for="cart-drawer-note" class="visually-hidden">
               {{- 'cart.order_instructions_label' | t -}}
             </label>
+
             <textarea
               id="cart-drawer-note"
               class="cart-drawer__notes-textarea"
@@ -187,20 +185,29 @@
             >{{- cart.note -}}</textarea>
           </div>
         </details>
+
         {%- form 'cart', id: 'cart-drawer-note-form' -%}{%- endform -%}
       {%- endif -%}
 
-      {%- comment -%} ── DISCOUNT CODES ── {%- endcomment -%}
       <details class="cart-drawer__notes">
         <summary class="cart-drawer__notes-trigger">
-          <span class="cart-drawer__notes-label">{{- 'cart.discount_codes_label' | t -}}</span>
+          <span class="cart-drawer__notes-title-wrap">
+            <span class="cart-drawer__notes-icon-left" aria-hidden="true">
+              {%- render 'icon', name: 'discount' -%}
+            </span>
+            <span class="cart-drawer__notes-label">{{- 'cart.discount_codes_label' | t -}}</span>
+          </span>
           <span class="cart-drawer__notes-icon" aria-hidden="true">
             {%- render 'icon', name: 'chevron-down' -%}
           </span>
         </summary>
+
         <div class="cart-drawer__notes-body">
           <div class="cart-drawer__discount-row" role="group" aria-label="{{ 'cart.discount_codes_label' | t }}">
-            <label for="cart-drawer-discount" class="visually-hidden">{{- 'cart.discount_codes_label' | t -}}</label>
+            <label for="cart-drawer-discount" class="visually-hidden">
+              {{- 'cart.discount_codes_label' | t -}}
+            </label>
+
             <input
               id="cart-drawer-discount"
               class="cart-drawer__discount-input"
@@ -210,6 +217,7 @@
               placeholder="{{ 'cart.discount_code_placeholder' | t }}"
               data-discount-code
             >
+
             <button type="button" class="cart-drawer__discount-apply" data-discount-apply>
               {{- 'cart.apply_discount' | t | upcase -}}
             </button>
@@ -217,7 +225,6 @@
         </div>
       </details>
 
-      {%- comment -%} ── TOTAL ── {%- endcomment -%}
       <div class="cart-drawer__subtotal-row">
         <span class="cart-drawer__subtotal-label">{{- 'cart.total' | t | upcase -}}</span>
         <span class="cart-drawer__subtotal-value" id="cart-drawer-subtotal" data-raw="{{ cart.total_price }}">
@@ -225,32 +232,33 @@
         </span>
       </div>
 
-      <p class="cart-drawer__tax-note">{{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}</p>
+      <p class="cart-drawer__tax-note">
+        {{- 'cart.taxes_and_shipping_policy_at_checkout_html' | t -}}
+      </p>
 
-      {%- comment -%} ── VIEW CART + CHECKOUT ── {%- endcomment -%}
       <div class="cart-drawer__actions-row">
         {%- if show_view_cart -%}
           <a href="{{ routes.cart_url }}" class="cart-drawer__secondary-btn">
             {{- 'cart.view_cart' | t | upcase -}}
           </a>
         {%- endif -%}
-        <form
-          action="{{ routes.cart_url }}"
-          method="post"
-          class="cart-drawer__checkout-form{% unless show_view_cart %} cart-drawer__checkout-form--full{% endunless %}"
-        >
+
+        {%- assign form_class = 'cart-drawer__checkout-form' -%}
+        {%- unless show_view_cart -%}
+          {%- assign form_class = form_class | append: ' cart-drawer__checkout-form--full' -%}
+        {%- endunless -%}
+
+        {% form 'cart', cart, class: form_class %}
           <button
             type="submit"
             name="checkout"
             class="cart-drawer__checkout-btn"
             id="cart-drawer-checkout-btn"
-            data-checkout-label="{{ 'cart.checkout' | t | upcase }} —"
           >
             {{- 'cart.checkout' | t | upcase }} — {{ cart.total_price | money -}}
           </button>
-        </form>
+        {% endform %}
       </div>
-
-    </div>{%- comment -%} /.cart-drawer__footer {%- endcomment -%}
-  </div>{%- comment -%} /.cart-drawer__panel {%- endcomment -%}
+    </div>
+  </div>
 </cart-drawer-component>

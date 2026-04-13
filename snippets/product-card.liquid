@@ -1,60 +1,166 @@
-{%- comment -%}
-  Snippet: product-card
+{% doc %}
+  Snippet: product-card.liquid
   Path: snippets/product-card.liquid
-  Description: Reusable product card with image, title, badges, and price.
-  Parameters:
-    - product {product} required
-    - show_badges {boolean} optional, default: true
-    - show_vendor {boolean} optional, default: false
-  Example:
-    {% render 'product-card', product: product, show_badges: true %}
-{%- endcomment -%}
+  Description: Renders a product card for use in product grid areas.
+    Includes media hover swap, sale badge, wishlist button, quick-add trigger,
+    size swatches, and pricing — all controlled by global theme settings.
+
+  @param {product} product  - Required. The product drop to render.
+  @param {boolean} [lazy]   - Optional. If true images use lazy loading. Default: true.
+
+  @example
+  {% render 'product-card', product: product %}
+{% enddoc %}
 
 {%- liquid
-  assign card_product = product
-  assign display_badges = show_badges | default: true
-  assign display_vendor = show_vendor | default: false
-  assign featured_image = card_product.featured_image
-  assign target_variant = card_product.selected_or_first_available_variant
+  comment
+    ── Resolve lazy loading ──
+  endcomment
+  assign lazy_load = lazy | default: true
+
+  comment
+    ── Global settings — always use | default: to guard against unsaved settings_data.json values ──
+  endcomment
+  assign show_vendor   = settings.card_show_vendor   | default: true, allow_false: true
+  assign show_wishlist = settings.card_show_wishlist | default: true, allow_false: true
+  assign quick_add     = settings.quick_add | default: true, allow_false: true
+  assign mobile_quick_add = settings.mobile_quick_add | default: true, allow_false: true
+  assign ratio         = settings.card_image_ratio   | default: '3/4'
+
+  comment
+    ── Media ──
+  endcomment
+  assign first_image  = product.featured_media
+  assign second_image = product.media[1]
+
+  comment
+    ── Pricing ──
+  endcomment
+  assign target_variant = product.selected_or_first_available_variant
+  assign compare_at     = target_variant.compare_at_price | default: 0
+  assign price          = target_variant.price | default: 0
+  assign on_sale        = false
+  if compare_at > price
+    assign on_sale = true
+  endif
+
+  comment
+    ── Sizes removed per user request ──
+  endcomment
 -%}
 
-{%- if card_product != blank -%}
-  <article class="product-card">
-    <a class="product-card__media" href="{{ card_product.url }}">
-      {%- if featured_image != blank -%}
+<div class="product-card">
+
+  {{- 'component-product-card.css' | asset_url | stylesheet_tag -}}
+
+  <div
+    class="product-card__media-wrapper"
+    style="aspect-ratio: {{ ratio | replace: '/', ' / ' }};"
+  >
+    <a
+      href="{{ product.url }}"
+      class="product-card__media"
+      tabindex="-1"
+      aria-hidden="true"
+      aria-label="{{ product.title | escape }}"
+    >
+      {%- if first_image -%}
         <img
-          class="product-card__image"
-          src="{{ featured_image | image_url: width: 800 }}"
+          src="{{ first_image | image_url: width: 600 }}"
           srcset="
-            {{ featured_image | image_url: width: 200 }} 200w,
-            {{ featured_image | image_url: width: 400 }} 400w,
-            {{ featured_image | image_url: width: 800 }} 800w,
-            {{ featured_image | image_url: width: 1200 }} 1200w
+            {{ first_image | image_url: width: 300 }}  300w,
+            {{ first_image | image_url: width: 600 }}  600w,
+            {{ first_image | image_url: width: 900 }}  900w
           "
-          sizes="(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw"
-          width="{{ featured_image.width }}"
-          height="{{ featured_image.height }}"
-          alt="{{ featured_image.alt | escape | default: card_product.title | escape }}"
-          loading="lazy"
+          sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
+          alt="{{ first_image.alt | escape | default: product.title | escape }}"
+          width="{{ first_image.width }}"
+          height="{{ first_image.height }}"
+          class="product-card__image product-card__image--primary"
+          loading="{% if lazy_load %}lazy{% else %}eager{% endif %}"
+          {%- unless lazy_load %}fetchpriority="high"{% endunless -%}
           decoding="async"
         >
-      {%- endif -%}
-
-      {%- if display_badges and target_variant.available == false -%}
-        <span class="product-card__badge">{% render 'badge', type: 'sold_out' %}</span>
-      {%- elsif display_badges and target_variant.compare_at_price > target_variant.price -%}
-        <span class="product-card__badge">{% render 'badge', type: 'sale' %}</span>
+        {%- if second_image -%}
+          <img
+            src="{{ second_image | image_url: width: 600 }}"
+            srcset="
+              {{ second_image | image_url: width: 300 }}  300w,
+              {{ second_image | image_url: width: 600 }}  600w,
+              {{ second_image | image_url: width: 900 }}  900w
+            "
+            sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
+            alt="{{ second_image.alt | escape | default: product.title | escape }}"
+            width="{{ second_image.width }}"
+            height="{{ second_image.height }}"
+            class="product-card__image product-card__image--secondary"
+            loading="lazy"
+            decoding="async"
+          >
+        {%- endif -%}
+      {%- else -%}
+        <div class="product-card__placeholder" aria-hidden="true">
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
       {%- endif -%}
     </a>
 
-    <div class="product-card__body">
-      <h3 class="product-card__title">
-        <a href="{{ card_product.url }}">{{ card_product.title | escape }}</a>
-      </h3>
-      {%- if display_vendor -%}
-        <p class="product-card__vendor">{{ card_product.vendor | escape }}</p>
+    {%- comment -%} Sale badge — top left {%- endcomment -%}
+    {%- if on_sale -%}
+      <span class="product-card__badge" aria-label="{{ 'products.badges.sale' | t }}">
+        {{- 'products.badges.sale' | t -}}
+      </span>
+    {%- endif -%}
+
+    {%- comment -%} Wishlist — top right {%- endcomment -%}
+    {%- if show_wishlist -%}
+      <button
+        type="button"
+        class="product-card__wishlist"
+        aria-label="{{ 'products.product.add_to_wishlist' | t }}: {{ product.title | escape }}"
+      >
+        <span class="visually-hidden">{{ 'products.product.add_to_wishlist' | t }}</span>
+        {%- render 'icon', name: 'bookmark', aria_hidden: true -%}
+      </button>
+    {%- endif -%}
+
+    {%- if quick_add -%}
+      <button
+        type="button"
+        class="product-card__quick-add{% unless mobile_quick_add %} product-card__quick-add--desktop-only{% endunless %}"
+        data-quick-add-trigger="{{ product.url }}"
+        data-quick-add-style="modal"
+        data-product-single-variant="{{ product.has_only_default_variant }}"
+        data-variant-id="{{ target_variant.id }}"
+        aria-label="{{ 'products.product.quick_add' | t }}: {{ product.title | escape }}"
+        aria-haspopup="{% if quick_add == 'modal' %}dialog{% else %}false{% endif %}"
+      >
+        <span aria-hidden="true">+</span>
+        <span class="visually-hidden">{{ 'products.product.quick_add' | t }}</span>
+      </button>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__info">
+    {%- if show_vendor and product.vendor != blank -%}
+      <span class="product-card__vendor">{{ product.vendor | escape }}</span>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title | escape }}</a>
+    </h3>
+
+
+
+    <div class="product-card__prices">
+      {%- if on_sale -%}
+        <span class="product-card__price product-card__price--sale">{{ price | money }}</span>
+        {%- assign percent_off = compare_at | minus: price | times: 100.0 | divided_by: compare_at | round -%}
+        <span class="product-card__discount" aria-label="{{ 'products.badges.save' | t: percent: percent_off }}">-{{ percent_off }}%</span>
+        <s class="product-card__compare" aria-label="{{ 'products.product.price.regular_price' | t }}">{{ compare_at | money }}</s>
+      {%- else -%}
+        <span class="product-card__price">{{ price | money }}</span>
       {%- endif -%}
-      {% render 'price', product: card_product, variant: target_variant, show_badge: false %}
     </div>
-  </article>
-{%- endif -%}
+  </div>
+</div>

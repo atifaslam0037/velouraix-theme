@@ -6,16 +6,21 @@
 {%- liquid
   assign body_font = settings.type_primary_font
   assign body_font_bold = body_font | font_modify: 'weight', 'bold'
+  assign heading_font = settings.type_heading_font
 -%}
 
-{%- unless body_font.system? -%}
-  {{ body_font | font_face: font_display: 'swap' }}
-  {%- if body_font_bold -%}
-    {{ body_font_bold | font_face: font_display: 'swap' }}
-  {%- endif -%}
-{%- endunless -%}
-
 <style>
+  {%- unless body_font.system? -%}
+    {{ body_font | font_face: font_display: 'swap' }}
+    {%- if body_font_bold -%}
+      {{ body_font_bold | font_face: font_display: 'swap' }}
+    {%- endif -%}
+  {%- endunless -%}
+
+  {%- unless heading_font.system? -%}
+    {{ heading_font | font_face: font_display: 'swap' }}
+  {%- endunless -%}
+
   :root {
     /* ── Layout ── */
     --page-width:  {{ settings.max_page_width }};
@@ -69,6 +74,16 @@
       --font-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       --font-primary--style:  normal;
       --font-primary--weight: 400;
+    {%- endif -%}
+
+    {%- if heading_font != blank -%}
+      --font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }}, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-heading--style:  {{ heading_font.style }};
+      --font-heading--weight: {{ heading_font.weight }};
+    {%- else -%}
+      --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-heading--style:  normal;
+      --font-heading--weight: 600;
     {%- endif -%}
 
     /* ── Body ── */

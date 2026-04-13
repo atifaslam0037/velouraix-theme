@@ -37,7 +37,13 @@
   {%- if cart.item_count > 0 -%}
     <ul class="cart-items__list" role="list" aria-label="{{ 'cart.title' | t }}">
       {%- for item in cart.items -%}
-        <li class="cart-item" data-cart-item="{{ item.key }}" id="cart-item-{{ item.key }}">
+        <li
+          class="cart-item"
+          data-cart-item="{{ item.key }}"
+          data-variant-id="{{ item.variant_id }}"
+          data-line="{{ forloop.index }}"
+          id="cart-item-{{ item.key }}"
+        >
 
           {%- comment -%} IMAGE {%- endcomment -%}
           <a href="{{ item.url }}" class="cart-item__image-wrap" tabindex="-1" aria-hidden="true">
@@ -125,10 +131,10 @@
                 class="cart-item__remove"
                 type="button"
                 data-cart-remove="{{ item.key }}"
-                aria-label="{{ 'cart.remove' | t }}: {{ item.title | escape }}"
               >
+                <span class="visually-hidden">{{ 'cart.remove' | t }}: {{ item.title | escape }}</span>
                 <span class="cart-item__remove-icon" aria-hidden="true">{%- render 'icon', name: 'trash' -%}</span>
-                <span class="cart-item__remove-text">{{- 'cart.remove' | t -}}</span>
+                <span class="cart-item__remove-text" aria-hidden="true">{{- 'cart.remove' | t -}}</span>
               </button>
             </div>
 
@@ -139,11 +145,11 @@
             <div class="cart-item__qty-col">
               {%- assign desktop_id = item.key | append: '-desktop' -%}
               {%- render 'quantity-input',
-                id: desktop_id,
-                name: 'updates[]',
-                value: item.quantity,
-                min: 0,
-                index: forloop.index
+                  id: desktop_id,
+                  name: 'qty-display',
+                  value: item.quantity,
+                  min: 0,
+                  index: forloop.index
               -%}
             </div>
             <span class="cart-item__total-col" id="cart-item-total-desktop-{{ item.key }}">
@@ -153,10 +159,10 @@
               class="cart-item__remove cart-item__remove--desktop"
               type="button"
               data-cart-remove="{{ item.key }}"
-              aria-label="{{ 'cart.remove' | t }}: {{ item.title | escape }}"
             >
+              <span class="visually-hidden">{{ 'cart.remove' | t }}: {{ item.title | escape }}</span>
               <span class="cart-item__remove-icon" aria-hidden="true">{%- render 'icon', name: 'trash' -%}</span>
-              <span class="cart-item__remove-text">{{- 'cart.remove' | t -}}</span>
+              <span class="cart-item__remove-text" aria-hidden="true">{{- 'cart.remove' | t -}}</span>
             </button>
           {%- endunless -%}
 
