@@ -1,0 +1,80 @@
+{% doc %}
+  Block: accelerated-checkout.liquid
+  Path: blocks/accelerated-checkout.liquid
+  Description: Renders Shopify dynamic checkout buttons (Shop Pay, Apple Pay, PayPal, etc.)
+    inside the buy-buttons product form. Respects the parent block's show_dynamic_checkout setting.
+  Sections using this block: used inside blocks/buy-buttons.liquid.
+{% enddoc %}
+
+<div class="product-form__dynamic-checkout" {{ block.shopify_attributes }}>
+  {%- if product != blank -%}
+    {% # theme-check-disable UndefinedObject %}
+    {{ form | payment_button }}
+    {% # theme-check-enable UndefinedObject %}
+  {%- else -%}
+    <button
+      class="shopify-payment-button__button shopify-payment-button__button--unbranded"
+      disabled
+      aria-disabled="true"
+    >
+      {{ 'products.product.buy_it_now' | t }}
+    </button>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.accelerated_checkout.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "t:blocks.accelerated_checkout.name"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.product-form__dynamic-checkout {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.product-form__dynamic-checkout .shopify-payment-button {
+  width: 100%;
+}
+
+.product-form__dynamic-checkout .shopify-payment-button__button--unbranded {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  background: var(--color-text);
+  color: var(--color-background);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--button-radius);
+  cursor: pointer;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .product-form__dynamic-checkout .shopify-payment-button__button--unbranded {
+    transition: opacity var(--transition-base);
+  }
+
+  .product-form__dynamic-checkout .shopify-payment-button__button--unbranded:hover {
+    opacity: 0.85;
+  }
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  .product-form__dynamic-checkout .shopify-payment-button__button--unbranded {
+    transition-duration: 0.001ms !important;
+  }
+}
+{% endstylesheet %}

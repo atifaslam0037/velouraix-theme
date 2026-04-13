@@ -85,7 +85,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-primary--family);
+  font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
   line-height: var(--font-heading-line-height);
   color: var(--color-heading, var(--color-foreground));

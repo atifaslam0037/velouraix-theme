@@ -6,16 +6,21 @@
 {%- liquid
   assign body_font = settings.type_primary_font
   assign body_font_bold = body_font | font_modify: 'weight', 'bold'
+  assign heading_font = settings.type_heading_font
 -%}
 
-{%- unless body_font.system? -%}
-  {{ body_font | font_face: font_display: 'swap' }}
-  {%- if body_font_bold -%}
-    {{ body_font_bold | font_face: font_display: 'swap' }}
-  {%- endif -%}
-{%- endunless -%}
-
 <style>
+  {%- unless body_font.system? -%}
+    {{ body_font | font_face: font_display: 'swap' }}
+    {%- if body_font_bold -%}
+      {{ body_font_bold | font_face: font_display: 'swap' }}
+    {%- endif -%}
+  {%- endunless -%}
+
+  {%- unless heading_font.system? -%}
+    {{ heading_font | font_face: font_display: 'swap' }}
+  {%- endunless -%}
+
   :root {
     /* ── Layout ── */
     --page-width:  {{ settings.max_page_width }};
@@ -55,6 +60,11 @@
     --color-price-sale:    {{ settings.color_price_sale }};
     --color-price-compare: {{ settings.color_price_compare }};
 
+    /* ── Variant picker buttons (global) ── */
+    --vp-btn-border: {{ settings.variant_btn_border_thickness | default: 1 }}px;
+    --vp-btn-radius: {{ settings.variant_btn_corner_radius | default: 0 }}px;
+    --vp-btn-width:  {{ settings.variant_btn_width | default: 'auto' }};
+
     /* ── Radius & Icons ── */
     --style-border-radius-inputs:  calc(var(--space-1) * {{ settings.input_corner_radius | divided_by: 4.0 }});
     --style-border-radius-buttons: calc(var(--space-1) * {{ settings.button_corner_radius | divided_by: 4.0 }});
@@ -69,6 +79,16 @@
       --font-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       --font-primary--style:  normal;
       --font-primary--weight: 400;
+    {%- endif -%}
+
+    {%- if heading_font != blank -%}
+      --font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }}, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-heading--style:  {{ heading_font.style }};
+      --font-heading--weight: {{ heading_font.weight }};
+    {%- else -%}
+      --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-heading--style:  normal;
+      --font-heading--weight: 600;
     {%- endif -%}
 
     /* ── Body ── */

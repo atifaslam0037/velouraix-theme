@@ -21,7 +21,8 @@
       "label": "Pagination",
       "previous": "Previous",
       "next": "Next"
-    }
+    },
+    "error": "Error"
   },
   "blocks": {
     "text": {
@@ -105,6 +106,52 @@
         "padding": { "label": "Padding" }
       },
       "presets": { "name": "Group" }
+    },
+    "buy_buttons": {
+      "name": "Buy buttons",
+      "settings": {
+        "show_dynamic_checkout": {
+          "label": "Show dynamic checkout buttons"
+        }
+      },
+      "presets": { "name": "Buy buttons" }
+    },
+    "add_to_cart": {
+      "name": "Add to cart",
+      "settings": {
+        "button_style": {
+          "label": "Button style",
+          "options": {
+            "primary": "Primary",
+            "secondary": "Secondary"
+          }
+        }
+      },
+      "presets": { "name": "Add to cart" }
+    },
+    "quantity": {
+      "name": "Quantity",
+      "presets": { "name": "Quantity" }
+    },
+    "accelerated_checkout": {
+      "name": "Accelerated checkout",
+      "presets": { "name": "Accelerated checkout" }
+    },
+    "variant_picker": {
+      "name": "Variant picker",
+      "settings": {
+        "picker_style": {
+          "label": "Style",
+          "options": { "buttons": "Buttons", "dropdown": "Dropdowns" }
+        },
+        "show_swatches": { "label": "Swatches" },
+        "alignment": { "label": "Alignment" },
+        "show_availability": { "label": "Show sold out labels" },
+        "padding_top":    { "label": "Top" },
+        "padding_bottom": { "label": "Bottom" },
+        "padding_left":   { "label": "Left" },
+        "padding_right":  { "label": "Right" }
+      }
     }
   },
   "labels": {
@@ -155,9 +202,16 @@
     "predictive_search": "Enable predictive search",
     "cart_style": "Cart style",
     "cart_auto_open": "Auto-open cart after adding items",
-    "cart_notes": "Enable cart notes",
+    "cart_drawer_header": "Drawer options",
+    "cart_show_view_cart": "Show \"View cart\" link",
+    "cart_show_view_cart_info": "Displays a text link to the full cart page below the checkout button",
+    "cart_show_upsell": "Show \"You might also like\" recommendations",
+    "cart_show_upsell_info": "Shows product recommendations inside the cart drawer",
+    "cart_features_header": "Features",
+    "cart_notes": "Enable order instructions",
     "free_shipping_bar": "Show free shipping progress bar",
-    "free_shipping_threshold": "Free shipping threshold"
+    "free_shipping_threshold": "Free shipping threshold",
+    "heading_font": "Heading font"
   },
   "placeholders": {
     "logo_alt": "Your shop name"
@@ -188,7 +242,14 @@
     "badges": {
       "sale": "Sale",
       "new": "New",
-      "sold_out": "Sold out"
+      "sold_out": "Sold out",
+      "save": "Save {{ percent }}%"
+    },
+    "media": {
+      "play_video": "Play video",
+      "view_3d": "View in 3D",
+      "gallery": "Media gallery",
+      "view_in_space": "View in your space"
     },
     "product": {
       "add_to_cart": "Add to cart",
@@ -202,6 +263,16 @@
         "decrease": "Decrease quantity",
         "increase": "Increase quantity",
         "input_label": "Quantity"
+      },
+      "adding": "Adding to cart...",
+      "expected_delivery": "Expected delivery 3-5 working days.",
+      "unavailable": "Unavailable",
+      "quick_add": "Quick add",
+      "available_sizes": "Available sizes",
+      "add_to_wishlist": "Add to wishlist",
+      "buy_it_now": "Buy it now",
+      "price": {
+        "regular_price": "Regular price"
       }
     }
   },
@@ -268,6 +339,12 @@
   },
   "cart": {
     "checkout": "Checkout",
+    "total": "Total",
+    "discount_codes_label": "Discount codes",
+    "discount_code_placeholder": "Discount code",
+    "apply_discount": "Apply",
+    "save_note": "Save",
+    "drawer_heading_aria": "Cart, {{ count }} items",
     "title": "Cart",
     "update": "Update",
     "remove": "Remove",
@@ -279,7 +356,15 @@
     "increase_quantity": "Increase quantity",
     "items_count": "items",
     "discounts": "Discounts",
-    "taxes_and_shipping_policy_at_checkout_html": "Taxes and shipping calculated at checkout."
+    "taxes_and_shipping_policy_at_checkout_html": "Taxes and shipping calculated at checkout.",
+    "column_product": "Product",
+    "column_quantity": "Quantity",
+    "column_total": "Total",
+    "free_shipping_reached": "You've unlocked free shipping!",
+    "free_shipping_remaining_html": "Add {{ amount }} more for free shipping",
+    "order_instructions_label": "Order instructions",
+    "order_instructions_placeholder": "Special requests, notes, etc.",
+    "upsell_label": "You might also like"
   },
   "sections": {
     "header": {

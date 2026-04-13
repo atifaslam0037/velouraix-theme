@@ -1,27 +1,37 @@
 {%- comment -%}
   Snippet: cart-items.liquid
   Path: snippets/cart-items.liquid
-  Description: Renders cart line items for the drawer and cart page.
-    Used by blocks/_cart-products.liquid (page) and snippets/cart-drawer.liquid (drawer).
-    Each item: product image, title, variant, custom properties, unit price,
-    quantity-input component, line total, and remove button.
+  Description: Renders cart line items for drawer and cart page.
+    Drawer: stacked compact layout.
+    Page (desktop): table layout with qty column and total column aligned under headers.
 
-  @param {string} [context]  - 'drawer' or 'page'. Controls layout density.
-  @param {boolean} [show_vendor] - Show item vendor on cart page.
-  @param {boolean} [show_dividers] - Show divider lines between items.
-  @param {number} [image_size] - Image size in pixels for page context.
-  @param {string} [aspect_ratio] - auto | portrait | square.
+  @param {string}  [context]       - 'drawer' or 'page'.
+  @param {boolean} [show_vendor]   - Show product vendor.
+  @param {boolean} [show_dividers] - Show item divider lines.
+  @param {number}  [image_size]    - Image size in px.
+  @param {string}  [aspect_ratio]  - 'auto' | 'portrait' | 'square'.
 
   @example
   {% render 'cart-items', context: 'drawer' %}
 {%- endcomment -%}
 
+{%- liquid
+  assign is_drawer   = false
+  if context == 'drawer'
+    assign is_drawer = true
+  endif
+  assign img_size    = image_size | default: 96
+  assign no_dividers = false
+  unless show_dividers
+    assign no_dividers = true
+  endunless
+-%}
+
 <cart-items-component
-  class="cart-items{% if context == 'drawer' %} cart-items--drawer{% endif %}{% unless show_dividers %} cart-items--no-dividers{% endunless %}{% if aspect_ratio == 'square' %} cart-items--ratio-square{% elsif aspect_ratio == 'portrait' %} cart-items--ratio-portrait{% endif %}"
-  style="
-    --cart-item-image-size: {{ image_size | default: 96 }}px;
-  "
-  {% if context == 'drawer' %}data-drawer{% endif %}
+  class="cart-items{% if is_drawer %} cart-items--drawer{% endif %}{% if no_dividers %} cart-items--no-dividers{% endif %}{% if aspect_ratio == 'square' %} cart-items--ratio-square{% elsif aspect_ratio == 'portrait' %} cart-items--ratio-portrait{% endif %}"
+  style="--cart-item-image-size: {{ img_size }}px;"
+  data-cart-line-items
+  {% if is_drawer %}data-drawer{% endif %}
   data-section-id="main-cart"
 >
   {%- if cart.item_count > 0 -%}
@@ -30,16 +40,13 @@
         <li
           class="cart-item"
           data-cart-item="{{ item.key }}"
+          data-variant-id="{{ item.variant_id }}"
+          data-line="{{ forloop.index }}"
           id="cart-item-{{ item.key }}"
         >
 
-          {%- comment -%} ── IMAGE ── {%- endcomment -%}
-          <a
-            href="{{ item.url }}"
-            class="cart-item__image-wrap"
-            tabindex="-1"
-            aria-hidden="true"
-          >
+          {%- comment -%} IMAGE {%- endcomment -%}
+          <a href="{{ item.url }}" class="cart-item__image-wrap" tabindex="-1" aria-hidden="true">
             {%- if item.image != blank -%}
               <img
                 class="cart-item__image"
@@ -63,13 +70,11 @@
             {%- endif -%}
           </a>
 
-          {%- comment -%} ── DETAILS ── {%- endcomment -%}
+          {%- comment -%} BODY: meta + price + controls (controls only used in drawer / mobile) {%- endcomment -%}
           <div class="cart-item__body">
-
             <div class="cart-item__meta">
-              <a href="{{ item.url }}" class="cart-item__name">
-                {{- item.product.title | escape -}}
-              </a>
+              <a href="{{ item.url }}" class="cart-item__name">{{- item.product.title | escape -}}</a>
+
               {%- if show_vendor -%}
                 <p class="cart-item__vendor">{{- item.product.vendor | escape -}}</p>
               {%- endif -%}
@@ -78,20 +83,17 @@
                 <p class="cart-item__variant">{{- item.variant.title | escape -}}</p>
               {%- endunless -%}
 
-              {%- comment -%} Custom line item properties {%- endcomment -%}
               {%- if item.properties.size > 0 -%}
-                {%- for property in item.properties -%}
-                  {%- assign first_char = property.first | slice: 0 -%}
-                  {%- if property.last != blank and first_char != '_' -%}
+                {%- for prop in item.properties -%}
+                  {%- assign first_char = prop.first | slice: 0 -%}
+                  {%- if prop.last != blank and first_char != '_' -%}
                     <p class="cart-item__property">
-                      <span class="cart-item__property-key">{{ property.first | escape }}:</span>
+                      <span class="cart-item__property-key">{{ prop.first | escape }}:</span>
                       <span class="cart-item__property-val">
-                        {%- if property.last contains '/uploads/' -%}
-                          <a href="{{ property.last }}" target="_blank" rel="noopener noreferrer">
-                            {{- property.last | split: '/' | last -}}
-                          </a>
+                        {%- if prop.last contains '/uploads/' -%}
+                          <a href="{{ prop.last }}" target="_blank" rel="noopener noreferrer">{{ prop.last | split: '/' | last }}</a>
                         {%- else -%}
-                          {{- property.last | escape -}}
+                          {{- prop.last | escape -}}
                         {%- endif -%}
                       </span>
                     </p>
@@ -100,7 +102,7 @@
               {%- endif -%}
             </div>
 
-            {%- comment -%} ── PRICE ROW ── {%- endcomment -%}
+            {%- comment -%} Price row — always rendered, CSS hides line-total on desktop page {%- endcomment -%}
             <div class="cart-item__price-row">
               <div class="cart-item__unit-price">
                 {%- if item.original_price > item.price -%}
@@ -110,13 +112,13 @@
                   {{- item.price | money -}}
                 </span>
               </div>
-
+              {%- comment -%} Line total shown inline on mobile/drawer; hidden on desktop (uses separate col) {%- endcomment -%}
               <span class="cart-item__line-total" id="cart-item-total-{{ item.key }}">
                 {{- item.final_line_price | money -}}
               </span>
             </div>
 
-            {%- comment -%} ── CONTROLS: quantity + remove ── {%- endcomment -%}
+            {%- comment -%} Controls inside body — shown on mobile + drawer. On desktop the qty-col below handles the grid column. {%- endcomment -%}
             <div class="cart-item__controls">
               {%- render 'quantity-input',
                 id: item.key,
@@ -125,27 +127,45 @@
                 min: 0,
                 index: forloop.index
               -%}
-
               <button
                 class="cart-item__remove"
                 type="button"
                 data-cart-remove="{{ item.key }}"
-                aria-label="{{ 'cart.remove' | t }}: {{ item.title | escape }}"
               >
-                <span class="visually-hidden">{{- 'cart.remove' | t -}}</span>
-                {%- render 'icon', name: 'trash' -%}
+                <span class="visually-hidden">{{ 'cart.remove' | t }}: {{ item.title | escape }}</span>
+                <span class="cart-item__remove-icon" aria-hidden="true">{%- render 'icon', name: 'trash' -%}</span>
+                <span class="cart-item__remove-text" aria-hidden="true">{{- 'cart.remove' | t -}}</span>
               </button>
             </div>
 
-            {%- comment -%} Validation error region for this line {%- endcomment -%}
-            <p
-              class="cart-item__error"
-              id="Line-item-error-{{ item.key }}"
-              role="alert"
-              aria-live="assertive"
-            ></p>
-
+            <p class="cart-item__error" id="Line-item-error-{{ item.key }}" role="alert" aria-live="assertive"></p>
           </div>
+
+          {%- unless is_drawer -%}
+            <div class="cart-item__qty-col">
+              {%- assign desktop_id = item.key | append: '-desktop' -%}
+              {%- render 'quantity-input',
+                  id: desktop_id,
+                  name: 'qty-display',
+                  value: item.quantity,
+                  min: 0,
+                  index: forloop.index
+              -%}
+            </div>
+            <span class="cart-item__total-col" id="cart-item-total-desktop-{{ item.key }}">
+              {{- item.final_line_price | money -}}
+            </span>
+            <button
+              class="cart-item__remove cart-item__remove--desktop"
+              type="button"
+              data-cart-remove="{{ item.key }}"
+            >
+              <span class="visually-hidden">{{ 'cart.remove' | t }}: {{ item.title | escape }}</span>
+              <span class="cart-item__remove-icon" aria-hidden="true">{%- render 'icon', name: 'trash' -%}</span>
+              <span class="cart-item__remove-text" aria-hidden="true">{{- 'cart.remove' | t -}}</span>
+            </button>
+          {%- endunless -%}
+
         </li>
       {%- endfor -%}
     </ul>

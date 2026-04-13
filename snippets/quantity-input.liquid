@@ -20,9 +20,9 @@
     class="quantity-input__btn quantity-input__btn--minus"
     name="minus"
     type="button"
-    aria-label="{{ 'products.product.quantity.decrease' | t }}"
     {% if value <= min %}disabled{% endif %}
   >
+    <span class="visually-hidden">{{ 'products.product.quantity.decrease' | t }}</span>
     {%- render 'icon', name: 'minus' -%}
   </button>
 
@@ -44,8 +44,8 @@
     class="quantity-input__btn quantity-input__btn--plus"
     name="plus"
     type="button"
-    aria-label="{{ 'products.product.quantity.increase' | t }}"
   >
+    <span class="visually-hidden">{{ 'products.product.quantity.increase' | t }}</span>
     {%- render 'icon', name: 'plus' -%}
   </button>
 </quantity-input>

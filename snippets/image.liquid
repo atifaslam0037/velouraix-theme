@@ -5,41 +5,41 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign img = image
-  assign img_url = url | default: null
-  assign img_class = class | default: ''
-  assign img_width = width | default: 800
-  assign img_alt = image.alt | default: ''
-  assign img_load = loading | default: 'lazy'
+  assign image_object = image
+  assign image_link_url = url | default: null
+  assign image_class = class | default: ''
+  assign image_width = width | default: 800
+  assign image_alt = image.alt | default: ''
+  assign image_loading = loading | default: 'lazy'
 -%}
 
-{%- if img != blank -%}
+{%- if image_object != blank -%}
   {%- liquid
-    assign img_height = img_width | divided_by: img.aspect_ratio | round
+    assign image_height = image_width | divided_by: image_object.aspect_ratio | round
   -%}
 
-  {%- if img_url != blank -%}
-    <a href="{{ img_url }}" class="image-link" tabindex="-1" aria-hidden="true">
+  {%- if image_link_url != blank -%}
+    <a href="{{ image_link_url }}" class="image-link" tabindex="-1" aria-hidden="true">
   {%- endif -%}
 
   {{-
-    img
-    | image_url: width: img_width
+    image_object
+    | image_url: width: image_width
     | image_tag:
-      class: img_class,
-      alt: img_alt,
-      width: img_width,
-      height: img_height,
-      loading: img_load,
+      class: image_class,
+      alt: image_alt,
+      width: image_width,
+      height: image_height,
+      loading: image_loading,
       widths: '200, 400, 600, 800, 1000, 1200'
   -}}
 
-  {%- if img_url != blank -%}
+  {%- if image_link_url != blank -%}
     </a>
   {%- endif -%}
 
 {%- else -%}
-  <div class="image-placeholder {{ img_class }}" aria-hidden="true">
+  <div class="image-placeholder {{ image_class }}" aria-hidden="true">
     {{- 'product-1' | placeholder_svg_tag: 'placeholder-svg' -}}
   </div>
 {%- endif -%}

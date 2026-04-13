@@ -47,7 +47,7 @@
         "nav_style": "mega_menu",
         "sticky": true,
         "transparent": false,
-        "header_height": 56,
+        "header_height": 72,
         "bg_color": "#ffffff",
         "text_color": "#000000",
         "border_color": "#e8e8e8"

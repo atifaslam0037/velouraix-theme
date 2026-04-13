@@ -1,3 +1,9 @@
+{%- liquid
+  assign cart_qty_sum = 0
+  for item in cart.items
+    assign cart_qty_sum = cart_qty_sum | plus: item.quantity
+  endfor
+-%}
 {% doc %}
   Layout: [NAV LEFT] — [LOGO CENTER] — [ICONS RIGHT]
   Desktop: text nav left, logo center, text-style action icons right.
@@ -61,22 +67,22 @@
           <button
             class="header-action-text"
             type="button"
-            aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+            aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart_qty_sum }}"
             data-cart-toggle
           >
             <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
             {%- render 'icon', name: 'cart' -%}
-            <span class="header-action-text__badge{% if cart.item_count == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+            <span class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
           </button>
         {%- else -%}
           <a
             href="{{ routes.cart_url }}"
             class="header-action-text"
-            aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart.item_count }}"
+            aria-label="{{ 'sections.header.cart_aria_label' | t: count: cart_qty_sum }}"
           >
             <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
             {%- render 'icon', name: 'cart' -%}
-            <span class="header-action-text__badge{% if cart.item_count == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart.item_count }}</span>
+            <span class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
           </a>
         {%- endif -%}
       {%- endif -%}

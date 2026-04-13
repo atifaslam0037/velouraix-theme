@@ -17,14 +17,14 @@
         class="search-modal__close"
         type="button"
         data-search-close
-        aria-label="{{ 'accessibility.close' | t }}"
       >
+        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
         {%- render 'icon', name: 'close' -%}
       </button>
     </div>
 
     <div class="search-modal__body">
-      {%- form 'search', class: 'search-modal__form', role: 'search' -%}
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search-modal__form">
         <input type="hidden" name="type" value="product">
         <label for="search-modal-input" class="visually-hidden">
           {{- 'sections.header.search_label' | t -}}
@@ -44,11 +44,11 @@
         <button
           type="submit"
           class="search-modal__submit"
-          aria-label="{{ 'search.submit' | t }}"
         >
+          <span class="visually-hidden">{{ 'search.submit' | t }}</span>
           {%- render 'icon', name: 'search' -%}
         </button>
-      {%- endform -%}
+      </form>
 
       <div class="search-modal__blocks">
         <div class="search-modal__block">
@@ -151,7 +151,6 @@
     flex: 1;
     background: transparent;
     border: none;
-    outline: none;
     font-family: var(--font-primary);
     font-size: var(--font-size-sm);
     letter-spacing: 0.05em;
@@ -162,6 +161,12 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: var(--font-size-xs);
+  }
+
+  .search-modal__input:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
   }
 
   .search-modal__submit {

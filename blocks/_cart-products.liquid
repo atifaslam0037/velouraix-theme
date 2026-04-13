@@ -1,16 +1,18 @@
-{%- comment -%}
-  Block: _cart-products.liquid
-  Path: blocks/_cart-products.liquid
-  Description: Private theme block. Renders cart line items on the cart page,
-    or the empty state when the cart has no items.
-    Statically rendered by sections/main-cart.liquid via content_for 'block'.
+{% doc %}
+  @name _cart-products
+
+  @description Private theme block. Renders cart line items on the cart page,
+    or the empty-cart state. Statically rendered by sections/main-cart.liquid
+    via content_for 'block'. Image size, aspect ratio, dividers, and vendor
+    visibility are all merchant-configurable via schema settings.
 
   @example
-  {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
-{%- endcomment -%}
+  Rendered from sections/main-cart.liquid via content_for (cart-page-items).
+{% enddoc %}
 
 <div
   class="cart-products-block"
+  {{ block.shopify_attributes }}
   style="
     --cart-products-padding-top: {{ block.settings.padding_top }}px;
     --cart-products-padding-bottom: {{ block.settings.padding_bottom }}px;
@@ -85,49 +87,49 @@
 
 {% schema %}
 {
-  "name": "Cart products",
+  "name": "t:blocks.cart_products.name",
   "settings": [
     {
       "type": "range",
       "id": "product_image_size",
-      "label": "Product image size",
-      "min": 16,
-      "max": 40,
-      "step": 2,
+      "label": "t:blocks.cart_products.settings.product_image_size.label",
+      "min": 80,
+      "max": 200,
+      "step": 8,
       "unit": "px",
-      "default": 24
+      "default": 96
     },
     {
       "type": "select",
       "id": "aspect_ratio",
-      "label": "Aspect ratio",
+      "label": "t:blocks.cart_products.settings.aspect_ratio.label",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "portrait", "label": "Portrait" },
-        { "value": "square", "label": "Square" }
+        { "value": "auto", "label": "t:blocks.cart_products.settings.aspect_ratio.options.auto" },
+        { "value": "portrait", "label": "t:blocks.cart_products.settings.aspect_ratio.options.portrait" },
+        { "value": "square", "label": "t:blocks.cart_products.settings.aspect_ratio.options.square" }
       ],
       "default": "auto"
     },
     {
       "type": "checkbox",
       "id": "show_dividers",
-      "label": "Dividers",
+      "label": "t:blocks.cart_products.settings.show_dividers.label",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_vendor",
-      "label": "Vendor",
+      "label": "t:blocks.cart_products.settings.show_vendor.label",
       "default": false
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "t:blocks.cart_products.settings.padding_header.content"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Top",
+      "label": "t:blocks.cart_products.settings.padding_top.label",
       "min": 0,
       "max": 80,
       "step": 4,
@@ -137,7 +139,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Bottom",
+      "label": "t:blocks.cart_products.settings.padding_bottom.label",
       "min": 0,
       "max": 80,
       "step": 4,
@@ -147,7 +149,7 @@
     {
       "type": "range",
       "id": "padding_left",
-      "label": "Left",
+      "label": "t:blocks.cart_products.settings.padding_left.label",
       "min": 0,
       "max": 80,
       "step": 4,
@@ -157,7 +159,7 @@
     {
       "type": "range",
       "id": "padding_right",
-      "label": "Right",
+      "label": "t:blocks.cart_products.settings.padding_right.label",
       "min": 0,
       "max": 80,
       "step": 4,

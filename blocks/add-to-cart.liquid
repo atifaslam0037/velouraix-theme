@@ -1,0 +1,108 @@
+{% doc %}
+  Block: add-to-cart.liquid
+  Path: blocks/add-to-cart.liquid
+  Description: Renders the Add to Cart submit button inside the buy-buttons block.
+    Uses global .btn theme classes. Reflects variant availability.
+    A loading spinner appears during AJAX form submission.
+  Settings: button_style (primary | secondary).
+{% enddoc %}
+
+<div class="product-form__add-to-cart" {{ block.shopify_attributes }}>
+  <button
+    type="submit"
+    name="add"
+    class="btn btn--full-width {% if block.settings.button_style == 'secondary' %}btn--secondary{% else %}btn--primary{% endif %}"
+    form="ProductForm-{{ section.id }}"
+    {% if product.selected_or_first_available_variant.available == false %}
+      disabled
+      aria-disabled="true"
+    {% endif %}
+    aria-label="{% if product.selected_or_first_available_variant.available %}{{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}: {{ product.title | escape }}"
+  >
+    <span class="btn__label">
+      {%- if product.selected_or_first_available_variant.available -%}
+        {{ 'products.product.add_to_cart' | t }}
+      {%- else -%}
+        {{ 'products.product.sold_out' | t }}
+      {%- endif -%}
+    </span>
+    <span class="btn__loading" aria-hidden="true">
+      {%- render 'icon', name: 'spinner' -%}
+    </span>
+  </button>
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.add_to_cart.name",
+  "settings": [
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:blocks.add_to_cart.settings.button_style.label",
+      "options": [
+        { "value": "primary", "label": "t:blocks.add_to_cart.settings.button_style.options.primary" },
+        { "value": "secondary", "label": "t:blocks.add_to_cart.settings.button_style.options.secondary" }
+      ],
+      "default": "primary"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.add_to_cart.name"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.product-form__add-to-cart {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.product-form__add-to-cart .btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 52px;
+  width: 100%;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.product-form__add-to-cart .btn__loading {
+  display: none;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.product-form__add-to-cart .btn.is-loading .btn__label {
+  opacity: 0;
+}
+
+.product-form__add-to-cart .btn.is-loading .btn__loading {
+  display: block;
+  position: absolute;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .product-form__add-to-cart .btn,
+  .product-form__add-to-cart .btn__loading {
+    transition: opacity var(--transition-base), background-color var(--transition-base);
+  }
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  .product-form__add-to-cart .btn,
+  .product-form__add-to-cart .btn__loading {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+{% endstylesheet %}

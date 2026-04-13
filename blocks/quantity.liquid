@@ -1,0 +1,46 @@
+{% doc %}
+  Block: quantity.liquid
+  Path: blocks/quantity.liquid
+  Description: Renders the quantity stepper inside the buy-buttons product form.
+    Associates the input with the parent product form via form_id.
+    Uses the shared quantity-input snippet and web component.
+  Sections using this block: used inside blocks/buy-buttons.liquid.
+{% enddoc %}
+
+{%- assign product_form_id = 'ProductForm-' | append: section.id -%}
+
+<div class="product-form__quantity" {{ block.shopify_attributes }}>
+  <label
+    class="product-form__quantity-label visually-hidden"
+    for="quantity-{{ section.id }}"
+  >
+    {{ 'products.product.quantity.input_label' | t }}
+  </label>
+  {%- render 'quantity-input',
+      id: section.id,
+      name: 'quantity',
+      value: 1,
+      min: 1,
+      form_id: product_form_id
+  -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.quantity.name",
+  "settings": [],
+  "presets": [
+    {
+      "name": "t:blocks.quantity.name"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+.product-form__quantity {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+{% endstylesheet %}

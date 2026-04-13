@@ -13,6 +13,7 @@
     "article": "Article",
     "block": "Block",
     "blog": "Blog",
+    "variant_pickers": "Variant pickers",
     "cart": "Cart",
     "collection": "Collection",
     "collections": "Collections",
@@ -115,6 +116,12 @@
     "predictive_search": "Enable predictive search",
     "cart_style": "Cart type",
     "cart_auto_open": "Auto-open drawer on add to cart",
+    "cart_drawer_header": "Cart drawer",
+    "cart_show_view_cart": "Show \"View cart\" button",
+    "cart_show_view_cart_info": "Shows a \"View cart\" button in the cart drawer footer",
+    "cart_show_upsell": "Show \"You might also like\" slider",
+    "cart_show_upsell_info": "Shows product recommendations in the cart drawer",
+    "cart_features_header": "Cart features",
     "cart_notes": "Enable order notes",
     "free_shipping_bar": "Show free shipping progress bar",
     "free_shipping_threshold": "Free shipping threshold (amount)",
@@ -124,6 +131,10 @@
     "card_shadow": "Show card shadow",
     "enable_animations": "Enable scroll animations",
     "animation_style": "Animation style",
+    "variant_pickers_buttons_header": "Buttons",
+    "variant_btn_border_thickness": "Border thickness",
+    "variant_btn_corner_radius": "Corner radius",
+    "variant_btn_width": "Width",
     "animation_duration": "Animation duration"
   },
   "options": {
@@ -172,6 +183,10 @@
       "drawer": "Slide-in drawer",
       "page": "Cart page"
     },
+    "variant_btn_width": {
+      "fit":  "Fit",
+      "fill": "Fill"
+    },
     "animation_style": {
       "fade": "Fade in",
       "slide_up": "Slide up",
@@ -183,6 +198,357 @@
   },
   "placeholders": {
     "logo_alt": "Enter a description of your logo"
+  },
+  "blocks": {
+    "buy_buttons": {
+      "name": "Buy buttons"
+    },
+    "quantity": {
+      "name": "Quantity selector"
+    },
+    "add_to_cart": {
+      "name": "Add to cart button"
+    },
+    "accelerated_checkout": {
+      "name": "Dynamic checkout buttons"
+    },
+    "text": {
+      "name": "Text",
+      "settings": {
+        "text": {
+          "label": "Text",
+          "default": "Add your text"
+        },
+        "alignment": {
+          "label": "Alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        }
+      },
+      "presets": {
+        "name": "Text"
+      }
+    },
+    "heading": {
+      "name": "Heading",
+      "settings": {
+        "text": {
+          "label": "Heading",
+          "default": "Section heading"
+        },
+        "heading_tag": {
+          "label": "Heading tag"
+        },
+        "alignment": {
+          "label": "Alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "size": {
+          "label": "Size",
+          "options": {
+            "sm": "Small",
+            "md": "Medium",
+            "lg": "Large"
+          }
+        }
+      },
+      "presets": {
+        "name": "Heading"
+      }
+    },
+    "image": {
+      "name": "Image",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "alt_text": {
+          "label": "Alt text override"
+        },
+        "link": {
+          "label": "Link"
+        },
+        "width": {
+          "label": "Width",
+          "options": {
+            "narrow": "Narrow",
+            "default": "Default",
+            "wide": "Wide"
+          }
+        }
+      },
+      "presets": {
+        "name": "Image"
+      }
+    },
+    "button": {
+      "name": "Button",
+      "settings": {
+        "label": {
+          "label": "Label",
+          "default": "Shop now"
+        },
+        "url": {
+          "label": "Link"
+        },
+        "style": {
+          "label": "Style",
+          "options": {
+            "primary": "Primary",
+            "secondary": "Secondary",
+            "ghost": "Ghost"
+          }
+        },
+        "size": {
+          "label": "Size",
+          "options": {
+            "sm": "Small",
+            "md": "Medium",
+            "lg": "Large"
+          }
+        },
+        "new_tab": {
+          "label": "Open in new tab"
+        }
+      },
+      "presets": {
+        "name": "Button"
+      }
+    },
+    "divider": {
+      "name": "Divider",
+      "settings": {
+        "spacing": {
+          "label": "Spacing"
+        },
+        "show_line": {
+          "label": "Show divider line"
+        }
+      },
+      "presets": {
+        "name": "Divider"
+      }
+    },
+    "group": {
+      "name": "Group",
+      "settings": {
+        "text": {
+          "label": "Content",
+          "default": "Add grouped content"
+        },
+        "layout": {
+          "label": "Layout",
+          "options": {
+            "row": "Row",
+            "column": "Column"
+          }
+        },
+        "alignment": {
+          "label": "Alignment",
+          "options": {
+            "start": "Start",
+            "center": "Center",
+            "end": "End"
+          }
+        },
+        "gap": {
+          "label": "Gap"
+        },
+        "padding": {
+          "label": "Padding"
+        }
+      },
+      "presets": {
+        "name": "Group"
+      }
+    },
+    "cart_title": {
+      "name": "Cart title",
+      "settings": {
+        "title": {
+          "label": "Title",
+          "default": "Cart"
+        },
+        "show_count": {
+          "label": "Cart count"
+        },
+        "typography": {
+          "label": "Preset",
+          "options": {
+            "heading_2": "Heading 2",
+            "heading_3": "Heading 3",
+            "heading_4": "Heading 4"
+          }
+        },
+        "alignment": {
+          "label": "Alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "padding_header": {
+          "content": "Padding"
+        },
+        "padding_top": {
+          "label": "Top"
+        },
+        "padding_bottom": {
+          "label": "Bottom"
+        },
+        "padding_left": {
+          "label": "Left"
+        },
+        "padding_right": {
+          "label": "Right"
+        }
+      }
+    },
+    "cart_products": {
+      "name": "Cart products",
+      "settings": {
+        "product_image_size": {
+          "label": "Product image size"
+        },
+        "aspect_ratio": {
+          "label": "Aspect ratio",
+          "options": {
+            "auto": "Auto",
+            "portrait": "Portrait",
+            "square": "Square"
+          }
+        },
+        "show_dividers": {
+          "label": "Dividers"
+        },
+        "show_vendor": {
+          "label": "Vendor"
+        },
+        "padding_header": {
+          "content": "Padding"
+        },
+        "padding_top": {
+          "label": "Top"
+        },
+        "padding_bottom": {
+          "label": "Bottom"
+        },
+        "padding_left": {
+          "label": "Left"
+        },
+        "padding_right": {
+          "label": "Right"
+        }
+      }
+    },
+    "cart_summary": {
+      "name": "Summary",
+      "settings": {
+        "enable_sticky": {
+          "label": "Enable sticky summary"
+        },
+        "show_tax_note": {
+          "label": "Show tax note"
+        },
+        "borders_header": {
+          "content": "Borders"
+        },
+        "border_style": {
+          "label": "Style",
+          "options": {
+            "none": "None",
+            "solid": "Solid"
+          }
+        },
+        "border_thickness": {
+          "label": "Thickness"
+        },
+        "border_opacity": {
+          "label": "Opacity"
+        },
+        "corner_radius": {
+          "label": "Corner radius"
+        },
+        "padding_header": {
+          "content": "Padding"
+        },
+        "padding_top": {
+          "label": "Top"
+        },
+        "padding_bottom": {
+          "label": "Bottom"
+        },
+        "padding_left": {
+          "label": "Left"
+        },
+        "padding_right": {
+          "label": "Right"
+        }
+      }
+    },
+    "product_title": {
+      "name": "Product title",
+      "settings": {
+        "heading_tag": {
+          "label": "Heading tag",
+          "options": {
+            "h1": "H1",
+            "h2": "H2"
+          }
+        }
+      }
+    },
+    "price": {
+      "name": "Price",
+      "settings": {
+        "show_compare_at": {
+          "label": "Show compare-at price"
+        },
+        "show_installments": {
+          "label": "Show installment information"
+        },
+        "show_tax_notice": {
+          "label": "Show tax and shipping notice"
+        }
+      }
+    },
+    "variant_picker": {
+      "name": "Variant picker",
+      "settings": {
+        "description": "Displays variants from parent product",
+        "global_style_note": "Edit variant styling in theme settings",
+        "picker_style": {
+          "label": "Style",
+          "options": {
+            "buttons":  "Buttons",
+            "dropdown": "Dropdowns"
+          }
+        },
+        "show_swatches": {
+          "label": "Swatches",
+          "info":  "Colour options will render as swatches instead of text buttons"
+        },
+        "alignment": {
+          "label": "Alignment"
+        },
+        "show_availability": {
+          "label": "Show sold out labels"
+        },
+        "padding_header":  "Padding",
+        "padding_top":    { "label": "Top" },
+        "padding_bottom": { "label": "Bottom" },
+        "padding_left":   { "label": "Left" },
+        "padding_right":  { "label": "Right" }
+      }
+    }
   },
   "sections": {
     "header_group": {
@@ -505,6 +871,9 @@
         "show_order_note": {
           "label": "Show order note"
         }
+      },
+      "presets": {
+        "name": "Cart"
       }
     },
     "main_search": {
@@ -829,6 +1198,9 @@
           "name": "Comments"
         }
       }
+    },
+    "main-product": {
+      "name": "Main product"
     }
   }
 }
