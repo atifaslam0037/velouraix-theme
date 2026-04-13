@@ -13,6 +13,7 @@
     "article": "Article",
     "block": "Block",
     "blog": "Blog",
+    "variant_pickers": "Variant pickers",
     "cart": "Cart",
     "collection": "Collection",
     "collections": "Collections",
@@ -130,6 +131,10 @@
     "card_shadow": "Show card shadow",
     "enable_animations": "Enable scroll animations",
     "animation_style": "Animation style",
+    "variant_pickers_buttons_header": "Buttons",
+    "variant_btn_border_thickness": "Border thickness",
+    "variant_btn_corner_radius": "Corner radius",
+    "variant_btn_width": "Width",
     "animation_duration": "Animation duration"
   },
   "options": {
@@ -177,6 +182,10 @@
     "cart_style": {
       "drawer": "Slide-in drawer",
       "page": "Cart page"
+    },
+    "variant_btn_width": {
+      "fit":  "Fit",
+      "fill": "Fill"
     },
     "animation_style": {
       "fade": "Fade in",
@@ -514,16 +523,30 @@
     "variant_picker": {
       "name": "Variant picker",
       "settings": {
+        "description": "Displays variants from parent product",
+        "global_style_note": "Edit variant styling in theme settings",
         "picker_style": {
-          "label": "Picker style",
+          "label": "Style",
           "options": {
-            "buttons": "Buttons",
-            "dropdown": "Dropdown"
+            "buttons":  "Buttons",
+            "dropdown": "Dropdowns"
           }
+        },
+        "show_swatches": {
+          "label": "Swatches",
+          "info":  "Colour options will render as swatches instead of text buttons"
+        },
+        "alignment": {
+          "label": "Alignment"
         },
         "show_availability": {
           "label": "Show sold out labels"
-        }
+        },
+        "padding_header":  "Padding",
+        "padding_top":    { "label": "Top" },
+        "padding_bottom": { "label": "Bottom" },
+        "padding_left":   { "label": "Left" },
+        "padding_right":  { "label": "Right" }
       }
     }
   },

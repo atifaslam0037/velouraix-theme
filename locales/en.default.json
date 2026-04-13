@@ -136,6 +136,22 @@
     "accelerated_checkout": {
       "name": "Accelerated checkout",
       "presets": { "name": "Accelerated checkout" }
+    },
+    "variant_picker": {
+      "name": "Variant picker",
+      "settings": {
+        "picker_style": {
+          "label": "Style",
+          "options": { "buttons": "Buttons", "dropdown": "Dropdowns" }
+        },
+        "show_swatches": { "label": "Swatches" },
+        "alignment": { "label": "Alignment" },
+        "show_availability": { "label": "Show sold out labels" },
+        "padding_top":    { "label": "Top" },
+        "padding_bottom": { "label": "Bottom" },
+        "padding_left":   { "label": "Left" },
+        "padding_right":  { "label": "Right" }
+      }
     }
   },
   "labels": {
@@ -194,7 +210,8 @@
     "cart_features_header": "Features",
     "cart_notes": "Enable order instructions",
     "free_shipping_bar": "Show free shipping progress bar",
-    "free_shipping_threshold": "Free shipping threshold"
+    "free_shipping_threshold": "Free shipping threshold",
+    "heading_font": "Heading font"
   },
   "placeholders": {
     "logo_alt": "Your shop name"

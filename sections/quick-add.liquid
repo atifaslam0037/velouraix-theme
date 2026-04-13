@@ -1,355 +1,189 @@
 {%- comment -%}
   File: sections/quick-add.liquid
-  Description: Renders the AJAX content for the quick add modal.
+  Description: AJAX content for the Quick Add modal.
+  Design reference: left = scrollable product images, right = info + form.
+    • Vendor label (small caps muted)
+    • Large display title
+    • Price
+    • Size picker — flat swatch grid (label/input pattern)
+    • Quantity stepper + ADD TO CART — price button (inline row)
+    • BUY IT NOW (Shopify dynamic checkout, full-width)
+    • "There are N products left" green dot low-stock notice
 {%- endcomment -%}
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
+  assign stock = current_variant.inventory_quantity
+  assign low_stock_threshold = 13
+  assign show_stock = false
+  if current_variant.inventory_management != null and stock > 0 and stock <= low_stock_threshold
+    assign show_stock = true
+  endif
 -%}
 
-<div class="quick-add">
-  <div class="quick-add__layout">
-    <div class="quick-add__media">
+<div class="qa">
+  <div class="qa__layout">
+    {%- comment -%} ── LEFT: media stack ── {%- endcomment -%}
+    <div class="qa__media">
       {%- if product.media.size > 0 -%}
-        <div class="quick-add__media-list">
+        <div class="qa__media-list" id="qa-media-list">
           {%- for media in product.media -%}
-            <div class="quick-add__media-item">
+            <div class="qa__media-item">
               {%- if media.media_type == 'image' -%}
                 <img
-                  src="{{ media | image_url: width: 800 }}"
+                  src="{{ media | image_url: width: 900 }}"
                   alt="{{ media.alt | escape }}"
                   width="{{ media.width }}"
                   height="{{ media.height }}"
                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  decoding="async"
                 >
               {%- else -%}
-                {{ media | media_tag: image_size: '800x', autoplay: true, loop: true, controls: true }}
+                {{ media | media_tag: image_size: '900x', autoplay: true, loop: true, controls: true }}
               {%- endif -%}
             </div>
           {%- endfor -%}
         </div>
+
+        {%- if product.media.size > 1 -%}
+          <div class="qa__media-nav" aria-hidden="true">
+            <button class="qa__media-prev" type="button" data-qa-prev aria-label="Previous image">
+              {%- render 'icon', icon: 'chevron-left' -%}
+            </button>
+            <button class="qa__media-next" type="button" data-qa-next aria-label="Next image">
+              {%- render 'icon', icon: 'chevron-right' -%}
+            </button>
+          </div>
+        {%- endif -%}
+
       {%- else -%}
-        <div class="quick-add__placeholder">
+        <div class="qa__placeholder">
           {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
         </div>
       {%- endif -%}
     </div>
 
-    <div class="quick-add__content">
-      <div class="quick-add__content-inner">
-        <div class="quick-add__info">
-          {%- if settings.card_show_vendor and product.vendor != blank -%}
-            <p class="quick-add__vendor">{{ product.vendor }}</p>
+    {%- comment -%} ── RIGHT: product info + form ── {%- endcomment -%}
+    <div class="qa__content">
+      <div class="qa__inner">
+        {%- if product.vendor != blank -%}
+          <p class="qa__vendor">{{ product.vendor | upcase }}</p>
+        {%- endif -%}
+
+        <h2 class="qa__title" id="QuickAddTitle">{{ product.title }}</h2>
+
+        <div class="qa__price-row" id="qa-price">
+          {%- if current_variant.compare_at_price > current_variant.price -%}
+            <span class="qa__price qa__price--sale">{{ current_variant.price | money }}</span>
+            <s class="qa__compare">{{ current_variant.compare_at_price | money }}</s>
+          {%- else -%}
+            <span class="qa__price">{{ current_variant.price | money }}</span>
           {%- endif -%}
-
-          <h2 class="quick-add__title" id="QuickAddTitle">{{ product.title }}</h2>
-
-          <div class="quick-add__price-row" id="quick-add-price">
-            {%- if current_variant.compare_at_price > current_variant.price -%}
-              <span class="quick-add__price quick-add__price--sale">{{ current_variant.price | money }}</span>
-              <s class="quick-add__compare">{{ current_variant.compare_at_price | money }}</s>
-            {%- else -%}
-              <span class="quick-add__price">{{ current_variant.price | money }}</span>
-            {%- endif -%}
-          </div>
         </div>
 
-        <div class="quick-add__form-wrap">
-          <product-form class="product-form">
-            {%- form 'product',
-              product,
-              id: 'QuickAddForm',
-              class: 'quick-add__form',
-              novalidate: 'novalidate',
-              data-type: 'add-to-cart-form'
-            -%}
-              <input type="hidden" name="id" value="{{ current_variant.id }}">
+        <product-form class="product-form">
+          {%- form 'product',
+            product,
+            id: 'QuickAddForm',
+            class: 'qa__form',
+            novalidate: 'novalidate',
+            data-type: 'add-to-cart-form'
+          -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}">
 
-              <div class="product-form__error-message-wrapper" role="alert" hidden>
-                <span class="product-form__error-message"></span>
-              </div>
-
-              {%- unless product.has_only_default_variant -%}
-                <div class="quick-add__variants">
-                  {%- render 'product-variant-picker',
-                    product: product,
-                    section: section,
-                    form_id: 'QuickAddForm',
-                    picker_style: 'dropdown',
-                    show_availability: false
-                  -%}
-                </div>
-              {%- endunless -%}
-
-              <div
-                class="product-form__buttons-row"
-                style="display: flex; gap: var(--space-3); margin-bottom: var(--space-4);"
-              >
-                <div class="product-form__quantity" style="flex: 0 0 120px;">
-                  <label class="product-form__quantity-label visually-hidden" for="QuickAddQuantity">
-                    {{ 'products.product.quantity.input_label' | t }}
-                  </label>
-                  {% render 'quantity-input',
-                    id: section.id,
-                    name: 'quantity',
-                    value: 1,
-                    min: 1,
-                    form_id: 'QuickAddForm'
-                  %}
-                </div>
-
-                <div class="product-form__add-to-cart" style="flex: 1;">
-                  <button
-                    type="submit"
-                    name="add"
-                    class="btn btn--full-width quick-add__submit quick-add__submit--secondary"
-                    {% unless current_variant.available %}
-                      disabled
-                    {% endunless %}
-                    form="QuickAddForm"
-                    style="height: 100%; border-radius: 0;"
-                  >
-                    <span>
-                      {%- if current_variant.available -%}
-                        {{ 'products.product.add_to_cart' | t | upcase }} -
-                        <span data-add-to-cart-price>{{ current_variant.price | money }}</span>
-                      {%- else -%}
-                        {{ 'products.product.sold_out' | t | upcase }}
-                      {%- endif -%}
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              {%- if product.available -%}
-                <div class="product-form__dynamic-checkout quick-add__buy-now">
-                  {{ form | payment_button }}
-                </div>
-              {%- endif -%}
-            {%- endform -%}
-          </product-form>
-
-          {%- assign stock = current_variant.inventory_quantity -%}
-          {%- if current_variant.inventory_management != null and stock > 0 and stock <= 5 -%}
-            <div class="quick-add__low-stock">
-              <span class="quick-add__stock-dot"></span>
-              <span>Low stock! Only {{ stock }} products left</span>
+            <div class="product-form__error-message-wrapper" role="alert" hidden>
+              <span class="product-form__error-message"></span>
             </div>
-          {%- endif -%}
-        </div>
+
+            {%- unless product.has_only_default_variant -%}
+              <div class="qa__variants">
+                {%- for option in product.options_with_values -%}
+                  <div class="qa__option-group">
+                    <span class="qa__option-label">{{ option.name }}</span>
+                    <div class="qa__option-values" role="group" aria-label="{{ option.name }}">
+                      {%- for value in option.values -%}
+                        {%- assign variant_for_value = null -%}
+                        {%- for variant in product.variants -%}
+                          {%- if variant.option1 == value or variant.option2 == value or variant.option3 == value -%}
+                            {%- assign variant_for_value = variant -%}
+                            {%- break -%}
+                          {%- endif -%}
+                        {%- endfor -%}
+                        {%- assign is_unavailable = false -%}
+                        {%- unless variant_for_value.available -%}
+                          {%- assign is_unavailable = true -%}
+                        {%- endunless -%}
+                        <div class="qa__swatch{% if is_unavailable %} qa__swatch--unavailable{% endif %}">
+                          <input
+                            type="radio"
+                            name="options[{{ option.name | escape }}]"
+                            id="qa-option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}"
+                            value="{{ value | escape }}"
+                            form="QuickAddForm"
+                            {% if option.selected_value == value %}
+                              checked
+                            {% endif %}
+                          >
+                          <label for="qa-option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}">
+                            {{ value }}
+                          </label>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+
+            <div class="qa__action-row">
+              <div class="qa__qty">
+                {% render 'quantity-input',
+                  id: section.id,
+                  name: 'quantity',
+                  value: 1,
+                  min: 1,
+                  form_id: 'QuickAddForm'
+                %}
+              </div>
+              <div class="qa__atc">
+                <button
+                  type="submit"
+                  name="add"
+                  class="qa__atc-btn"
+                  form="QuickAddForm"
+                  {%- unless current_variant.available %}
+                    disabled
+                  {% endunless %}
+                >
+                  {%- if current_variant.available -%}
+                    {{ 'products.product.add_to_cart' | t | upcase }} —
+                    <span data-add-to-cart-price>{{ current_variant.price | money }}</span>
+                  {%- else -%}
+                    {{ 'products.product.sold_out' | t | upcase }}
+                  {%- endif -%}
+                </button>
+              </div>
+            </div>
+
+            {%- if product.available -%}
+              <div class="qa__buy-now">
+                {{ form | payment_button }}
+              </div>
+            {%- endif -%}
+          {%- endform -%}
+        </product-form>
+
+        {%- if show_stock -%}
+          <div class="qa__stock">
+            <span class="qa__stock-dot"></span>
+            <span>There are {{ stock }} products left</span>
+          </div>
+        {%- endif -%}
       </div>
     </div>
   </div>
-
-  <script type="application/json" data-product-json>
-    {{ product | json }}
-  </script>
 </div>
 
-<style>
-  .quick-add {
-    display: flex;
-    height: 100%;
-  }
-  .quick-add__layout {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-  }
-  @media (min-width: 768px) {
-    .quick-add__layout {
-      flex-direction: row;
-      height: 700px; /* Fixed height for modal */
-      max-height: calc(100vh - 4rem);
-    }
-  }
-  .quick-add__media {
-    flex: 1;
-    background: var(--color-surface-2);
-    height: clamp(300px, 40vh, 500px);
-  }
-  @media (min-width: 768px) {
-    .quick-add__media {
-      flex: 0 0 55%;
-      height: 100%;
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
-  }
-  .quick-add__media-list {
-    display: flex;
-    flex-direction: column;
-  }
-  .quick-add__media-item {
-    width: 100%;
-    display: block;
-  }
-  .quick-add__media-item img,
-  .quick-add__media-item video {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    display: block;
-  }
-  .quick-add__placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .quick-add__placeholder svg {
-    width: 50px;
-    fill: var(--color-text-faint);
-  }
-
-  .quick-add__content {
-    flex: 1;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  @media (min-width: 768px) {
-    .quick-add__content {
-      flex: 0 0 45%;
-      height: 100%;
-      overflow-y: auto;
-    }
-  }
-  .quick-add__content-inner {
-    padding: var(--space-8);
-    display: flex;
-    flex-direction: column;
-  }
-  .quick-add__vendor {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: var(--space-2);
-  }
-  .quick-add__title {
-    font-size: 2.5rem;
-    font-weight: 300;
-    margin: 0 0 var(--space-4) 0;
-    line-height: 1.1;
-    font-family: var(--font-body-family);
-  }
-  .quick-add__price-row {
-    margin-bottom: var(--space-6);
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-  .quick-add__price--sale {
-    color: #c7192eff; /* Typical sale red, or use theme standard */
-  }
-  .quick-add__compare {
-    color: var(--color-text-muted);
-    font-weight: 400;
-    text-decoration: line-through;
-    margin-left: var(--space-2);
-  }
-  .quick-add__description {
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: var(--space-6);
-  }
-  .quick-add__delivery {
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-6);
-  }
-
-  .quick-add__option-group {
-    margin-bottom: var(--space-6);
-  }
-  .quick-add__option-name {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: var(--space-3);
-  }
-  .quick-add__option-values {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-  .quick-add__option-values label {
-    min-width: 2.5rem;
-    height: 2.5rem;
-    padding: 0 var(--space-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--color-border);
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: all var(--transition-base);
-  }
-  .quick-add__option-values input:checked + label {
-    border-color: #000;
-  }
-  .quick-add__option-values input:focus-visible + label {
-    outline: 2px solid #000;
-    outline-offset: 1px;
-  }
-
-  .quick-add__actions {
-    display: flex;
-    gap: var(--space-3);
-    margin-bottom: var(--space-3);
-    height: 3rem;
-  }
-
-  .quick-add__submit {
-    flex: 1;
-    background: #fff;
-    border: 1px solid #000;
-    color: #000;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    cursor: pointer;
-    transition: background var(--transition-base), color var(--transition-base);
-    height: 3rem;
-  }
-  .quick-add__submit:hover {
-    background: #f5f5f5;
-  }
-  .quick-add__submit:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .quick-add__buy-now {
-    margin-bottom: var(--space-6);
-  }
-  .quick-add__buy-now .shopify-payment-button__button {
-    border-radius: 0 !important;
-    font-family: inherit;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    height: 3rem;
-  }
-
-  .quick-add__low-stock {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: 0.85rem;
-    color: #8b8b8b;
-  }
-  .quick-add__stock-dot {
-    width: 10px;
-    height: 10px;
-    background: #e1e2ad;
-    border-radius: 50%;
-    display: inline-block;
-  }
-</style>
+<script type="application/json" data-product-json>
+  {{ product | json }}
+</script>

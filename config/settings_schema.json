@@ -565,6 +565,45 @@
     ]
   },
   {
+    "name": "t:general.variant_pickers",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:labels.variant_pickers_buttons_header"
+      },
+      {
+        "type": "range",
+        "id": "variant_btn_border_thickness",
+        "label": "t:labels.variant_btn_border_thickness",
+        "min": 0,
+        "max": 4,
+        "step": 1,
+        "unit": "px",
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "variant_btn_corner_radius",
+        "label": "t:labels.variant_btn_corner_radius",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "type": "select",
+        "id": "variant_btn_width",
+        "label": "t:labels.variant_btn_width",
+        "options": [
+          { "value": "auto",  "label": "t:options.variant_btn_width.fit" },
+          { "value": "100%", "label": "t:options.variant_btn_width.fill" }
+        ],
+        "default": "auto"
+      }
+    ]
+  },
+  {
     "name": "t:general.cart",
     "settings": [
       {

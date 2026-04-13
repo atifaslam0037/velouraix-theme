@@ -1,0 +1,502 @@
+/* ============================================================
+   component-quick-add.css  —  VELOURAIX
+   Desktop: 55% image slider | 45% product panel
+   Mobile:  stacked, image on top
+   ============================================================ */
+
+/* ─── Dialog shell ─── */
+.quick-add-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  background: transparent;
+  border: none;
+  overflow: hidden;
+}
+
+.quick-add-modal[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-add-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: oklch(from var(--color-text) l c h / 0.5);
+  cursor: pointer;
+}
+
+.quick-add-modal__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(880px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2.5rem);
+  background: var(--color-background);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 16px oklch(0 0 0 / 0.12),
+    0 24px 64px oklch(0 0 0 / 0.2);
+}
+
+.quick-add-modal__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+/* × close button */
+.quick-add-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: oklch(from var(--color-background) l c h / 0.9);
+  color: var(--color-text);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--transition-base);
+  backdrop-filter: blur(4px);
+}
+
+.quick-add-modal__close:hover {
+  opacity: 1;
+}
+
+.quick-add-modal__close svg {
+  width: 13px;
+  height: 13px;
+}
+
+.quick-add-modal__close:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ─── Layout ─── */
+.qa__layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .qa__layout {
+    flex-direction: row;
+    height: clamp(480px, 80vh, 700px);
+    max-height: calc(100vh - 2.5rem);
+  }
+}
+
+/* ─── Left: Image Slider ─── */
+.qa__media-wrap {
+  position: relative;
+  background: oklch(from var(--color-text) l c h / 0.04);
+  flex-shrink: 0;
+  overflow: hidden;
+  height: clamp(260px, 60vw, 480px);
+}
+
+@media (min-width: 640px) {
+  .qa__media-wrap {
+    flex: 0 0 55%;
+    height: 100%;
+  }
+}
+
+.qa__slider {
+  display: flex;
+  height: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.qa__slider:active {
+  cursor: grabbing;
+}
+
+.qa__slider::-webkit-scrollbar {
+  display: none;
+}
+
+.qa__slide {
+  display: flex;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+}
+
+.qa__slide img,
+.qa__slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.qa__slide--placeholder {
+  align-items: center;
+  justify-content: center;
+}
+
+/* Circular prev/next arrows — bottom centre */
+.qa__slider-nav {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.qa__slider-btn {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: oklch(from var(--color-background) l c h / 0.88);
+  color: var(--color-text);
+  cursor: pointer;
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.15);
+  backdrop-filter: blur(4px);
+  transition: background var(--transition-base);
+}
+
+.qa__slider-btn:hover {
+  background: var(--color-background);
+}
+
+.qa__slider-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.qa__slider-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ─── Right: Product Info ─── */
+.qa__content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+@media (min-width: 640px) {
+  .qa__content {
+    flex: 0 0 45%;
+    height: 100%;
+  }
+}
+
+.qa__inner {
+  padding: 32px 28px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 639px) {
+  .qa__inner {
+    padding: 20px 18px 24px;
+  }
+}
+
+.qa__vendor {
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 6px;
+}
+
+.qa__title {
+  font-family: var(--font-body-family, var(--font-primary));
+  font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--color-text);
+  margin: 0 0 12px;
+}
+
+.qa__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.qa__price {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-text);
+}
+
+.qa__price--sale {
+  color: #c7192e;
+}
+
+.qa__compare {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+/* ─── Variant picker (inherits block CSS) ─── */
+.qa__variant-picker {
+  margin-bottom: 18px;
+  --vp-block-pt: 0px;
+  --vp-block-pb: 0px;
+  --vp-block-pl: 0px;
+  --vp-block-pr: 0px;
+}
+
+/* ─── Buy wrap ─── */
+.qa__buy-wrap.product-form-block {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.qa__buy-wrap .product-form__error-message-wrapper {
+  margin-bottom: 10px;
+}
+
+/* Quantity + ATC side-by-side row */
+.qa__atc-row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.qa__qty {
+  flex: 0 0 120px;
+}
+
+/* Normalise whatever quantity snippet renders */
+.qa__qty .quantity,
+.qa__qty [class*="quantity"] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 1px solid oklch(from var(--color-text) l c h / 0.22) !important;
+  border-radius: 0 !important;
+  background: var(--color-background) !important;
+}
+
+.qa__qty .quantity__button,
+.qa__qty button[name="minus"],
+.qa__qty button[name="plus"] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 100% !important;
+  background: none !important;
+  border: 0 !important;
+  font-size: 1.15rem !important;
+  color: var(--color-text) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: opacity var(--transition-base) !important;
+}
+
+.qa__qty .quantity__button:hover,
+.qa__qty button[name="minus"]:hover,
+.qa__qty button[name="plus"]:hover {
+  opacity: 0.45 !important;
+}
+
+.qa__qty .quantity__input,
+.qa__qty input[type="number"],
+.qa__qty input[name="quantity"] {
+  flex: 1 !important;
+  text-align: center !important;
+  border: 0 !important;
+  background: none !important;
+  font-family: var(--font-primary) !important;
+  font-size: 14px !important;
+  color: var(--color-text) !important;
+  -moz-appearance: textfield !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+.qa__qty input::-webkit-inner-spin-button,
+.qa__qty input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+/* ATC button */
+.qa__atc {
+  flex: 1;
+  display: flex;
+}
+
+.qa__atc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: 0 14px;
+  border: 1px solid var(--color-text);
+  border-radius: 0;
+  background: var(--color-text);
+  color: var(--color-background);
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  transition: opacity var(--transition-base);
+}
+
+.qa__atc-btn:hover {
+  opacity: 0.82;
+}
+
+.qa__atc-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.qa__atc-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.qa__atc-btn.is-loading .qa__atc-label {
+  opacity: 0;
+}
+
+.qa__atc-btn.is-loading .qa__atc-spinner {
+  display: block;
+}
+
+.qa__atc-spinner {
+  display: none;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 18px;
+  height: 18px;
+  border: 2px solid oklch(from var(--color-background) l c h / 0.35);
+  border-top-color: var(--color-background);
+  border-radius: 50%;
+  animation: qa-spin 0.7s linear infinite;
+}
+
+@keyframes qa-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* BUY IT NOW */
+.qa__buy-now {
+  margin-top: 0;
+}
+
+.qa__buy-now .shopify-payment-button__button,
+.qa__buy-now [class*="shopify-payment-button"] {
+  border-radius: 0 !important;
+  font-family: var(--font-primary) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.08em !important;
+  height: 50px !important;
+  min-height: 50px !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+}
+
+/* ─── Low-stock notice ─── */
+.qa__stock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  color: var(--color-text);
+}
+
+.qa__stock-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5aab64;
+  flex-shrink: 0;
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .qa__slider {
+    scroll-behavior: auto;
+  }
+
+  .qa__atc-spinner {
+    animation: none;
+  }
+
+  .quick-add-modal__close,
+  .qa__slider-btn {
+    transition-duration: 0.001ms !important;
+  }
+}

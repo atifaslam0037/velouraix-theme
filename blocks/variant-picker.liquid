@@ -1,21 +1,72 @@
+{%- comment -%}
+  Block: variant-picker.liquid
+  Path: blocks/variant-picker.liquid
+  Description: Renders the product variant picker (buttons or dropdown).
+    Block-level settings: style, swatches toggle, alignment, padding.
+    Global button appearance (border thickness, corner radius, width) is
+    controlled in Theme Settings → Variant pickers and exposed as CSS vars
+    via snippets/css-variables.liquid.
+    Uses: snippets/product-variant-picker.liquid
+
+  Settings exposed:
+    picker_style       — 'buttons' | 'dropdown'
+    show_swatches      — checkbox, show colour swatches when option is a colour
+    alignment          — 'left' | 'center' | 'right'
+    show_availability  — checkbox, show sold-out label on unavailable options
+    padding_top        — 0–80 px
+    padding_bottom     — 0–80 px
+    padding_left       — 0–80 px
+    padding_right      — 0–80 px
+{%- endcomment -%}
+
 {%- liquid
   assign product_form_id = 'ProductForm-' | append: section.id
+  assign picker_style    = block.settings.picker_style    | default: 'buttons'
+  assign show_swatches   = block.settings.show_swatches   | default: false
+  assign alignment       = block.settings.alignment       | default: 'left'
 -%}
 
-<div class="variant-picker-block" {{ block.shopify_attributes }}>
+<div
+  class="variant-picker-block variant-picker-block--align-{{ alignment }}"
+  {{ block.shopify_attributes }}
+  style="
+    --vp-block-pt: {{ block.settings.padding_top    | default: 0 }}px;
+    --vp-block-pb: {{ block.settings.padding_bottom | default: 0 }}px;
+    --vp-block-pl: {{ block.settings.padding_left   | default: 0 }}px;
+    --vp-block-pr: {{ block.settings.padding_right  | default: 0 }}px;
+  "
+>
   {%- render 'product-variant-picker',
-    product: product,
-    section: section,
-    form_id: product_form_id,
-    picker_style: block.settings.picker_style,
+    product:           product,
+    section:           section,
+    form_id:           product_form_id,
+    picker_style:      picker_style,
+    show_swatches:     show_swatches,
     show_availability: block.settings.show_availability
   -%}
 </div>
 
 {% stylesheet %}
+/* ══════════════════════════════════════════════════════
+   Variant Picker Block
+   All values reference CSS custom properties only.
+   Global tokens (--vp-btn-border, --vp-btn-radius,
+   --vp-btn-width) come from snippets/css-variables.liquid
+   via the Theme Settings → Variant pickers section.
+   ══════════════════════════════════════════════════════ */
+
+.variant-picker-block {
+  padding-top:    var(--vp-block-pt, 0px);
+  padding-bottom: var(--vp-block-pb, 0px);
+  padding-left:   var(--vp-block-pl, 0px);
+  padding-right:  var(--vp-block-pr, 0px);
+}
+
+/* ── Option group layout ── */
 .variant-picker-block .product-variant-picker-snippet {
-  display: grid;
-  gap: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 .variant-picker-block .product-variant-picker-snippet__fieldset {
@@ -24,21 +75,43 @@
   margin: 0;
 }
 
-.variant-picker-block .product-variant-picker-snippet__label {
-  display: block;
+/* ── Option label row (name + current value) ── */
+.variant-picker-block .product-variant-picker-snippet__label-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
   margin-bottom: var(--space-2);
+}
+
+.variant-picker-block .product-variant-picker-snippet__label {
+  font-family: var(--font-primary);
   font-size: var(--font-size-xs);
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
+.variant-picker-block .product-variant-picker-snippet__current-value {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+}
+
+/* ── Button group ── */
 .variant-picker-block .product-variant-picker-snippet__buttons {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
 
+/* Alignment modifiers */
+.variant-picker-block--align-center .product-variant-picker-snippet__buttons { justify-content: center; }
+.variant-picker-block--align-right  .product-variant-picker-snippet__buttons { justify-content: flex-end; }
+.variant-picker-block--align-left   .product-variant-picker-snippet__buttons { justify-content: flex-start; }
+
+/* ── Hidden radio input ── */
 .variant-picker-block .product-variant-picker-snippet__button-wrapper {
   position: relative;
 }
@@ -48,41 +121,122 @@
   inset: 0;
   opacity: 0;
   cursor: pointer;
+  margin: 0;
+  width: 100%;
+  height: 100%;
 }
 
+/* ── Option button pill ── */
 .variant-picker-block .product-variant-picker-snippet__button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 2.5rem;
+  /* Width: 'fit' = auto, 'fill' = expand (set via --vp-btn-width) */
+  width: var(--vp-btn-width, auto);
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
+  border-style: solid;
+  border-width: var(--vp-btn-border, 1px);
+  border-color: var(--color-border);
+  border-radius: var(--vp-btn-radius, 0px);
   background: var(--color-background);
   color: var(--color-text);
-  font-size: var(--font-size-sm);
-  transition: border-color var(--transition-base), background var(--transition-base);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-base),
+    background   var(--transition-base),
+    color        var(--transition-base);
+  white-space: nowrap;
+  user-select: none;
 }
 
-.variant-picker-block .product-variant-picker-snippet__radio:checked + .product-variant-picker-snippet__button {
+/* Selected state */
+.variant-picker-block .product-variant-picker-snippet__radio:checked
+  + .product-variant-picker-snippet__button {
   border-color: var(--color-text);
-  background: oklch(from var(--color-text) l c h / 0.06);
+  background: var(--color-background);
+  color: var(--color-text);
 }
 
-.variant-picker-block .product-variant-picker-snippet__radio:disabled + .product-variant-picker-snippet__button {
-  opacity: 0.45;
+/* Hover state (unselected) */
+.variant-picker-block .product-variant-picker-snippet__radio:not(:checked):not(:disabled):hover
+  + .product-variant-picker-snippet__button {
+  border-color: oklch(from var(--color-text) l c h / 0.45);
+}
+
+/* Sold-out / disabled state */
+.variant-picker-block .product-variant-picker-snippet__radio:disabled
+  + .product-variant-picker-snippet__button {
+  opacity: 0.38;
+  cursor: not-allowed;
   text-decoration: line-through;
+}
+
+/* Focus-visible ring on keyboard navigation */
+.variant-picker-block .product-variant-picker-snippet__radio:focus-visible
+  + .product-variant-picker-snippet__button {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ── Colour swatch variant ── */
+.variant-picker-block .product-variant-picker-snippet__swatch {
+  display: inline-block;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--vp-btn-radius, 0px);
+  border-style: solid;
+  border-width: var(--vp-btn-border, 1px);
+  border-color: oklch(from var(--color-text) l c h / 0.15);
+  cursor: pointer;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.variant-picker-block .product-variant-picker-snippet__radio:checked
+  + .product-variant-picker-snippet__swatch {
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-text);
+}
+
+.variant-picker-block .product-variant-picker-snippet__radio:disabled
+  + .product-variant-picker-snippet__swatch {
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
+/* ── Dropdown select ── */
 .variant-picker-block .product-variant-picker-snippet__select {
   width: 100%;
-  min-height: 2.8rem;
-  border: 1px solid var(--color-input-border);
-  border-radius: var(--style-border-radius-inputs);
+  min-height: 2.75rem;
+  padding-inline: var(--space-4);
+  border-style: solid;
+  border-width: var(--vp-btn-border, 1px);
+  border-color: var(--color-input-border);
+  border-radius: var(--vp-btn-radius, 0px);
   background: var(--color-input-background);
   color: var(--color-input-text);
-  padding-inline: var(--space-4);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.variant-picker-block .product-variant-picker-snippet__select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ── Reduced motion ── */
+@media screen and (prefers-reduced-motion: reduce) {
+  .variant-picker-block .product-variant-picker-snippet__button,
+  .variant-picker-block .product-variant-picker-snippet__swatch {
+    transition-duration: 0.001ms !important;
+  }
 }
 {% endstylesheet %}
 
@@ -91,20 +245,73 @@
   "name": "t:blocks.variant_picker.name",
   "settings": [
     {
+      "type": "paragraph",
+      "content": "t:blocks.variant_picker.settings.description"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:blocks.variant_picker.settings.global_style_note"
+    },
+    {
       "type": "select",
       "id": "picker_style",
       "label": "t:blocks.variant_picker.settings.picker_style.label",
       "options": [
-        { "value": "buttons", "label": "t:blocks.variant_picker.settings.picker_style.options.buttons" },
+        { "value": "buttons",  "label": "t:blocks.variant_picker.settings.picker_style.options.buttons" },
         { "value": "dropdown", "label": "t:blocks.variant_picker.settings.picker_style.options.dropdown" }
       ],
       "default": "buttons"
     },
     {
       "type": "checkbox",
+      "id": "show_swatches",
+      "label": "t:blocks.variant_picker.settings.show_swatches.label",
+      "info": "t:blocks.variant_picker.settings.show_swatches.info",
+      "default": true
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:blocks.variant_picker.settings.alignment.label",
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
       "id": "show_availability",
       "label": "t:blocks.variant_picker.settings.show_availability.label",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.variant_picker.settings.padding_header"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:blocks.variant_picker.settings.padding_top.label",
+      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:blocks.variant_picker.settings.padding_bottom.label",
+      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "t:blocks.variant_picker.settings.padding_left.label",
+      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "t:blocks.variant_picker.settings.padding_right.label",
+      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "default": 0
     }
   ]
 }

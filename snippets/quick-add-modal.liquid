@@ -1,13 +1,18 @@
 {% doc %}
-  Global wrapper for Quick Add Modal. 
+  Global wrapper for Quick Add Modal.
   Only rendered once at the bottom of layout/theme.liquid.
 {% enddoc %}
 
 <dialog id="QuickAddModal" class="quick-add-modal" aria-modal="true" aria-labelledby="QuickAddTitle">
   <div class="quick-add-modal__overlay" data-quick-add-close></div>
   <div class="quick-add-modal__content-wrapper" role="document">
-    <button type="button" class="quick-add-modal__close" aria-label="Close" data-quick-add-close>
-      CLOSE {%- render 'icon', icon: 'close', aria_hidden: true -%}
+    <button
+      type="button"
+      class="quick-add-modal__close"
+      aria-label="Close"
+      data-quick-add-close
+    >
+      {%- render 'icon', icon: 'close', aria_hidden: true -%}
     </button>
     <div class="quick-add-modal__content" data-quick-add-content>
       <!-- AJAX content injected here -->

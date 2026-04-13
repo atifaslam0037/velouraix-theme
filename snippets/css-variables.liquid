@@ -60,6 +60,11 @@
     --color-price-sale:    {{ settings.color_price_sale }};
     --color-price-compare: {{ settings.color_price_compare }};
 
+    /* ── Variant picker buttons (global) ── */
+    --vp-btn-border: {{ settings.variant_btn_border_thickness | default: 1 }}px;
+    --vp-btn-radius: {{ settings.variant_btn_corner_radius | default: 0 }}px;
+    --vp-btn-width:  {{ settings.variant_btn_width | default: 'auto' }};
+
     /* ── Radius & Icons ── */
     --style-border-radius-inputs:  calc(var(--space-1) * {{ settings.input_corner_radius | divided_by: 4.0 }});
     --style-border-radius-buttons: calc(var(--space-1) * {{ settings.button_corner_radius | divided_by: 4.0 }});

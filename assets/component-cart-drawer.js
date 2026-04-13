@@ -16,27 +16,19 @@ if (!customElements.get('cart-drawer-component')) {
       this._isOpen      = false;
       this._lastFocused = null;
 
-      this._onToggle         = this._onToggle.bind(this);
       this._onKeydown        = this._onKeydown.bind(this);
       this._onItemAdded      = this._onItemAdded.bind(this);
       this._onCartSynced     = this._onCartSynced.bind(this);
       this._onDelegatedClick = this._onDelegatedClick.bind(this);
 
-      document.querySelectorAll('[data-cart-toggle]').forEach((btn) =>
-        btn.addEventListener('click', this._onToggle)
-      );
-
-      this.addEventListener('click', this._onDelegatedClick);
+      document.addEventListener('click',           this._onDelegatedClick);
       document.addEventListener('keydown',         this._onKeydown);
       document.addEventListener('cart:item-added', this._onItemAdded);
       document.addEventListener('cart:synced',     this._onCartSynced);
     }
 
     disconnectedCallback() {
-      document.querySelectorAll('[data-cart-toggle]').forEach((btn) =>
-        btn.removeEventListener('click', this._onToggle)
-      );
-      this.removeEventListener('click', this._onDelegatedClick);
+      document.removeEventListener('click',           this._onDelegatedClick);
       document.removeEventListener('keydown',         this._onKeydown);
       document.removeEventListener('cart:item-added', this._onItemAdded);
       document.removeEventListener('cart:synced',     this._onCartSynced);
@@ -45,12 +37,16 @@ if (!customElements.get('cart-drawer-component')) {
 
     // ─── Handlers ──────────────────────────────────────────
 
-    _onToggle(event) {
-      event.preventDefault();
-      this._isOpen ? this.close() : this.open();
-    }
-
     _onDelegatedClick(event) {
+      // Toggle button
+      const toggleBtn = event.target.closest('[data-cart-toggle]');
+      if (toggleBtn) {
+        event.preventDefault();
+        this._isOpen ? this.close() : this.open();
+        return;
+      }
+
+      // Close button
       if (event.target.closest('[data-cart-close]')) {
         event.preventDefault();
         this.close();
