@@ -1,56 +1,64 @@
 {%- comment -%}
   File: sections/quick-add.liquid
-  Description: AJAX content for the Quick Add modal.
-  Design reference: left = scrollable product images, right = info + form.
-    • Vendor label (small caps muted)
-    • Large display title
-    • Price
-    • Size picker — flat swatch grid (label/input pattern)
-    • Quantity stepper + ADD TO CART — price button (inline row)
-    • BUY IT NOW (Shopify dynamic checkout, full-width)
-    • "There are N products left" green dot low-stock notice
+  Description: AJAX content loaded into #QuickAddModal via fetch.
+  Design: Left = horizontal drag-scroll image slider with circular
+          prev/next arrows at bottom-centre.
+          Right = vendor · title · price · variant-picker block
+                  · quantity + ATC row · BUY IT NOW
+  NOTE: stock notice intentionally excluded per design spec.
 {%- endcomment -%}
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
-  assign stock = current_variant.inventory_quantity
-  assign low_stock_threshold = 13
-  assign show_stock = false
-  if current_variant.inventory_management != null and stock > 0 and stock <= low_stock_threshold
-    assign show_stock = true
-  endif
+  assign form_id = 'QuickAddForm-' | append: section.id
 -%}
 
 <div class="qa">
   <div class="qa__layout">
-    {%- comment -%} ── LEFT: media stack ── {%- endcomment -%}
     <div class="qa__media">
       {%- if product.media.size > 0 -%}
-        <div class="qa__media-list" id="qa-media-list">
+        <div
+          class="qa__slider"
+          id="qa-slider-{{ section.id }}"
+          aria-label="{{ product.title | escape }} images"
+          role="list"
+        >
           {%- for media in product.media -%}
-            <div class="qa__media-item">
+            <div class="qa__slide" role="listitem">
               {%- if media.media_type == 'image' -%}
                 <img
                   src="{{ media | image_url: width: 900 }}"
-                  alt="{{ media.alt | escape }}"
+                  alt="{{ media.alt | default: product.title | escape }}"
                   width="{{ media.width }}"
                   height="{{ media.height }}"
                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                   decoding="async"
                 >
               {%- else -%}
-                {{ media | media_tag: image_size: '900x', autoplay: true, loop: true, controls: true }}
+                {{ media | media_tag: image_size: '900x', autoplay: false, loop: true, controls: true }}
               {%- endif -%}
             </div>
           {%- endfor -%}
         </div>
 
         {%- if product.media.size > 1 -%}
-          <div class="qa__media-nav" aria-hidden="true">
-            <button class="qa__media-prev" type="button" data-qa-prev aria-label="Previous image">
+          <div class="qa__slider-nav" aria-hidden="true">
+            <button
+              class="qa__slider-btn"
+              type="button"
+              data-slider-id="qa-slider-{{ section.id }}"
+              data-dir="-1"
+              aria-label="Previous image"
+            >
               {%- render 'icon', icon: 'chevron-left' -%}
             </button>
-            <button class="qa__media-next" type="button" data-qa-next aria-label="Next image">
+            <button
+              class="qa__slider-btn"
+              type="button"
+              data-slider-id="qa-slider-{{ section.id }}"
+              data-dir="1"
+              aria-label="Next image"
+            >
               {%- render 'icon', icon: 'chevron-right' -%}
             </button>
           </div>
@@ -62,8 +70,6 @@
         </div>
       {%- endif -%}
     </div>
-
-    {%- comment -%} ── RIGHT: product info + form ── {%- endcomment -%}
     <div class="qa__content">
       <div class="qa__inner">
         {%- if product.vendor != blank -%}
@@ -72,7 +78,7 @@
 
         <h2 class="qa__title" id="QuickAddTitle">{{ product.title }}</h2>
 
-        <div class="qa__price-row" id="qa-price">
+        <div class="qa__price-row" id="qa-price-{{ section.id }}">
           {%- if current_variant.compare_at_price > current_variant.price -%}
             <span class="qa__price qa__price--sale">{{ current_variant.price | money }}</span>
             <s class="qa__compare">{{ current_variant.compare_at_price | money }}</s>
@@ -80,105 +86,87 @@
             <span class="qa__price">{{ current_variant.price | money }}</span>
           {%- endif -%}
         </div>
-
-        <product-form class="product-form">
-          {%- form 'product',
-            product,
-            id: 'QuickAddForm',
-            class: 'qa__form',
-            novalidate: 'novalidate',
-            data-type: 'add-to-cart-form'
-          -%}
-            <input type="hidden" name="id" value="{{ current_variant.id }}">
-
-            <div class="product-form__error-message-wrapper" role="alert" hidden>
-              <span class="product-form__error-message"></span>
-            </div>
-
-            {%- unless product.has_only_default_variant -%}
-              <div class="qa__variants">
-                {%- for option in product.options_with_values -%}
-                  <div class="qa__option-group">
-                    <span class="qa__option-label">{{ option.name }}</span>
-                    <div class="qa__option-values" role="group" aria-label="{{ option.name }}">
-                      {%- for value in option.values -%}
-                        {%- assign variant_for_value = null -%}
-                        {%- for variant in product.variants -%}
-                          {%- if variant.option1 == value or variant.option2 == value or variant.option3 == value -%}
-                            {%- assign variant_for_value = variant -%}
-                            {%- break -%}
-                          {%- endif -%}
-                        {%- endfor -%}
-                        {%- assign is_unavailable = false -%}
-                        {%- unless variant_for_value.available -%}
-                          {%- assign is_unavailable = true -%}
-                        {%- endunless -%}
-                        <div class="qa__swatch{% if is_unavailable %} qa__swatch--unavailable{% endif %}">
-                          <input
-                            type="radio"
-                            name="options[{{ option.name | escape }}]"
-                            id="qa-option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}"
-                            value="{{ value | escape }}"
-                            form="QuickAddForm"
-                            {% if option.selected_value == value %}
-                              checked
-                            {% endif %}
-                          >
-                          <label for="qa-option-{{ section.id }}-{{ option.position }}-{{ forloop.index }}">
-                            {{ value }}
-                          </label>
-                        </div>
-                      {%- endfor -%}
-                    </div>
-                  </div>
-                {%- endfor -%}
-              </div>
-            {%- endunless -%}
-
-            <div class="qa__action-row">
-              <div class="qa__qty">
-                {% render 'quantity-input',
-                  id: section.id,
-                  name: 'quantity',
-                  value: 1,
-                  min: 1,
-                  form_id: 'QuickAddForm'
-                %}
-              </div>
-              <div class="qa__atc">
-                <button
-                  type="submit"
-                  name="add"
-                  class="qa__atc-btn"
-                  form="QuickAddForm"
-                  {%- unless current_variant.available %}
-                    disabled
-                  {% endunless %}
-                >
-                  {%- if current_variant.available -%}
-                    {{ 'products.product.add_to_cart' | t | upcase }} —
-                    <span data-add-to-cart-price>{{ current_variant.price | money }}</span>
-                  {%- else -%}
-                    {{ 'products.product.sold_out' | t | upcase }}
-                  {%- endif -%}
-                </button>
-              </div>
-            </div>
-
-            {%- if product.available -%}
-              <div class="qa__buy-now">
-                {{ form | payment_button }}
-              </div>
-            {%- endif -%}
-          {%- endform -%}
-        </product-form>
-
-        {%- if show_stock -%}
-          <div class="qa__stock">
-            <span class="qa__stock-dot"></span>
-            <span>There are {{ stock }} products left</span>
+        {%- unless product.has_only_default_variant -%}
+          <div
+            class="qa__variant-picker variant-picker-block variant-picker-block--align-left"
+            style="--vp-block-pt:0px;--vp-block-pb:0px;--vp-block-pl:0px;--vp-block-pr:0px;"
+          >
+            {%- render 'product-variant-picker',
+              product: product,
+              section: section,
+              form_id: form_id,
+              picker_style: 'buttons',
+              show_swatches: true,
+              show_availability: true
+            -%}
           </div>
-        {%- endif -%}
+        {%- endunless -%}
+
+        <div class="product-form-block qa__buy-block">
+          <product-form class="product-form">
+            {%- form 'product',
+              product,
+              id: form_id,
+              class: 'form',
+              novalidate: 'novalidate',
+              data-type: 'add-to-cart-form'
+            -%}
+              <input
+                type="hidden"
+                name="id"
+                value="{{ current_variant.id }}"
+                data-qa-variant-id
+              >
+
+              <div
+                class="product-form__error-message-wrapper"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+                hidden
+              >
+                <span class="visually-hidden">{{ 'general.error' | t }}</span>
+                <span class="product-form__error-message"></span>
+              </div>
+
+              {%- comment -%} Quantity stepper + ATC inline ── {%- endcomment -%}
+              <div class="qa__action-row">
+                <div class="qa__qty">
+                  {%- render 'quantity-input', id: section.id, name: 'quantity', value: 1, min: 1, form_id: form_id -%}
+                </div>
+
+                <div class="qa__atc">
+                  <button
+                    type="submit"
+                    name="add"
+                    class="qa__atc-btn"
+                    form="{{ form_id }}"
+                    {%- unless current_variant.available %}
+                      disabled
+                    {%- endunless %}
+                  >
+                    <span class="qa__atc-label">
+                      {%- if current_variant.available -%}
+                        {{ 'products.product.add_to_cart' | t | upcase }}
+                        &nbsp;—&nbsp;<span data-qa-atc-price>{{ current_variant.price | money }}</span>
+                      {%- else -%}
+                        {{ 'products.product.sold_out' | t | upcase }}
+                      {%- endif -%}
+                    </span>
+                    <span class="qa__atc-spinner" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
+
+              {%- comment -%} BUY IT NOW ── {%- endcomment -%}
+              {%- if product.available -%}
+                <div class="qa__buy-now">
+                  {{ form | payment_button }}
+                </div>
+              {%- endif -%}
+            {%- endform -%}
+          </product-form>
+        </div>
       </div>
     </div>
   </div>

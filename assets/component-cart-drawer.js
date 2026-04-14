@@ -66,8 +66,18 @@ if (!customElements.get('cart-drawer-component')) {
       const { itemCount, formattedTotal } = event.detail || {};
 
       if (typeof itemCount !== 'undefined') {
+        const countVal = parseInt(itemCount, 10) || 0;
+        const countStr = String(countVal);
+        
         const dc = document.getElementById('cart-drawer-count');
-        if (dc) dc.textContent = String(parseInt(itemCount, 10) || 0);
+        if (dc) dc.textContent = countStr;
+
+        ['cart-count', 'cart-count-mobile'].forEach((id) => {
+          document.querySelectorAll(`[id="${id}"]`).forEach((el) => {
+            el.textContent = countStr;
+            el.classList.toggle('hidden', countVal === 0);
+          });
+        });
       }
       if (formattedTotal) {
         const sub = document.getElementById('cart-drawer-subtotal');
@@ -151,7 +161,19 @@ if (!customElements.get('cart-drawer-component')) {
 
         const freshCount = doc.getElementById('cart-drawer-count');
         const curCount   = document.getElementById('cart-drawer-count');
-        if (freshCount && curCount) curCount.textContent = freshCount.textContent;
+        if (freshCount && curCount) {
+          curCount.textContent = freshCount.textContent;
+          const countVal = parseInt(freshCount.textContent, 10) || 0;
+          const countStr = String(countVal);
+
+          // Synchronize the header cart badges
+          ['cart-count', 'cart-count-mobile'].forEach((id) => {
+            document.querySelectorAll(`[id="${id}"]`).forEach((cur) => {
+              cur.textContent = countStr;
+              cur.classList.toggle('hidden', countVal === 0);
+            });
+          });
+        }
 
         const freshSub = doc.getElementById('cart-drawer-subtotal');
         const curSub   = document.getElementById('cart-drawer-subtotal');
@@ -171,10 +193,10 @@ if (!customElements.get('cart-drawer-component')) {
         const count = parseInt(cart.item_count, 10) || 0;
 
         ['cart-count', 'cart-count-mobile'].forEach((id) => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          el.textContent = count > 0 ? String(count) : '';
-          el.classList.toggle('hidden', count === 0);
+          document.querySelectorAll(`[id="${id}"]`).forEach((el) => {
+            el.textContent = count > 0 ? String(count) : '';
+            el.classList.toggle('hidden', count === 0);
+          });
         });
 
         const dc = document.getElementById('cart-drawer-count');

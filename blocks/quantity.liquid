@@ -3,8 +3,6 @@
   Path: blocks/quantity.liquid
   Description: Renders the quantity stepper inside the buy-buttons product form.
     Associates the input with the parent product form via form_id.
-    Uses the shared quantity-input snippet and web component.
-  Sections using this block: used inside blocks/buy-buttons.liquid.
 {% enddoc %}
 
 {%- assign product_form_id = 'ProductForm-' | append: section.id -%}
@@ -14,33 +12,36 @@
     class="product-form__quantity-label visually-hidden"
     for="quantity-{{ section.id }}"
   >
-    {{ 'products.product.quantity.input_label' | t }}
+    {{- 'products.product.quantity.input_label' | t -}}
   </label>
-  {%- render 'quantity-input',
-      id: section.id,
-      name: 'quantity',
-      value: 1,
-      min: 1,
-      form_id: product_form_id
-  -%}
+
+  {%- render 'quantity-input', id: section.id, name: 'quantity', value: 1, min: 1, form_id: product_form_id -%}
 </div>
+
+{% stylesheet %}
+  .product-form__quantity {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: stretch;
+  }
+
+  /* Make quantity-input match the add-to-cart button height */
+  .product-form__quantity .quantity-input {
+    min-height: 52px;
+    height: 100%;
+  }
+
+  .product-form__quantity .quantity-input__btn,
+  .product-form__quantity .quantity-input__field {
+    height: 100%;
+    min-height: 52px;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:blocks.quantity.name",
+  "name": "Quantity",
   "settings": [],
-  "presets": [
-    {
-      "name": "t:blocks.quantity.name"
-    }
-  ]
+  "presets": [{ "name": "Quantity" }]
 }
 {% endschema %}
-
-{% stylesheet %}
-.product-form__quantity {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-}
-{% endstylesheet %}

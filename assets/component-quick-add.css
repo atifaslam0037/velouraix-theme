@@ -1,23 +1,28 @@
-/* ============================================================
+/* =============================================================
    component-quick-add.css  —  VELOURAIX
-   Desktop: 55% image slider | 45% product panel
-   Mobile:  stacked, image on top
-   ============================================================ */
+   Quick-Add modal: pixel-matched to reference screenshot.
+   Desktop  : 55 % horizontal slider  |  45 % product panel
+   Mobile   : stacked – slider on top, content below
+   Slider   : CSS scroll-snap + mousedown drag + prev/next btns
+   Nav btns : frosted-glass circles, bottom-centre of image
+   ============================================================= */
 
-/* ─── Dialog shell ─── */
+
+/* ── 1. <dialog> shell ────────────────────────────────────── */
+
 .quick-add-modal {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 600;
-  padding: 0;
-  margin: 0;
   width: 100%;
   max-width: 100%;
   height: 100%;
   max-height: 100%;
+  padding: 0;
+  margin: 0;
   background: transparent;
-  border: none;
+  border: 0;
   overflow: hidden;
 }
 
@@ -27,56 +32,59 @@
   justify-content: center;
 }
 
+/* semi-transparent backdrop */
 .quick-add-modal__overlay {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: oklch(from var(--color-text) l c h / 0.5);
+  background: oklch(from var(--color-text) l c h / 0.45);
   cursor: pointer;
 }
 
-.quick-add-modal__panel {
+/* white card */
+.quick-add-modal__content-wrapper {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  width: min(880px, calc(100vw - 2rem));
-  max-height: calc(100vh - 2.5rem);
+  width: min(880px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
   background: var(--color-background);
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
   box-shadow:
-    0 4px 16px oklch(0 0 0 / 0.12),
-    0 24px 64px oklch(0 0 0 / 0.2);
+    0 4px 16px oklch(0 0 0 / 0.10),
+    0 24px 64px oklch(0 0 0 / 0.18);
 }
 
-.quick-add-modal__body {
+/* scrollable inner area */
+[data-quick-add-content] {
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   flex: 1;
 }
 
-/* × close button */
+/* ── × close button ──────────────────────────────────────── */
 .quick-add-modal__close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 14px;
+  right: 14px;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: oklch(from var(--color-background) l c h / 0.9);
+  background: oklch(from var(--color-background) l c h / 0.90);
   color: var(--color-text);
   cursor: pointer;
-  opacity: 0.7;
-  transition: opacity var(--transition-base);
+  opacity: 0.75;
   backdrop-filter: blur(4px);
+  transition: opacity var(--transition-base, 200ms ease);
 }
 
 .quick-add-modal__close:hover {
@@ -84,8 +92,9 @@
 }
 
 .quick-add-modal__close svg {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
 }
 
 .quick-add-modal__close:focus-visible {
@@ -93,7 +102,9 @@
   outline-offset: 3px;
 }
 
-/* ─── Layout ─── */
+
+/* ── 2. Two-column layout ──────────────────────────────────── */
+
 .qa__layout {
   display: flex;
   flex-direction: column;
@@ -103,29 +114,37 @@
 @media (min-width: 640px) {
   .qa__layout {
     flex-direction: row;
-    height: clamp(480px, 80vh, 700px);
-    max-height: calc(100vh - 2.5rem);
+    height: clamp(480px, 78vh, 680px);
+    max-height: calc(100dvh - 40px);
   }
 }
 
-/* ─── Left: Image Slider ─── */
-.qa__media-wrap {
+
+/* ── 3. Left: image slider ─────────────────────────────────── */
+
+.qa__media {
   position: relative;
-  background: oklch(from var(--color-text) l c h / 0.04);
   flex-shrink: 0;
   overflow: hidden;
-  height: clamp(260px, 60vw, 480px);
+  background: oklch(from var(--color-text) l c h / 0.04);
+  /* mobile: height driven by aspect ratio */
+  aspect-ratio: 4 / 5;
+  height: clamp(240px, 62vw, 460px);
 }
 
 @media (min-width: 640px) {
-  .qa__media-wrap {
+  .qa__media {
     flex: 0 0 55%;
     height: 100%;
+    aspect-ratio: unset;
   }
 }
 
+/* ── scroll-snap horizontal track ── */
 .qa__slider {
   display: flex;
+  flex-direction: row;
+  width: 100%;
   height: 100%;
   overflow-x: scroll;
   overflow-y: hidden;
@@ -139,22 +158,24 @@
   user-select: none;
 }
 
-.qa__slider:active {
-  cursor: grabbing;
-}
-
 .qa__slider::-webkit-scrollbar {
   display: none;
 }
 
+.qa__slider.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+/* each slide snaps full-width */
 .qa__slide {
-  display: flex;
   flex: 0 0 100%;
   width: 100%;
   height: 100%;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   overflow: hidden;
+  display: flex;
 }
 
 .qa__slide img,
@@ -167,12 +188,21 @@
   -webkit-user-drag: none;
 }
 
-.qa__slide--placeholder {
+/* placeholder when no media */
+.qa__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Circular prev/next arrows — bottom centre */
+.qa__placeholder .placeholder-svg {
+  width: 64px;
+  fill: var(--color-text-faint);
+}
+
+/* ── circular prev/next — bottom centre ── */
 .qa__slider-nav {
   position: absolute;
   bottom: 14px;
@@ -183,6 +213,7 @@
   gap: 8px;
   z-index: 5;
   pointer-events: none;
+  /* container is passthrough */
 }
 
 .qa__slider-btn {
@@ -190,17 +221,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: oklch(from var(--color-background) l c h / 0.88);
   color: var(--color-text);
   cursor: pointer;
-  box-shadow: 0 2px 8px oklch(0 0 0 / 0.15);
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.14);
   backdrop-filter: blur(4px);
-  transition: background var(--transition-base);
+  transition: background var(--transition-base, 200ms ease);
 }
 
 .qa__slider-btn:hover {
@@ -210,6 +241,7 @@
 .qa__slider-btn svg {
   width: 14px;
   height: 14px;
+  pointer-events: none;
 }
 
 .qa__slider-btn:focus-visible {
@@ -217,7 +249,9 @@
   outline-offset: 3px;
 }
 
-/* ─── Right: Product Info ─── */
+
+/* ── 4. Right: product info ────────────────────────────────── */
+
 .qa__content {
   display: flex;
   flex-direction: column;
@@ -235,17 +269,19 @@
 }
 
 .qa__inner {
-  padding: 32px 28px 28px;
   display: flex;
   flex-direction: column;
+  padding: 36px 32px 32px;
+  height: 100%;
 }
 
 @media (max-width: 639px) {
   .qa__inner {
-    padding: 20px 18px 24px;
+    padding: 22px 20px 28px;
   }
 }
 
+/* vendor */
 .qa__vendor {
   font-family: var(--font-primary);
   font-size: 11px;
@@ -253,23 +289,27 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  margin: 0 0 6px;
+  margin: 0 0 8px;
+  line-height: 1.3;
 }
 
+/* title — large light weight, matches reference */
 .qa__title {
-  font-family: var(--font-body-family, var(--font-primary));
-  font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+  font-family: var(--font-heading-family, var(--font-primary));
+  font-size: clamp(1.75rem, 4vw, 2.625rem);
   font-weight: 300;
-  line-height: 1.1;
+  line-height: 1.07;
   color: var(--color-text);
-  margin: 0 0 12px;
+  margin: 0 0 14px;
+  letter-spacing: -0.01em;
 }
 
+/* price */
 .qa__price-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .qa__price {
@@ -287,51 +327,67 @@
   font-size: 0.875rem;
   color: var(--color-text-muted);
   text-decoration: line-through;
+  text-decoration-thickness: 1px;
 }
 
-/* ─── Variant picker (inherits block CSS) ─── */
+
+/* ── 5. Variant picker (inherits block styles) ──────────────── */
+
+/* reset block padding inside modal */
 .qa__variant-picker {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   --vp-block-pt: 0px;
   --vp-block-pb: 0px;
   --vp-block-pl: 0px;
   --vp-block-pr: 0px;
 }
 
-/* ─── Buy wrap ─── */
-.qa__buy-wrap.product-form-block {
+/* "Choose Size" style label */
+.qa__variant-picker .product-variant-picker-snippet__label-row {
+  margin-bottom: var(--space-2, 8px);
+}
+
+
+/* ── 6. Buy block ──────────────────────────────────────────── */
+
+/* zero out margins from .product-form-block when inside modal */
+.qa__buy-block.product-form-block {
   margin-top: 0;
   margin-bottom: 0;
 }
 
-.qa__buy-wrap .product-form__error-message-wrapper {
+.qa__buy-block .product-form__error-message-wrapper {
   margin-bottom: 10px;
 }
 
-/* Quantity + ATC side-by-side row */
-.qa__atc-row {
+/* Quantity + ATC side-by-side */
+.qa__action-row {
   display: flex;
   align-items: stretch;
   gap: 10px;
-  height: 50px;
-  margin-bottom: 10px;
+  height: 52px;
+  margin-bottom: 12px;
 }
 
+/* ── quantity stepper ── */
 .qa__qty {
-  flex: 0 0 120px;
+  flex: 0 0 128px;
 }
 
-/* Normalise whatever quantity snippet renders */
+/* Normalise whatever quantity-input snippet renders */
+.qa__qty>*,
 .qa__qty .quantity,
-.qa__qty [class*="quantity"] {
+.qa__qty [class*="quantity-wrapper"] {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   width: 100% !important;
   height: 100% !important;
-  border: 1px solid oklch(from var(--color-text) l c h / 0.22) !important;
+  padding: 0 !important;
+  border: 1px solid oklch(from var(--color-text) l c h / 0.20) !important;
   border-radius: 0 !important;
   background: var(--color-background) !important;
+  gap: 0 !important;
 }
 
 .qa__qty .quantity__button,
@@ -340,37 +396,37 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 38px !important;
+  flex-shrink: 0 !important;
+  width: 40px !important;
   height: 100% !important;
   background: none !important;
   border: 0 !important;
-  font-size: 1.15rem !important;
   color: var(--color-text) !important;
+  font-size: 1.2rem !important;
   cursor: pointer !important;
-  flex-shrink: 0 !important;
-  transition: opacity var(--transition-base) !important;
+  transition: opacity var(--transition-base, 200ms) !important;
 }
 
 .qa__qty .quantity__button:hover,
 .qa__qty button[name="minus"]:hover,
 .qa__qty button[name="plus"]:hover {
-  opacity: 0.45 !important;
+  opacity: 0.4 !important;
 }
 
 .qa__qty .quantity__input,
 .qa__qty input[type="number"],
 .qa__qty input[name="quantity"] {
   flex: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
   text-align: center !important;
   border: 0 !important;
   background: none !important;
+  padding: 0 !important;
   font-family: var(--font-primary) !important;
   font-size: 14px !important;
   color: var(--color-text) !important;
   -moz-appearance: textfield !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
 }
 
 .qa__qty input::-webkit-inner-spin-button,
@@ -378,20 +434,20 @@
   -webkit-appearance: none;
 }
 
-/* ATC button */
+/* ── ATC button ── */
 .qa__atc {
   flex: 1;
   display: flex;
 }
 
 .qa__atc-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   width: 100%;
   height: 100%;
-  padding: 0 14px;
+  padding: 0 16px;
   border: 1px solid var(--color-text);
   border-radius: 0;
   background: var(--color-text);
@@ -399,21 +455,20 @@
   font-family: var(--font-primary);
   font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
-  cursor: pointer;
   white-space: nowrap;
-  position: relative;
+  cursor: pointer;
   overflow: hidden;
-  transition: opacity var(--transition-base);
+  transition: opacity var(--transition-base, 200ms ease);
 }
 
 .qa__atc-btn:hover {
-  opacity: 0.82;
+  opacity: 0.80;
 }
 
 .qa__atc-btn:disabled {
-  opacity: 0.38;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
@@ -422,6 +477,7 @@
   outline-offset: 3px;
 }
 
+/* loading state */
 .qa__atc-btn.is-loading .qa__atc-label {
   opacity: 0;
 }
@@ -440,7 +496,7 @@
   border: 2px solid oklch(from var(--color-background) l c h / 0.35);
   border-top-color: var(--color-background);
   border-radius: 50%;
-  animation: qa-spin 0.7s linear infinite;
+  animation: qa-spin 0.65s linear infinite;
 }
 
 @keyframes qa-spin {
@@ -449,43 +505,26 @@
   }
 }
 
-/* BUY IT NOW */
+/* ── BUY IT NOW ── */
 .qa__buy-now {
   margin-top: 0;
 }
 
 .qa__buy-now .shopify-payment-button__button,
-.qa__buy-now [class*="shopify-payment-button"] {
+.qa__buy-now [class*="shopify-payment-button__button"] {
   border-radius: 0 !important;
+  min-height: 52px !important;
+  height: 52px !important;
   font-family: var(--font-primary) !important;
-  font-weight: 400 !important;
-  letter-spacing: 0.08em !important;
-  height: 50px !important;
-  min-height: 50px !important;
   font-size: 11px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.10em !important;
   text-transform: uppercase !important;
 }
 
-/* ─── Low-stock notice ─── */
-.qa__stock {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  font-family: var(--font-primary);
-  font-size: 12px;
-  color: var(--color-text);
-}
 
-.qa__stock-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #5aab64;
-  flex-shrink: 0;
-}
+/* ── 7. Reduced motion ─────────────────────────────────────── */
 
-/* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   .qa__slider {
     scroll-behavior: auto;

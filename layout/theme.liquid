@@ -30,7 +30,8 @@
     {% render 'meta-tags' %}
 
     <script>
-      window.theme = {
+        window.theme = {
+        moneyFormat: {{ shop.money_format | json }},
         settings: {
           cart_auto_open: {{ settings.cart_auto_open | json }}
         },
@@ -66,6 +67,7 @@
 
     {{ 'component-product-card.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'component-product-form.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'component-variant-picker.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'component-quick-add.js' | asset_url }}" defer="defer"></script>
 
     <quick-add-modal>

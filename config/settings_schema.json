@@ -596,8 +596,14 @@
         "id": "variant_btn_width",
         "label": "t:labels.variant_btn_width",
         "options": [
-          { "value": "auto",  "label": "t:options.variant_btn_width.fit" },
-          { "value": "100%", "label": "t:options.variant_btn_width.fill" }
+          {
+            "value": "auto",
+            "label": "t:options.variant_btn_width.fit"
+          },
+          {
+            "value": "100%",
+            "label": "t:options.variant_btn_width.fill"
+          }
         ],
         "default": "auto"
       }

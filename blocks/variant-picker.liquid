@@ -2,28 +2,20 @@
   Block: variant-picker.liquid
   Path: blocks/variant-picker.liquid
   Description: Renders the product variant picker (buttons or dropdown).
-    Block-level settings: style, swatches toggle, alignment, padding.
-    Global button appearance (border thickness, corner radius, width) is
-    controlled in Theme Settings → Variant pickers and exposed as CSS vars
+    Global button appearance (border thickness, corner radius, width) lives in
+    Theme Settings → Variant pickers and is injected as:
+      --vp-btn-border  (px)
+      --vp-btn-radius  (px)
+      --vp-btn-width   (auto | 100%)
     via snippets/css-variables.liquid.
-    Uses: snippets/product-variant-picker.liquid
-
-  Settings exposed:
-    picker_style       — 'buttons' | 'dropdown'
-    show_swatches      — checkbox, show colour swatches when option is a colour
-    alignment          — 'left' | 'center' | 'right'
-    show_availability  — checkbox, show sold-out label on unavailable options
-    padding_top        — 0–80 px
-    padding_bottom     — 0–80 px
-    padding_left       — 0–80 px
-    padding_right      — 0–80 px
+    Block-level: style, swatches, alignment, padding (top/bottom/left/right).
 {%- endcomment -%}
 
 {%- liquid
   assign product_form_id = 'ProductForm-' | append: section.id
-  assign picker_style    = block.settings.picker_style    | default: 'buttons'
-  assign show_swatches   = block.settings.show_swatches   | default: false
-  assign alignment       = block.settings.alignment       | default: 'left'
+  assign picker_style = block.settings.picker_style | default: 'buttons'
+  assign show_swatches = block.settings.show_swatches | default: false
+  assign alignment = block.settings.alignment | default: 'left'
 -%}
 
 <div
@@ -37,280 +29,300 @@
   "
 >
   {%- render 'product-variant-picker',
-    product:           product,
-    section:           section,
-    form_id:           product_form_id,
-    picker_style:      picker_style,
-    show_swatches:     show_swatches,
+    product: product,
+    section: section,
+    form_id: product_form_id,
+    picker_style: picker_style,
+    show_swatches: show_swatches,
     show_availability: block.settings.show_availability
   -%}
 </div>
 
 {% stylesheet %}
-/* ══════════════════════════════════════════════════════
+  /* ══════════════════════════════════════════════════════
    Variant Picker Block
-   All values reference CSS custom properties only.
-   Global tokens (--vp-btn-border, --vp-btn-radius,
-   --vp-btn-width) come from snippets/css-variables.liquid
-   via the Theme Settings → Variant pickers section.
+   Global tokens: --vp-btn-border, --vp-btn-radius, --vp-btn-width
+   injected by snippets/css-variables.liquid from Theme Settings.
+   Block tokens:  --vp-block-pt/pb/pl/pr (inline style above).
    ══════════════════════════════════════════════════════ */
 
-.variant-picker-block {
-  padding-top:    var(--vp-block-pt, 0px);
-  padding-bottom: var(--vp-block-pb, 0px);
-  padding-left:   var(--vp-block-pl, 0px);
-  padding-right:  var(--vp-block-pr, 0px);
-}
-
-/* ── Option group layout ── */
-.variant-picker-block .product-variant-picker-snippet {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.variant-picker-block .product-variant-picker-snippet__fieldset {
-  border: 0;
-  padding: 0;
-  margin: 0;
-}
-
-/* ── Option label row (name + current value) ── */
-.variant-picker-block .product-variant-picker-snippet__label-row {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
-}
-
-.variant-picker-block .product-variant-picker-snippet__label {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.variant-picker-block .product-variant-picker-snippet__current-value {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.04em;
-  color: var(--color-text);
-}
-
-/* ── Button group ── */
-.variant-picker-block .product-variant-picker-snippet__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-/* Alignment modifiers */
-.variant-picker-block--align-center .product-variant-picker-snippet__buttons { justify-content: center; }
-.variant-picker-block--align-right  .product-variant-picker-snippet__buttons { justify-content: flex-end; }
-.variant-picker-block--align-left   .product-variant-picker-snippet__buttons { justify-content: flex-start; }
-
-/* ── Hidden radio input ── */
-.variant-picker-block .product-variant-picker-snippet__button-wrapper {
-  position: relative;
-}
-
-.variant-picker-block .product-variant-picker-snippet__radio {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  margin: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* ── Option button pill ── */
-.variant-picker-block .product-variant-picker-snippet__button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  /* Width: 'fit' = auto, 'fill' = expand (set via --vp-btn-width) */
-  width: var(--vp-btn-width, auto);
-  padding: var(--space-2) var(--space-4);
-  border-style: solid;
-  border-width: var(--vp-btn-border, 1px);
-  border-color: var(--color-border);
-  border-radius: var(--vp-btn-radius, 0px);
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    border-color var(--transition-base),
-    background   var(--transition-base),
-    color        var(--transition-base);
-  white-space: nowrap;
-  user-select: none;
-}
-
-/* Selected state */
-.variant-picker-block .product-variant-picker-snippet__radio:checked
-  + .product-variant-picker-snippet__button {
-  border-color: var(--color-text);
-  background: var(--color-background);
-  color: var(--color-text);
-}
-
-/* Hover state (unselected) */
-.variant-picker-block .product-variant-picker-snippet__radio:not(:checked):not(:disabled):hover
-  + .product-variant-picker-snippet__button {
-  border-color: oklch(from var(--color-text) l c h / 0.45);
-}
-
-/* Sold-out / disabled state */
-.variant-picker-block .product-variant-picker-snippet__radio:disabled
-  + .product-variant-picker-snippet__button {
-  opacity: 0.38;
-  cursor: not-allowed;
-  text-decoration: line-through;
-}
-
-/* Focus-visible ring on keyboard navigation */
-.variant-picker-block .product-variant-picker-snippet__radio:focus-visible
-  + .product-variant-picker-snippet__button {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
-
-/* ── Colour swatch variant ── */
-.variant-picker-block .product-variant-picker-snippet__swatch {
-  display: inline-block;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: var(--vp-btn-radius, 0px);
-  border-style: solid;
-  border-width: var(--vp-btn-border, 1px);
-  border-color: oklch(from var(--color-text) l c h / 0.15);
-  cursor: pointer;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
-}
-
-.variant-picker-block .product-variant-picker-snippet__radio:checked
-  + .product-variant-picker-snippet__swatch {
-  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-text);
-}
-
-.variant-picker-block .product-variant-picker-snippet__radio:disabled
-  + .product-variant-picker-snippet__swatch {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-/* ── Dropdown select ── */
-.variant-picker-block .product-variant-picker-snippet__select {
-  width: 100%;
-  min-height: 2.75rem;
-  padding-inline: var(--space-4);
-  border-style: solid;
-  border-width: var(--vp-btn-border, 1px);
-  border-color: var(--color-input-border);
-  border-radius: var(--vp-btn-radius, 0px);
-  background: var(--color-input-background);
-  color: var(--color-input-text);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-  cursor: pointer;
-  appearance: auto;
-}
-
-.variant-picker-block .product-variant-picker-snippet__select:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
-
-/* ── Reduced motion ── */
-@media screen and (prefers-reduced-motion: reduce) {
-  .variant-picker-block .product-variant-picker-snippet__button,
-  .variant-picker-block .product-variant-picker-snippet__swatch {
-    transition-duration: 0.001ms !important;
+  .variant-picker-block {
+    padding-top: var(--vp-block-pt, 0px);
+    padding-bottom: var(--vp-block-pb, 0px);
+    padding-left: var(--vp-block-pl, 0px);
+    padding-right: var(--vp-block-pr, 0px);
   }
-}
+
+  /* ── Option group layout ── */
+  .variant-picker-block .product-variant-picker-snippet {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .variant-picker-block .product-variant-picker-snippet__fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* ── Label row (name + current value) ── */
+  .variant-picker-block .product-variant-picker-snippet__label-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  .variant-picker-block .product-variant-picker-snippet__label {
+    display: block;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+  }
+
+  .variant-picker-block .product-variant-picker-snippet__current-value {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+  }
+
+  /* ── Button group ── */
+  .variant-picker-block .product-variant-picker-snippet__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Alignment modifiers */
+  .variant-picker-block--align-center .product-variant-picker-snippet__buttons {
+    justify-content: center;
+  }
+  .variant-picker-block--align-right .product-variant-picker-snippet__buttons {
+    justify-content: flex-end;
+  }
+  .variant-picker-block--align-left .product-variant-picker-snippet__buttons {
+    justify-content: flex-start;
+  }
+
+  /* ── Hidden radio input ── */
+  .variant-picker-block .product-variant-picker-snippet__button-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .variant-picker-block .product-variant-picker-snippet__radio {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  /* ── Option button ── */
+  .variant-picker-block .product-variant-picker-snippet__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    /* --vp-btn-width: auto (Fit) | 100% (Fill) — set in css-variables.liquid */
+    width: var(--vp-btn-width, auto);
+    padding: var(--space-2) var(--space-4);
+    border-style: solid;
+    /* --vp-btn-border: from Theme Settings → Variant pickers → Border thickness */
+    border-width: var(--vp-btn-border, 1px);
+    border-color: var(--color-border);
+    /* --vp-btn-radius: from Theme Settings → Variant pickers → Corner radius */
+    border-radius: var(--vp-btn-radius, 0px);
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color var(--transition-base), background var(--transition-base), color var(--transition-base);
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none; /* click handled by the radio above */
+  }
+
+  /* Selected state */
+  .variant-picker-block .product-variant-picker-snippet__radio:checked + .product-variant-picker-snippet__button {
+    border-color: var(--color-text);
+    background: var(--color-background);
+    color: var(--color-text);
+    border-width: calc(var(--vp-btn-border, 1px) + 1px);
+  }
+
+  /* Hover (unselected) */
+  .variant-picker-block
+    .product-variant-picker-snippet__radio:not(:checked):not(:disabled):hover
+    + .product-variant-picker-snippet__button {
+    border-color: oklch(from var(--color-text) l c h / 0.45);
+  }
+
+  /* Sold-out / disabled */
+  .variant-picker-block .product-variant-picker-snippet__radio:disabled + .product-variant-picker-snippet__button {
+    opacity: 0.38;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    pointer-events: none;
+  }
+
+  /* Focus-visible ring */
+  .variant-picker-block .product-variant-picker-snippet__radio:focus-visible + .product-variant-picker-snippet__button {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  /* ── Colour swatch ── */
+  .variant-picker-block .product-variant-picker-snippet__swatch {
+    display: inline-block;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--vp-btn-radius, 0px);
+    border-style: solid;
+    border-width: var(--vp-btn-border, 1px);
+    border-color: oklch(from var(--color-text) l c h / 0.15);
+    cursor: pointer;
+    pointer-events: none;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .variant-picker-block .product-variant-picker-snippet__radio:checked + .product-variant-picker-snippet__swatch {
+    box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-text);
+  }
+
+  .variant-picker-block .product-variant-picker-snippet__radio:disabled + .product-variant-picker-snippet__swatch {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* ── Dropdown select ── */
+  .variant-picker-block .product-variant-picker-snippet__select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding-inline: var(--space-4);
+    border-style: solid;
+    border-width: var(--vp-btn-border, 1px);
+    border-color: var(--color-input-border, var(--color-border));
+    border-radius: var(--vp-btn-radius, 0px);
+    background: var(--color-input-background, var(--color-background));
+    color: var(--color-input-text, var(--color-text));
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    cursor: pointer;
+    appearance: auto;
+  }
+
+  .variant-picker-block .product-variant-picker-snippet__select:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  /* ── Reduced motion ── */
+  @media screen and (prefers-reduced-motion: reduce) {
+    .variant-picker-block .product-variant-picker-snippet__button,
+    .variant-picker-block .product-variant-picker-snippet__swatch {
+      transition-duration: 0.001ms !important;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:blocks.variant_picker.name",
+  "name": "Variant picker",
   "settings": [
     {
       "type": "paragraph",
-      "content": "t:blocks.variant_picker.settings.description"
+      "content": "Displays variants from parent product"
     },
     {
       "type": "paragraph",
-      "content": "t:blocks.variant_picker.settings.global_style_note"
+      "content": "Edit variant styling in [theme settings](/editor?context=theme&focus=variant_pickers)."
     },
     {
       "type": "select",
       "id": "picker_style",
-      "label": "t:blocks.variant_picker.settings.picker_style.label",
+      "label": "Style",
       "options": [
-        { "value": "buttons",  "label": "t:blocks.variant_picker.settings.picker_style.options.buttons" },
-        { "value": "dropdown", "label": "t:blocks.variant_picker.settings.picker_style.options.dropdown" }
+        { "value": "buttons", "label": "Buttons" },
+        { "value": "dropdown", "label": "Dropdowns" }
       ],
       "default": "buttons"
     },
     {
       "type": "checkbox",
       "id": "show_swatches",
-      "label": "t:blocks.variant_picker.settings.show_swatches.label",
-      "info": "t:blocks.variant_picker.settings.show_swatches.info",
-      "default": true
+      "label": "Swatches",
+      "info": "Show colour swatches when option name contains 'color' or 'colour'",
+      "default": false
     },
     {
       "type": "text_alignment",
       "id": "alignment",
-      "label": "t:blocks.variant_picker.settings.alignment.label",
+      "label": "Alignment",
       "default": "left"
     },
     {
       "type": "checkbox",
       "id": "show_availability",
-      "label": "t:blocks.variant_picker.settings.show_availability.label",
+      "label": "Show sold-out options",
       "default": true
     },
     {
       "type": "header",
-      "content": "t:blocks.variant_picker.settings.padding_header"
+      "content": "Padding"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "t:blocks.variant_picker.settings.padding_top.label",
-      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "label": "Top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
       "default": 0
     },
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "t:blocks.variant_picker.settings.padding_bottom.label",
-      "min": 0, "max": 80, "step": 4, "unit": "px",
-      "default": 8
+      "label": "Bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "range",
       "id": "padding_left",
-      "label": "t:blocks.variant_picker.settings.padding_left.label",
-      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "label": "Left",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
       "default": 0
     },
     {
       "type": "range",
       "id": "padding_right",
-      "label": "t:blocks.variant_picker.settings.padding_right.label",
-      "min": 0, "max": 80, "step": 4, "unit": "px",
+      "label": "Right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
       "default": 0
     }
   ]

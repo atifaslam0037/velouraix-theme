@@ -3,106 +3,156 @@
   Path: blocks/add-to-cart.liquid
   Description: Renders the Add to Cart submit button inside the buy-buttons block.
     Uses global .btn theme classes. Reflects variant availability.
+    Shows price inline: "ADD TO CART — Rs.99.00".
     A loading spinner appears during AJAX form submission.
-  Settings: button_style (primary | secondary).
+  Settings:
+    button_style — primary | secondary
 {% enddoc %}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign is_available = variant.available
+  assign variant_price = variant.price | money
+-%}
 
 <div class="product-form__add-to-cart" {{ block.shopify_attributes }}>
   <button
     type="submit"
     name="add"
-    class="btn btn--full-width {% if block.settings.button_style == 'secondary' %}btn--secondary{% else %}btn--primary{% endif %}"
+    class="btn btn--full-width{% if block.settings.button_style == 'secondary' %} btn--secondary{% else %} btn--primary{% endif %}"
     form="ProductForm-{{ section.id }}"
-    {% if product.selected_or_first_available_variant.available == false %}
-      disabled
-      aria-disabled="true"
-    {% endif %}
-    aria-label="{% if product.selected_or_first_available_variant.available %}{{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}: {{ product.title | escape }}"
+    {% unless is_available %}
+      disabled aria-disabled="true"
+    {% endunless %}
+    aria-label="{% if is_available %}{{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}: {{ product.title | escape }}"
   >
     <span class="btn__label">
-      {%- if product.selected_or_first_available_variant.available -%}
-        {{ 'products.product.add_to_cart' | t }}
+      {%- if is_available -%}
+        {{ 'products.product.add_to_cart' | t | upcase }}
+        <span class="btn__price-sep" aria-hidden="true"> — </span>
+        <span class="btn__price">{{ variant_price }}</span>
       {%- else -%}
-        {{ 'products.product.sold_out' | t }}
+        {{ 'products.product.sold_out' | t | upcase }}
       {%- endif -%}
     </span>
+
     <span class="btn__loading" aria-hidden="true">
       {%- render 'icon', name: 'spinner' -%}
     </span>
   </button>
 </div>
 
+{% stylesheet %}
+  /* ══════════════════════════════════════════════
+   Add to Cart block
+   ══════════════════════════════════════════════ */
+
+  .product-form__add-to-cart {
+    display: flex;
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .product-form__add-to-cart .btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    min-height: 52px;
+    width: 100%;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: var(--button-radius, 0px);
+    padding-inline: var(--space-5);
+    cursor: pointer;
+    transition: background-color var(--transition-base), color var(--transition-base), opacity var(--transition-base);
+  }
+
+  /* Primary: black background, white text */
+  .product-form__add-to-cart .btn--primary {
+    background: var(--color-text);
+    color: var(--color-background);
+    border: none;
+  }
+
+  .product-form__add-to-cart .btn--primary:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+
+  /* Secondary: transparent with border */
+  .product-form__add-to-cart .btn--secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid oklch(from var(--color-text) l c h / 0.35);
+  }
+
+  .product-form__add-to-cart .btn--secondary:hover:not(:disabled) {
+    border-color: var(--color-text);
+  }
+
+  /* Disabled / sold-out */
+  .product-form__add-to-cart .btn:disabled,
+  .product-form__add-to-cart .btn[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Price separator + price — slightly muted */
+  .product-form__add-to-cart .btn__price-sep,
+  .product-form__add-to-cart .btn__price {
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+
+  /* Loading state */
+  .product-form__add-to-cart .btn__loading {
+    display: none;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .product-form__add-to-cart .btn.is-loading .btn__label {
+    opacity: 0;
+  }
+
+  .product-form__add-to-cart .btn.is-loading .btn__loading {
+    display: block;
+    position: absolute;
+  }
+
+  /* Focus ring */
+  .product-form__add-to-cart .btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .product-form__add-to-cart .btn,
+    .product-form__add-to-cart .btn__loading {
+      transition-duration: 0.001ms !important;
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
-  "name": "t:blocks.add_to_cart.name",
+  "name": "Add to cart",
   "settings": [
     {
       "type": "select",
       "id": "button_style",
-      "label": "t:blocks.add_to_cart.settings.button_style.label",
+      "label": "Style",
       "options": [
-        { "value": "primary", "label": "t:blocks.add_to_cart.settings.button_style.options.primary" },
-        { "value": "secondary", "label": "t:blocks.add_to_cart.settings.button_style.options.secondary" }
+        { "value": "primary", "label": "Primary" },
+        { "value": "secondary", "label": "Secondary" }
       ],
       "default": "primary"
     }
   ],
-  "presets": [
-    {
-      "name": "t:blocks.add_to_cart.name"
-    }
-  ]
+  "presets": [{ "name": "Add to cart" }]
 }
 {% endschema %}
-
-{% stylesheet %}
-.product-form__add-to-cart {
-  display: flex;
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.product-form__add-to-cart .btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: 52px;
-  width: 100%;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.product-form__add-to-cart .btn__loading {
-  display: none;
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.product-form__add-to-cart .btn.is-loading .btn__label {
-  opacity: 0;
-}
-
-.product-form__add-to-cart .btn.is-loading .btn__loading {
-  display: block;
-  position: absolute;
-}
-
-@media screen and (prefers-reduced-motion: no-preference) {
-  .product-form__add-to-cart .btn,
-  .product-form__add-to-cart .btn__loading {
-    transition: opacity var(--transition-base), background-color var(--transition-base);
-  }
-}
-
-@media screen and (prefers-reduced-motion: reduce) {
-  .product-form__add-to-cart .btn,
-  .product-form__add-to-cart .btn__loading {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-  }
-}
-{% endstylesheet %}

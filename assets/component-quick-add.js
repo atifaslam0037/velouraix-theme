@@ -5,8 +5,6 @@
 class QuickAdd {
   constructor() {
     this.handleTriggerClick = this.handleTriggerClick.bind(this);
-    this.handleVariantChange = this.handleVariantChange.bind(this);
-
     this.initEvents();
   }
 
@@ -48,12 +46,6 @@ class QuickAdd {
         this.closeModal();
       }
     });
-
-    document.addEventListener('change', (evt) => {
-      if (evt.target.closest('variant-picker')) {
-        this.handleVariantChange(evt);
-      }
-    });
   }
 
   async handleTriggerClick(trigger) {
@@ -66,7 +58,7 @@ class QuickAdd {
       // Inline mode: Add directly
       trigger.setAttribute('aria-disabled', 'true');
       trigger.classList.add('is-loading');
-      
+
       try {
         await this.addToCart(variantId, 1);
         this.triggerCartDrawer();
@@ -90,26 +82,29 @@ class QuickAdd {
         <svg width="40" height="40" viewBox="0 0 40 40" class="spinner"><circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2" opacity="0.3"></circle><circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="113" stroke-dashoffset="85" style="transform-origin:center;animation:spin 1s linear infinite;"></circle></svg>
       </div>
     `;
-    
+
     if (typeof this.modal.showModal === 'function') {
       try {
         this.modal.showModal();
-      } catch(e) {} // Prevent error if already open
+      } catch (e) { } // Prevent error if already open
     } else {
       this.modal.setAttribute('open', '');
     }
-    
+
     document.body.style.overflow = 'hidden';
 
     try {
       const response = await fetch(`${productUrl}${productUrl.includes('?') ? '&' : '?'}section_id=quick-add`);
+      if (!response.ok) { this.closeModal(); return; }
+
       const text = await response.text();
       const html = new DOMParser().parseFromString(text, 'text/html');
       const inlineContent = html.querySelector('.shopify-section')?.innerHTML || '';
-      
+
       if (inlineContent) {
         this.modalContent.innerHTML = inlineContent;
         this.productData = this.getProductData();
+        this._initSliders();
 
         // Direct submit binding — more reliable than relying on custom element upgrade timing
         const form = this.modalContent.querySelector('form[data-type="add-to-cart-form"]');
@@ -124,6 +119,50 @@ class QuickAdd {
       this.closeModal();
     }
   }
+
+  _initSliders() {
+    if (!this.modalContent) return;
+    this.modalContent.querySelectorAll('.qa__slider:not([data-slider-init])').forEach((slider) => {
+      slider.setAttribute('data-slider-init', '1');
+      let isDrag = false, startX = 0, scrollLeft = 0;
+
+      slider.addEventListener('mousedown', (e) => {
+        isDrag = true; startX = e.pageX; scrollLeft = slider.scrollLeft;
+        slider.classList.add('is-dragging');
+      });
+      window.addEventListener('mouseup', () => {
+        if (!isDrag) return;
+        isDrag = false;
+        slider.classList.remove('is-dragging');
+      }, { passive: true });
+      slider.addEventListener('mousemove', (e) => {
+        if (!isDrag) return;
+        e.preventDefault();
+        slider.scrollLeft = scrollLeft - (e.pageX - startX) * 1.15;
+      });
+      slider.addEventListener('mouseleave', () => {
+        isDrag = false;
+        slider.classList.remove('is-dragging');
+      });
+      slider.addEventListener('click', (e) => {
+        if (Math.abs(slider.scrollLeft - scrollLeft) > 4) e.preventDefault();
+      });
+    });
+
+    // Prev/Next slider buttons (delegated on modal)
+    if (!this.modal._sliderNavInit) {
+      this.modal._sliderNavInit = true;
+      this.modal.addEventListener('click', (e) => {
+        const btn = e.target.closest('.qa__slider-btn');
+        if (!btn) return;
+        const slider = btn.dataset.sliderId && document.getElementById(btn.dataset.sliderId);
+        if (!slider) return;
+        const slideWidth = (slider.querySelector('.qa__slide') || slider).offsetWidth;
+        slider.scrollBy({ left: parseInt(btn.dataset.dir, 10) * slideWidth, behavior: 'smooth' });
+      });
+    }
+  }
+
 
   closeModal() {
     if (!this.modal) return;
@@ -143,79 +182,6 @@ class QuickAdd {
       } catch (e) { return null; }
     }
     return null;
-  }
-
-  handleVariantChange() {
-    if (!this.productData) return;
-    const form = this.modal?.querySelector('#QuickAddForm');
-    if (!form) return;
-    
-    // Build array of selected options
-    const options = [];
-    for (let i = 1; i <= 3; i++) {
-      const field = form.querySelector(`[name="options[Option${i}]"], [name="options[option${i}]"]`);
-      if (field) {
-        options.push(field.value);
-      } else {
-        // Fallback for native inputs that use option names directly
-        const rawInputs = Array.from(form.querySelectorAll('input[type="radio"]:checked, select'));
-        if (rawInputs.length > 0) {
-           options.push(rawInputs[i-1]?.value || '');
-        }
-      }
-    }
-
-    // Find variant
-    const matchedVariant = this.productData.variants.find(v => {
-      const vOptions = [v.option1, v.option2, v.option3].filter(Boolean);
-      return options.length === vOptions.length && options.every((val, i) => val === vOptions[i]);
-    });
-
-    if (matchedVariant) {
-      form.querySelector('input[name="id"]').value = matchedVariant.id;
-      this.updateVariantUI(matchedVariant);
-    }
-  }
-
-  updateVariantUI(variant) {
-    const modalContent = this.modalContent;
-    if (!modalContent) return;
-    const submitBtn = modalContent.querySelector('.quick-add__submit');
-    const priceDisplay = modalContent.querySelector('#quick-add-price');
-    
-    // Use window.Shopify.formatMoney if available
-    const formatMoney = (cents) => {
-      if (typeof window.Shopify !== 'undefined' && typeof window.Shopify.formatMoney === 'function') {
-        return window.Shopify.formatMoney(cents);
-      }
-      return '$' + (cents / 100).toFixed(2);
-    };
-
-    if (variant.available) {
-      submitBtn.removeAttribute('disabled');
-      const btnSpan = submitBtn.querySelector('span');
-      if (btnSpan && window.theme?.strings?.addToCart) {
-         const priceText = formatMoney(variant.price);
-         btnSpan.innerHTML = `${window.theme.strings.addToCart.toUpperCase()} - <span data-add-to-cart-price>${priceText}</span>`;
-      }
-    } else {
-      submitBtn.setAttribute('disabled', 'disabled');
-      const btnSpan = submitBtn.querySelector('span');
-      if (btnSpan && window.theme?.strings?.soldOut) {
-         btnSpan.parentElement.innerHTML = `<span>${window.theme.strings.soldOut.toUpperCase()}</span>`;
-      }
-    }
-
-    if (priceDisplay) {
-      let priceHtml = '';
-      if (variant.compare_at_price > variant.price) {
-        priceHtml = `<span class="quick-add__price quick-add__price--sale">${formatMoney(variant.price)}</span>
-                     <s class="quick-add__compare">${formatMoney(variant.compare_at_price)}</s>`;
-      } else {
-        priceHtml = `<span class="quick-add__price">${formatMoney(variant.price)}</span>`;
-      }
-      priceDisplay.innerHTML = priceHtml;
-    }
   }
 
   async addToCart(id, quantity) {

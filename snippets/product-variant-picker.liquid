@@ -1,7 +1,22 @@
+{%- comment -%}
+  Snippet: product-variant-picker.liquid
+  Path: snippets/product-variant-picker.liquid
+  Renders variant buttons, colour swatches, or dropdown.
+  Params:
+    product           — the product object
+    section           — the section object
+    form_id           — id of the associated cart form
+    picker_style      — 'buttons' | 'dropdown'
+    show_swatches     — boolean, show swatches for colour options
+    show_availability — boolean, show strikethrough on sold-out
+{%- endcomment -%}
+
 {%- liquid
   assign target = product.selected_or_first_available_variant
   assign picker_style = picker_style | default: 'buttons'
   assign form_id = form_id | default: 'ProductForm-' | append: section.id
+
+  assign color_option_names = 'color,colour,couleur,farbe,colore,색,色' | split: ','
 -%}
 
 <variant-picker
@@ -11,11 +26,22 @@
 >
   {%- if product.has_only_default_variant -%}
     <input type="hidden" name="id" value="{{ target.id }}" form="{{ form_id }}">
+
   {%- elsif picker_style == 'dropdown' -%}
-    <label for="VariantSelect-{{ section.id }}" class="product-variant-picker-snippet__label">
-      {{- 'products.product.variant' | t -}}
-    </label>
-    <select id="VariantSelect-{{ section.id }}" name="id" class="product-variant-picker-snippet__select" form="{{ form_id }}">
+    <div class="product-variant-picker-snippet__label-row">
+      <label
+        for="VariantSelect-{{ section.id }}"
+        class="product-variant-picker-snippet__label"
+      >
+        {{- 'products.product.variant' | t -}}
+      </label>
+    </div>
+    <select
+      id="VariantSelect-{{ section.id }}"
+      name="id"
+      class="product-variant-picker-snippet__select"
+      form="{{ form_id }}"
+    >
       {%- for variant in product.variants -%}
         <option
           value="{{ variant.id }}"
@@ -33,37 +59,103 @@
         </option>
       {%- endfor -%}
     </select>
-  {%- else -%}
-    <fieldset class="product-variant-picker-snippet__fieldset">
-      <legend class="product-variant-picker-snippet__label">
-        {{- 'products.product.variant' | t -}}
-      </legend>
 
-      <div class="product-variant-picker-snippet__buttons">
-        {%- for variant in product.variants -%}
-          <label class="product-variant-picker-snippet__button-wrapper">
-            <input
-              class="product-variant-picker-snippet__radio"
-              type="radio"
-              name="id"
-              value="{{ variant.id }}"
-              form="{{ form_id }}"
-              {% if variant == target %}
-                checked
-              {% endif %}
-              {% unless variant.available %}
-                disabled
-              {% endunless %}
-            >
-            <span class="product-variant-picker-snippet__button">
-              {{- variant.title -}}
-              {%- if show_availability and variant.available == false -%}
-                <span class="visually-hidden"> - {{ 'products.product.sold_out' | t }}</span>
+  {%- else -%}
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign option_name_down = option.name | downcase | strip
+        assign is_color = false
+        for color_name in color_option_names
+          if option_name_down == color_name
+            assign is_color = true
+          endif
+        endfor
+        assign use_swatch = false
+        if is_color and show_swatches
+          assign use_swatch = true
+        endif
+        assign option_index = forloop.index0
+        assign selected_value = option.selected_value
+      -%}
+
+      <fieldset class="product-variant-picker-snippet__fieldset">
+        <div class="product-variant-picker-snippet__label-row">
+          <legend class="product-variant-picker-snippet__label">
+            {{- option.name -}}
+          </legend>
+          <span class="product-variant-picker-snippet__current-value">
+            {{- selected_value -}}
+          </span>
+        </div>
+
+        <div class="product-variant-picker-snippet__buttons">
+          {%- for value in option.values -%}
+            {%- liquid
+              assign variant_for_option = null
+              for variant in product.variants
+                case option_index
+                  when 0
+                    if variant.option1 == value
+                      assign variant_for_option = variant
+                    endif
+                  when 1
+                    if variant.option2 == value
+                      assign variant_for_option = variant
+                    endif
+                  when 2
+                    if variant.option3 == value
+                      assign variant_for_option = variant
+                    endif
+                endcase
+                if variant_for_option != null
+                  break
+                endif
+              endfor
+              assign is_available = false
+              if variant_for_option != null and variant_for_option.available
+                assign is_available = true
+              endif
+            -%}
+
+            <label class="product-variant-picker-snippet__button-wrapper">
+              <input
+                class="product-variant-picker-snippet__radio"
+                type="radio"
+                name="{{ section.id }}-{{ option.name | handleize }}"
+                value="{{ value | escape }}"
+                form="{{ form_id }}"
+                data-option-position="{{ option_index }}"
+                {% if value == selected_value %}
+                  checked
+                {% endif %}
+                {% unless is_available %}
+                  disabled
+                {% endunless %}
+                aria-label="{{ value | escape }}"
+              >
+
+              {%- if use_swatch -%}
+                <span
+                  class="product-variant-picker-snippet__swatch"
+                  style="background-color: {{ value | downcase | replace: ' ', '' }};"
+                  title="{{ value | escape }}"
+                ></span>
+              {%- else -%}
+                <span class="product-variant-picker-snippet__button">
+                  {{- value -}}
+                  {%- if show_availability and is_available == false -%}
+                    <span class="visually-hidden"> - {{ 'products.product.sold_out' | t }}</span>
+                  {%- endif -%}
+                </span>
               {%- endif -%}
-            </span>
-          </label>
-        {%- endfor -%}
-      </div>
-    </fieldset>
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
   {%- endif -%}
+
+  <script type="application/json" data-variants-json>
+    {{ product.variants | json }}
+  </script>
 </variant-picker>

@@ -9,23 +9,20 @@
   Desktop: text nav left, logo center, text-style action icons right.
   Mobile: MENU text left, logo center, CART text+count right.
 
-  @param {block} logo_block       - Logo block
-  @param {block} nav_left_block   - Navigation block
-  @param {block} nav_right_block  - Icons/actions block
-  @param section_blocks           - All section blocks (for mega menu)
-  @param {string} search_style    - 'modal' or 'page'
-  @param {string} cart_style      - 'drawer' or 'page'
+  @param {block} logo_block - Logo block
+  @param {block} nav_left_block - Navigation block
+  @param {block} nav_right_block - Icons/actions block
+  @param section_blocks - All section blocks (for mega menu)
+  @param {string} search_style - 'modal' or 'page'
+  @param {string} cart_style - 'drawer' or 'page'
 
   @example
   {% render 'header-layout-logo-center', logo_block: logo_block, nav_left_block: nav_left_block, nav_right_block: nav_right_block, section_blocks: section_blocks, search_style: 'modal', cart_style: 'drawer' %}
 {% enddoc %}
 
-
-<div class="header-layout header-layout--logo-center page-width">
-
+<div class="header-layout header-layout--logo-center">
   {%- comment -%} ── START: MENU button (mobile) + desktop nav ── {%- endcomment -%}
   <div class="header-layout__start">
-
     {%- comment -%} Mobile: MENU text button {%- endcomment -%}
     <button
       class="header__mobile-toggle"
@@ -56,7 +53,6 @@
 
   {%- comment -%} ── END: cart (mobile) / full actions (desktop) ── {%- endcomment -%}
   <div class="header-layout__end">
-
     {%- comment -%}
       MOBILE: show only CART text + count badge.
       Respects cart_style: drawer triggers the drawer, page goes to cart page.
@@ -72,7 +68,14 @@
           >
             <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
             {%- render 'icon', name: 'cart' -%}
-            <span class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
+            <span
+              class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}"
+              id="cart-count-mobile"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {{- cart_qty_sum -}}
+            </span>
           </button>
         {%- else -%}
           <a
@@ -82,7 +85,14 @@
           >
             <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
             {%- render 'icon', name: 'cart' -%}
-            <span class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
+            <span
+              class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}"
+              id="cart-count-mobile"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {{- cart_qty_sum -}}
+            </span>
           </a>
         {%- endif -%}
       {%- endif -%}
@@ -94,13 +104,8 @@
     {%- endcomment -%}
     <div class="header-end--desktop">
       {%- if nav_right_block != null -%}
-        {%- render 'header-icons',
-          block: nav_right_block,
-          search_style: search_style,
-          cart_style: cart_style
-        -%}
+        {%- render 'header-icons', block: nav_right_block, search_style: search_style, cart_style: cart_style -%}
       {%- endif -%}
     </div>
-
   </div>
 </div>

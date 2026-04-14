@@ -4,18 +4,38 @@
   Description: Wraps the Shopify product form with AJAX submission via <product-form>.
     Accepts nested quantity, add-to-cart, and accelerated-checkout blocks.
     Renders an error message region for AJAX feedback.
-  Blocks accepted: quantity, add-to-cart, accelerated-checkout.
-  Settings: show_dynamic_checkout (checkbox).
+  Settings:
+    always_stack        — stack quantity + add-to-cart vertically
+    show_pickup         — show in-store pickup availability
+    gift_card_form      — enable gift card recipient form
+    padding_top/bottom/left/right — block spacing
 {% enddoc %}
 
-<div class="product-form-block" {{ block.shopify_attributes }}>
+{%- liquid
+  assign product_form_id = 'ProductForm-' | append: section.id
+  assign always_stack = block.settings.always_stack | default: false
+  assign gift_card_form = block.settings.gift_card_form | default: false
+-%}
+
+<div
+  class="product-form-block{% if always_stack %} product-form-block--stack{% endif %}"
+  {{ block.shopify_attributes }}
+  style="
+    --buy-pt: {{ block.settings.padding_top    | default: 0 }}px;
+    --buy-pb: {{ block.settings.padding_bottom | default: 0 }}px;
+    --buy-pl: {{ block.settings.padding_left   | default: 0 }}px;
+    --buy-pr: {{ block.settings.padding_right  | default: 0 }}px;
+  "
+>
   <product-form class="product-form">
     {%- assign product_form_id = 'ProductForm-' | append: section.id -%}
-    {%- form 'product', product,
-        id: product_form_id,
-        class: 'form',
-        novalidate: 'novalidate',
-        data-type: 'add-to-cart-form'
+
+    {%- form 'product',
+      product,
+      id: product_form_id,
+      class: 'form',
+      novalidate: 'novalidate',
+      data-type: 'add-to-cart-form'
     -%}
       <input
         type="hidden"
@@ -23,6 +43,14 @@
         value="{{ product.selected_or_first_available_variant.id }}"
         disabled
       >
+
+      {%- if gift_card_form and product.gift_card? -%}
+        <input
+          type="hidden"
+          name="properties[__shopify_send_gift_card_to_recipient]"
+          value="true"
+        >
+      {%- endif -%}
 
       <div
         class="product-form__error-message-wrapper"
@@ -36,78 +64,155 @@
       </div>
 
       <div class="product-form__buttons">
-        {% content_for "blocks" %}
+        {% content_for 'blocks' %}
       </div>
     {%- endform -%}
   </product-form>
 </div>
 
+{% stylesheet %}
+  /* ══════════════════════════════════════════════════
+   Buy Buttons Block
+   Padding tokens: --buy-pt/pb/pl/pr (inline)
+   ══════════════════════════════════════════════════ */
+
+  .product-form-block {
+    padding-top: var(--buy-pt, 0px);
+    padding-bottom: var(--buy-pb, 0px);
+    padding-left: var(--buy-pl, 0px);
+    padding-right: var(--buy-pr, 0px);
+  }
+
+  /* Error banner */
+  .product-form__error-message-wrapper {
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: color-mix(in srgb, var(--color-error) 8%, var(--color-background));
+    border: 1px solid color-mix(in srgb, var(--color-error) 40%, transparent);
+    border-radius: var(--radius-sm);
+    color: var(--color-error);
+    font-size: var(--font-size-sm);
+  }
+
+  /* ── Button row: [− 1 +] [ADD TO CART — price] ── */
+  .product-form__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: var(--space-3);
+    width: 100%;
+  }
+
+  .product-form__buttons > * {
+    margin: 0;
+  }
+
+  /* Quantity stepper — flex shrink, auto width */
+  .product-form__buttons > .product-form__quantity {
+    flex: 0 0 auto;
+  }
+
+  /* Add to cart — fills remaining space in the row */
+  .product-form__buttons > .product-form__add-to-cart {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  /* Dynamic checkout (BUY IT NOW) — always full width on its own row */
+  .product-form__buttons > .product-form__dynamic-checkout {
+    flex: 1 1 100%;
+  }
+
+  /* Stacked modifier: everything full-width stacked */
+  .product-form-block--stack .product-form__buttons {
+    flex-direction: column;
+  }
+
+  .product-form-block--stack .product-form__buttons > .product-form__quantity,
+  .product-form-block--stack .product-form__buttons > .product-form__add-to-cart {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  .product-form-block--stack .product-form__quantity .quantity-input {
+    width: 100%;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
-  "name": "t:blocks.buy_buttons.name",
-  "blocks": [
-    { "type": "quantity" },
-    { "type": "add-to-cart" },
-    { "type": "accelerated-checkout" }
-  ],
+  "name": "Buy buttons",
+  "blocks": [{ "type": "quantity" }, { "type": "add-to-cart" }, { "type": "accelerated-checkout" }],
   "settings": [
     {
       "type": "checkbox",
-      "id": "show_dynamic_checkout",
-      "default": true,
-      "label": "t:blocks.buy_buttons.settings.show_dynamic_checkout.label"
+      "id": "always_stack",
+      "label": "Always stack buttons",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pickup",
+      "label": "Show pickup availability",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "gift_card_form",
+      "label": "Gift card form",
+      "info": "Customers can send gift cards to a recipient's email with a personal message. [Learn more](https://help.shopify.com/en/manual/products/gift-card-products)",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0
     }
   ],
   "presets": [
     {
-      "name": "t:blocks.buy_buttons.name",
-      "blocks": [
-        { "type": "quantity" },
-        { "type": "add-to-cart" },
-        { "type": "accelerated-checkout" }
-      ]
+      "name": "Buy buttons",
+      "blocks": [{ "type": "quantity" }, { "type": "add-to-cart" }, { "type": "accelerated-checkout" }]
     }
   ]
 }
 {% endschema %}
-
-{% stylesheet %}
-.product-form-block {
-  margin-top: var(--space-6);
-  margin-bottom: var(--space-6);
-}
-
-.product-form__error-message-wrapper {
-  margin-bottom: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  background-color: color-mix(in srgb, var(--color-error) 8%, var(--color-background));
-  border: 1px solid color-mix(in srgb, var(--color-error) 40%, transparent);
-  border-radius: var(--radius-sm);
-  color: var(--color-error);
-  font-size: var(--font-size-sm);
-}
-
-.product-form__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  width: 100%;
-}
-
-.product-form__buttons > * {
-  margin: 0;
-}
-
-.product-form__buttons > .product-form__quantity {
-  flex: 0 0 auto;
-}
-
-.product-form__buttons > .product-form__add-to-cart {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.product-form__buttons > .product-form__dynamic-checkout {
-  flex: 1 1 100%;
-}
-{% endstylesheet %}
