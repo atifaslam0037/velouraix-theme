@@ -50,8 +50,6 @@
 -%}
 
 <div class="product-card">
-  {{- 'component-product-card.css' | asset_url | stylesheet_tag -}}
-
   <div
     class="product-card__media-wrapper"
     style="aspect-ratio: {{ ratio | replace: '/', ' / ' }};"

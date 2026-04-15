@@ -47,7 +47,7 @@ if (!customElements.get('variant-picker')) {
     // ── Change handler ────────────────────────────────────────────────────────
 
     async _onChange(event) {
-      const radio  = event.target.closest('input[type="radio"][data-option-position]');
+      const radio = event.target.closest('input[type="radio"][data-option-position]');
       const select = event.target.closest('select[name="id"]');
       if (!radio && !select) return;
 
@@ -75,7 +75,7 @@ if (!customElements.get('variant-picker')) {
         // Full-page mode: SRA fetch
         if (this._isFetching) return;
         const sectionId = this.dataset.sectionId;
-        const baseUrl   = this.dataset.url || window.location.pathname;
+        const baseUrl = this.dataset.url || window.location.pathname;
         if (!sectionId) return;
         await this._fetchVariant(variantId, sectionId, baseUrl);
       }
@@ -166,7 +166,7 @@ if (!customElements.get('variant-picker')) {
         if (variant.available) {
           atcBtn.removeAttribute('disabled');
           if (label) {
-            label.innerHTML = `${window.theme?.strings?.addToCart?.toUpperCase() ?? 'ADD TO CART'} &nbsp;&mdash;&nbsp; <span data-qa-atc-price>${this._formatMoney(variant.price)}</span>`;
+            label.innerHTML = `${window.theme?.strings?.addToCart?.toUpperCase() ?? 'ADD TO CART'}`;
           }
         } else {
           atcBtn.setAttribute('disabled', '');
@@ -198,9 +198,9 @@ if (!customElements.get('variant-picker')) {
         if (!response.ok) return;
 
         const html = await response.text();
-        const doc  = new DOMParser().parseFromString(html, 'text/html');
+        const doc = new DOMParser().parseFromString(html, 'text/html');
         const incoming = doc.querySelector(`#MainProduct-${sectionId}`);
-        const mounted  = document.querySelector(`#MainProduct-${sectionId}`);
+        const mounted = document.querySelector(`#MainProduct-${sectionId}`);
         if (!incoming || !mounted) return;
 
         this._replaceChildren(mounted, incoming);
