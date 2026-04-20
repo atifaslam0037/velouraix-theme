@@ -5,6 +5,8 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 <h1>{{ collection.title }}</h1>
 
 <div class="collection-products">
@@ -30,6 +32,13 @@
 {% schema %}
 {
   "name": "t:general.collection",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ]
 }
 {% endschema %}

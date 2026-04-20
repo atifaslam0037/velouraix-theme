@@ -1,3 +1,5 @@
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 {%- style -%}
   .custom-liquid-{{ section.id }} {
     padding-top: {{ section.settings.padding_top }}px;
@@ -38,6 +40,12 @@
       "unit": "px",
       "label": "t:general.padding_bottom",
       "default": 36
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ],
   "presets": [

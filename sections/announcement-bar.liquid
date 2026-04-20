@@ -1,11 +1,12 @@
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
 {%- if section.settings.show_announcement -%}
   <div
     class="announcement-bar"
     role="region"
     aria-label="{{ 'sections.announcement_bar.aria_label' | t }}"
     style="
-      --ann-bg: {{ section.settings.bg_color }};
-      --ann-color: {{ section.settings.text_color }};
+      --ann-bg: {{ section.settings.color_scheme.settings.background | default: '#FFFFFF' }};
+      --ann-color: {{ section.settings.color_scheme.settings.text | default: '#121212' }};
     "
   >
     <div class="announcement-bar__inner page-width">
@@ -94,20 +95,10 @@
       "label": "t:sections.announcement_bar.settings.end_text.label"
     },
     {
-      "type": "header",
-      "content": "t:sections.announcement_bar.settings.colors_header"
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "t:sections.announcement_bar.settings.bg_color.label",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.announcement_bar.settings.text_color.label",
-      "default": "#000000"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ],
   "presets": [{ "name": "t:sections.announcement_bar.name" }]

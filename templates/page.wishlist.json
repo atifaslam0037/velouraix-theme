@@ -10,16 +10,11 @@
 {
   "sections": {
     "main": {
-      "type": "main-product",
-      "settings": {}
-    },
-    "product-recommendations": {
-      "type": "recommended-products",
+      "type": "main-wishlist",
       "settings": {}
     }
   },
   "order": [
-    "main",
-    "product-recommendations"
+    "main"
   ]
 }

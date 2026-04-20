@@ -1,0 +1,103 @@
+{% doc %}
+  Outputs scoped CSS custom properties for a color scheme.
+
+  Call this at the very top of any section that supports per-section color schemes.
+  It generates a <style> block that overrides the global :root colour tokens for
+  everything inside #shopify-section-{section.id}.
+
+  @param {color_scheme} scheme   - The color_scheme object (e.g. section.settings.color_scheme)
+  @param {string}       selector - CSS selector to scope the variables on
+                                   (e.g. '#shopify-section-' | append: section.id)
+
+  @example
+  {%- render 'color-scheme',
+    scheme: section.settings.color_scheme,
+    selector: '#shopify-section-' | append: section.id
+  -%}
+{% enddoc %}
+
+{%- if scheme != blank -%}
+  {%- liquid
+    assign cs_bg          = scheme.settings.background        | default: '#FFFFFF'
+    assign cs_bg_grad     = scheme.settings.background_gradient
+    assign cs_text        = scheme.settings.text              | default: '#121212'
+    assign cs_muted       = scheme.settings.text_muted        | default: '#666666'
+    assign cs_heading     = scheme.settings.heading           | default: '#121212'
+    assign cs_border      = scheme.settings.border            | default: '#E8E8E8'
+    assign cs_inp_bg      = scheme.settings.input_background  | default: '#FFFFFF'
+    assign cs_inp_text    = scheme.settings.input_text        | default: '#121212'
+    assign cs_inp_border  = scheme.settings.input_border      | default: '#E8E8E8'
+    assign cs_inp_focus   = scheme.settings.input_focus       | default: '#93C5FD'
+
+    assign cs_btn         = scheme.settings.button            | default: '#121212'
+    assign cs_btn_label   = scheme.settings.button_label      | default: '#FFFFFF'
+    assign cs_btn_hover   = scheme.settings.button_hover      | default: '#333333'
+    assign cs_btn_label_h = scheme.settings.button_label_hover| default: '#FFFFFF'
+
+    assign cs_sec         = scheme.settings.secondary_button  | default: '#F2F2F2'
+    assign cs_sec_label   = scheme.settings.secondary_button_label | default: '#121212'
+    assign cs_sec_hover   = scheme.settings.secondary_button_hover | default: '#E0E0E0'
+    assign cs_sec_label_h = scheme.settings.secondary_button_label_hover | default: '#121212'
+
+    assign cs_sale        = scheme.settings.sale_price        | default: '#B91C1C'
+    assign cs_compare     = scheme.settings.compare_price     | default: '#999999'
+  -%}
+  <style>
+    {{ selector }} {
+      /* ── Backgrounds ── */
+      --color-background: {{ cs_bg }};
+      --color-bg:         {{ cs_bg }};
+      --color-surface:    {{ cs_bg }};
+      --color-surface-2:         color-mix(in srgb, {{ cs_bg }} 92%, {{ cs_text }} 8%);
+      --color-surface-offset:    color-mix(in srgb, {{ cs_bg }} 85%, {{ cs_text }} 15%);
+
+      /* ── Text ── */
+      --color-foreground:     {{ cs_text }};
+      --color-text:           {{ cs_text }};
+      --color-text-muted:     {{ cs_muted }};
+      --color-heading:        {{ cs_heading }};
+      --color-text-faint:     color-mix(in srgb, {{ cs_text }} 70%, transparent);
+      --color-text-inverse:   {{ cs_bg }};
+
+      /* ── Borders & inputs ── */
+      --color-border:           {{ cs_border }};
+      --color-input-background: {{ cs_inp_bg }};
+      --color-input-text:       {{ cs_inp_text }};
+      --color-input-border:     {{ cs_inp_border }};
+      --color-input-focus:      {{ cs_inp_focus }};
+
+      /* ── Primary button ── */
+      --color-btn-primary-bg:         {{ cs_btn }};
+      --color-btn-primary-text:       {{ cs_btn_label }};
+      --color-btn-primary-bg-hover:   {{ cs_btn_hover }};
+      --color-btn-primary-text-hover: {{ cs_btn_label_h }};
+
+      /* ── Secondary button ── */
+      --color-btn-secondary-bg:         {{ cs_sec }};
+      --color-btn-secondary-text:       {{ cs_sec_label }};
+      --color-btn-secondary-bg-hover:   {{ cs_sec_hover }};
+      --color-btn-secondary-text-hover: {{ cs_sec_label_h }};
+
+      /* ── Primary aliases ── */
+      --color-primary:           {{ cs_btn }};
+      --color-primary-hover:     {{ cs_btn_hover }};
+      --color-primary-active:    color-mix(in srgb, {{ cs_btn_hover }} 85%, {{ cs_text }} 15%);
+      --color-primary-highlight: color-mix(in srgb, {{ cs_btn }} 18%, transparent);
+      --color-button:            {{ cs_btn }};
+      --color-button-text:       {{ cs_btn_label }};
+
+      /* ── Pricing ── */
+      --color-price-sale:    {{ cs_sale }};
+      --color-price-compare: {{ cs_compare }};
+      --color-sale:          {{ cs_sale }};
+
+      /* ── Apply background colour ── */
+      {%- if cs_bg_grad != blank -%}
+        background: {{ cs_bg_grad }};
+      {%- else -%}
+        background-color: {{ cs_bg }};
+      {%- endif -%}
+      color: {{ cs_text }};
+    }
+  </style>
+{%- endif -%}

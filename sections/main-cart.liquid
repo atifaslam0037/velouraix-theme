@@ -6,6 +6,8 @@
     Settings from global theme settings control optional features (notes, free shipping).
 {%- endcomment -%}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 {{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
 {{ 'component-quantity-input.css' | asset_url | stylesheet_tag }}
 {{ 'section-main-cart.css' | asset_url | stylesheet_tag }}
@@ -83,12 +85,9 @@
       "default": "page"
     },
     {
-      "type": "select",
+      "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
-      "options": [
-        { "value": "scheme-1", "label": "Scheme 1" }
-      ],
+      "label": "t:general.color_scheme",
       "default": "scheme-1"
     },
     {

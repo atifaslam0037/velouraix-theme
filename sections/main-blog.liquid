@@ -5,6 +5,8 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
 {% endcomment %}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 <h1>{{ blog.title }}</h1>
 
 {% paginate blog.articles by 5 %}
@@ -30,6 +32,13 @@
 {% schema %}
 {
   "name": "t:general.blog",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ]
 }
 {% endschema %}

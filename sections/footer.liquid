@@ -1,3 +1,4 @@
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
 <footer>
   <div class="footer__copyright">
     &copy;
@@ -51,6 +52,12 @@
       "id": "show_payment_icons",
       "label": "t:labels.show_payment_icons",
       "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ]
 }

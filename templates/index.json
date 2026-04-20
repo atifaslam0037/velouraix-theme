@@ -12,9 +12,14 @@
     "main": {
       "type": "main-index",
       "settings": {}
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "featured_collection"
   ]
 }

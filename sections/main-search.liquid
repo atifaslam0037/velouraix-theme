@@ -6,6 +6,8 @@
   Settings: None
 {% endcomment %}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 <section class="section-main-search">
   <div class="page-width">
     <h1>{{ 'search.title' | t }}</h1>
@@ -153,7 +155,14 @@
 {% schema %}
 {
   "name": "t:general.search",
-  "settings": [],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ],
   "presets": [
     {
       "name": "t:general.search"

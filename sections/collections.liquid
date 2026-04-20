@@ -5,6 +5,8 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 <h1>{{ 'collections.title' | t }}</h1>
 
 <div
@@ -76,6 +78,12 @@
       "step": 5,
       "unit": "px",
       "default": 10
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ],
   "presets": [{ "name": "t:general.collections_grid" }]

@@ -1,0 +1,204 @@
+{% comment %}
+  Template: page.wishlist.liquid
+  Reads localStorage (velouraix_wishlist) and renders cards.
+  FIXED: waits for DOMContentLoaded before reading localStorage.
+{% endcomment %}
+
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
+{{ 'component-wishlist.css' | asset_url | stylesheet_tag }}
+{{ 'component-product-card.css' | asset_url | stylesheet_tag }}
+
+<div class="wishlist-page" id="wishlist-page">
+  <h1 class="wishlist-page__heading">{{ page.title | default: 'My Wishlist' }}</h1>
+  <p class="wishlist-page__count" id="wishlist-count" aria-live="polite"></p>
+
+  <div class="wishlist-page__grid" id="wishlist-grid" role="list"></div>
+
+  <div class="wishlist-page__empty" id="wishlist-empty" style="display:none;">
+    <svg
+      class="wishlist-page__empty-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06
+        a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78
+        1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+    <h2>Your wishlist is empty</h2>
+    <p>Save products you love and find them here anytime.</p>
+    <a href="{{ routes.all_products_collection_url }}" class="wishlist-page__empty-cta"> Browse Products </a>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var STORAGE_KEY = 'velouraix_wishlist';
+
+    function getList() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveList(list) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      } catch (_) {}
+    }
+
+    function removeItem(id) {
+      saveList(
+        getList().filter(function (p) {
+          return String(p.id) !== String(id);
+        })
+      );
+      if (window.VelouraWishlist) window.VelouraWishlist.syncAll();
+      render();
+    }
+
+    function esc(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function render() {
+      var list = getList();
+      var grid = document.getElementById('wishlist-grid');
+      var empty = document.getElementById('wishlist-empty');
+      var countEl = document.getElementById('wishlist-count');
+      if (!grid) return;
+
+      grid.innerHTML = '';
+
+      if (!list.length) {
+        empty.style.display = 'flex';
+        countEl.textContent = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+      countEl.textContent = list.length + (list.length === 1 ? ' item' : ' items');
+
+      list.forEach(function (p) {
+        var item = document.createElement('div');
+        item.className = 'product-card wishlist-item';
+        item.setAttribute('role', 'listitem');
+        item.innerHTML =
+          '<div class="product-card__media-wrapper" style="aspect-ratio:3/4">' +
+          '<a href="' +
+          esc(p.url) +
+          '" class="product-card__media" aria-label="' +
+          esc(p.title) +
+          '">' +
+          (p.image
+            ? '<img src="' +
+              esc(p.image) +
+              '" alt="' +
+              esc(p.title) +
+              '" class="product-card__image product-card__image--primary" loading="lazy" decoding="async" width="600" height="800">'
+            : '<div class="product-card__placeholder" aria-hidden="true"></div>') +
+          '</a>' +
+          /* Wishlist button so user can remove from this page too */
+          '<button type="button" class="product-card__wishlist is-wishlisted"' +
+          ' data-wishlist-btn' +
+          ' data-wishlist-id="' +
+          esc(String(p.id)) +
+          '"' +
+          ' data-wishlist-title="' +
+          esc(p.title) +
+          '"' +
+          ' data-wishlist-url="' +
+          esc(p.url) +
+          '"' +
+          ' data-wishlist-price="' +
+          esc(p.price) +
+          '"' +
+          ' data-wishlist-image="' +
+          esc(p.image) +
+          '"' +
+          ' data-wishlist-vendor="' +
+          esc(p.vendor) +
+          '"' +
+          ' data-label-remove="Remove from wishlist"' +
+          ' data-product-title="' +
+          esc(p.title) +
+          '"' +
+          ' aria-pressed="true"' +
+          ' aria-label="Remove from wishlist: ' +
+          esc(p.title) +
+          '">' +
+          '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" width="20" height="20" aria-hidden="true">' +
+          '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' +
+          '</svg>' +
+          '</button>' +
+          '</div>' +
+          '<div class="product-card__info">' +
+          (p.vendor ? '<span class="product-card__vendor">' + esc(p.vendor) + '</span>' : '') +
+          '<h3 class="product-card__title"><a href="' +
+          esc(p.url) +
+          '">' +
+          esc(p.title) +
+          '</a></h3>' +
+          '<div class="product-card__prices">' +
+          '<span class="product-card__price">' +
+          esc(p.price) +
+          '</span>' +
+          '</div>' +
+          '<button type="button" class="wishlist-item__remove" data-remove-id="' +
+          esc(String(p.id)) +
+          '">' +
+          '&times; Remove' +
+          '</button>' +
+          '</div>';
+        grid.appendChild(item);
+      });
+
+      /* Bind the text remove buttons */
+      grid.querySelectorAll('[data-remove-id]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          removeItem(btn.dataset.removeId);
+        });
+      });
+    }
+
+    /* Re-render when wishlist changes from another tab */
+    window.addEventListener('storage', function (e) {
+      if (e.key === STORAGE_KEY) render();
+    });
+
+    /* Re-render when heart toggled on this page */
+    document.addEventListener('wishlist:changed', render);
+
+    /* Run after DOM is ready */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', render);
+    } else {
+      render();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

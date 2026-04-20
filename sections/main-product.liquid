@@ -14,6 +14,8 @@
   assign first_model_media = product.media | where: 'media_type', 'model' | first
 -%}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 <script src="{{ 'component-product-gallery.js'  | asset_url }}" defer="defer"></script>
 <script src="{{ 'component-variant-picker.js'   | asset_url }}" defer="defer"></script>
 <script src="{{ 'component-quantity-selector.js'| asset_url }}" defer="defer"></script>
@@ -657,7 +659,14 @@
   "name": "t:sections.main-product.name",
   "tag": "section",
   "class": "section-main-product",
-  "settings": [],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ],
   "blocks": [{ "type": "@theme" }, { "type": "@app" }],
   "max_blocks": 12,
   "enabled_on": {

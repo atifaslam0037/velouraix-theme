@@ -1,5 +1,7 @@
 {% doc %}
   Renders all global theme settings as CSS custom properties on :root.
+  Colour tokens default to scheme-1 (Light). Sections override their own
+  colours via the 'color-scheme' snippet scoped to their section wrapper.
   Inject this snippet inside <head> so every page has access to design tokens.
 {% enddoc %}
 
@@ -29,36 +31,39 @@
     /* ── Branding ── */
     --logo-width: calc(var(--space-1) * {{ settings.logo_width | divided_by: 4.0 }});
 
-    /* ── Base ── */
-    --color-background: {{ settings.background_color }};
-    --color-foreground: {{ settings.foreground_color }};
+    /* ── Default colour tokens (from default scheme).
+       Each section overrides these by rendering snippets/color-scheme.liquid
+       scoped to its own #shopify-section-{id} wrapper. ── */
+    {%- assign default_scheme = settings.color_schemes | first -%}
+    --color-background: {{ default_scheme.settings.background | default: '#FFFFFF' }};
+    --color-foreground: {{ default_scheme.settings.text | default: '#121212' }};
 
     /* ── Text ── */
-    --color-text:       {{ settings.color_text }};
-    --color-text-muted: {{ settings.color_text_muted }};
-    --color-heading:    {{ settings.color_heading }};
+    --color-text:       {{ default_scheme.settings.text | default: '#121212' }};
+    --color-text-muted: {{ default_scheme.settings.text_muted | default: '#666666' }};
+    --color-heading:    {{ default_scheme.settings.heading | default: '#121212' }};
 
     /* ── Borders & Inputs ── */
-    --color-border:           {{ settings.color_border }};
-    --color-input-background: {{ settings.color_input_background }};
-    --color-input-text:       {{ settings.color_input_text }};
-    --color-input-border:     {{ settings.color_input_border }};
-    --color-input-focus:      {{ settings.color_input_focus }};
+    --color-border:           {{ default_scheme.settings.border | default: '#E8E8E8' }};
+    --color-input-background: {{ default_scheme.settings.input_background | default: '#FFFFFF' }};
+    --color-input-text:       {{ default_scheme.settings.input_text | default: '#121212' }};
+    --color-input-border:     {{ default_scheme.settings.input_border | default: '#E8E8E8' }};
+    --color-input-focus:      {{ default_scheme.settings.input_focus | default: '#93C5FD' }};
 
     /* ── Buttons ── */
-    --color-btn-primary-bg:         {{ settings.color_btn_primary_bg }};
-    --color-btn-primary-text:       {{ settings.color_btn_primary_text }};
-    --color-btn-primary-bg-hover:   {{ settings.color_btn_primary_bg_hover }};
-    --color-btn-primary-text-hover: {{ settings.color_btn_primary_text_hover }};
+    --color-btn-primary-bg:         {{ default_scheme.settings.button | default: '#121212' }};
+    --color-btn-primary-text:       {{ default_scheme.settings.button_label | default: '#FFFFFF' }};
+    --color-btn-primary-bg-hover:   {{ default_scheme.settings.button_hover | default: '#333333' }};
+    --color-btn-primary-text-hover: {{ default_scheme.settings.button_label_hover | default: '#FFFFFF' }};
 
-    --color-btn-secondary-bg:         {{ settings.color_btn_secondary_bg }};
-    --color-btn-secondary-text:       {{ settings.color_btn_secondary_text }};
-    --color-btn-secondary-bg-hover:   {{ settings.color_btn_secondary_bg_hover }};
-    --color-btn-secondary-text-hover: {{ settings.color_btn_secondary_text_hover }};
+    --color-btn-secondary-bg:         {{ default_scheme.settings.secondary_button | default: '#F2F2F2' }};
+    --color-btn-secondary-text:       {{ default_scheme.settings.secondary_button_label | default: '#121212' }};
+    --color-btn-secondary-bg-hover:   {{ default_scheme.settings.secondary_button_hover | default: '#E0E0E0' }};
+    --color-btn-secondary-text-hover: {{ default_scheme.settings.secondary_button_label_hover | default: '#121212' }};
 
     /* ── Pricing ── */
-    --color-price-sale:    {{ settings.color_price_sale }};
-    --color-price-compare: {{ settings.color_price_compare }};
+    --color-price-sale:    {{ default_scheme.settings.sale_price | default: '#B91C1C' }};
+    --color-price-compare: {{ default_scheme.settings.compare_price | default: '#999999' }};
 
     /* ── Variant picker buttons (global) ── */
     --vp-btn-border: {{ settings.variant_btn_border_thickness | default: 1 }}px;
@@ -91,7 +96,7 @@
       --font-heading--weight: 600;
     {%- endif -%}
 
-    /* ── Body ── */
+    /* ── Body text ── */
     --font-body-size:        calc(var(--space-1) * {{ settings.font_body_size | divided_by: 4.0 }});
     --font-body-weight:      {{ settings.font_body_weight }};
     --font-body-line-height: {{ settings.font_body_line_height }};
@@ -106,24 +111,24 @@
     --font-h5-size: calc(var(--space-1) * {{ settings.font_h5_size | divided_by: 4.0 }});
     --font-h6-size: calc(var(--space-1) * {{ settings.font_h6_size | divided_by: 4.0 }});
 
-    /* ── Header (set defaults, overridden per section inline style) ── */
+    /* ── Header defaults (overridden per section inline style) ── */
     --header-height: var(--space-14);
     --header-offset: var(--space-14);
-    --header-bg:     {{ settings.background_color }};
-    --header-color:  {{ settings.color_text }};
-    --header-border: {{ settings.color_border }};
+    --header-bg:     #FFFFFF;
+    --header-color:  #121212;
+    --header-border: #E8E8E8;
 
-    /* Required VELOURAIX token aliases */
+    /* ── Required token aliases ── */
     --color-bg: var(--color-background);
     --color-surface: var(--color-background);
     --color-surface-2: color-mix(in srgb, var(--color-background) 92%, var(--color-text) 8%);
     --color-surface-offset: color-mix(in srgb, var(--color-background) 85%, var(--color-text) 15%);
     --color-text-faint: color-mix(in srgb, var(--color-text) 70%, transparent);
     --color-text-inverse: var(--color-background);
-    --color-primary: {{ settings.color_btn_primary_bg }};
-    --color-primary-hover: {{ settings.color_btn_primary_bg_hover }};
-    --color-primary-active: color-mix(in srgb, {{ settings.color_btn_primary_bg_hover }} 85%, var(--color-text) 15%);
-    --color-primary-highlight: color-mix(in srgb, {{ settings.color_btn_primary_bg }} 18%, transparent);
+    --color-primary: var(--color-btn-primary-bg);
+    --color-primary-hover: var(--color-btn-primary-bg-hover);
+    --color-primary-active: color-mix(in srgb, var(--color-btn-primary-bg-hover) 85%, var(--color-text) 15%);
+    --color-primary-highlight: color-mix(in srgb, var(--color-btn-primary-bg) 18%, transparent);
     --color-button: var(--color-btn-primary-bg);
     --color-button-text: var(--color-btn-primary-text);
     --color-error: #b91c1c;
@@ -172,24 +177,6 @@
     --content-narrow: 60rem;
     --content-default: 80rem;
     --content-wide: 110rem;
-  }
-
-  [data-theme="dark"] {
-    --color-background: #101114;
-    --color-bg: #101114;
-    --color-surface: #171a1f;
-    --color-surface-2: #1d2128;
-    --color-surface-offset: #242a33;
-    --color-text: #f5f7fb;
-    --color-text-muted: #c7ced9;
-    --color-text-faint: #9aa5b4;
-    --color-text-inverse: #101114;
-    --color-heading: #ffffff;
-    --color-border: #2b313b;
-    --color-input-background: #171a1f;
-    --color-input-text: #f5f7fb;
-    --color-input-border: #3a4250;
-    --color-input-focus: #93c5fd;
   }
 
   /* ── Base resets that use design tokens ── */

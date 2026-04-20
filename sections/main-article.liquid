@@ -6,6 +6,8 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/article
 {% endcomment %}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 {% if article.image %}
   {{ article.image | image_url: width: 1000 | image_tag }}
 {% endif %}
@@ -63,6 +65,13 @@
 {% schema %}
 {
   "name": "t:general.article",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ]
 }
 {% endschema %}

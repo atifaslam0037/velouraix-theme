@@ -5,6 +5,8 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/404
 {% endcomment %}
 
+{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 <h1>{{ '404.title' | t }}</h1>
 
 <p>
@@ -18,6 +20,13 @@
 {% schema %}
 {
   "name": "t:general.404",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ]
 }
 {% endschema %}
