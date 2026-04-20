@@ -59,7 +59,6 @@
   "
 >
   <div class="featured-collection__container{% if section_width == 'full' %} featured-collection__container--full{% endif %}">
-    
     {%- if heading != blank -%}
       <div class="featured-collection__header featured-collection__header--{{ alignment }}">
         <div class="featured-collection__heading">
@@ -84,7 +83,7 @@
           {%- if icon == 'carets' -%}
             {%- render 'icon', name: 'caret-left' -%}
           {%- else -%}
-            {%- render 'icon', name: 'chevron-left' -%}
+            {%- render 'icon', name: 'arrow -left' -%}
           {%- endif -%}
         </button>
         <button
@@ -96,7 +95,7 @@
           {%- if icon == 'carets' -%}
             {%- render 'icon', name: 'caret-right' -%}
           {%- else -%}
-            {%- render 'icon', name: 'chevron-right' -%}
+            {%- render 'icon', name: 'arrow-right' -%}
           {%- endif -%}
         </button>
       {%- endif -%}
@@ -126,7 +125,6 @@
         </a>
       </div>
     {%- endif -%}
-
   </div>
 </section>
 
@@ -139,7 +137,7 @@
     var prevBtn = document.querySelector('[data-fc-prev="' + sectionId + '"]');
     var nextBtn = document.querySelector('[data-fc-next="' + sectionId + '"]');
     if (!prevBtn || !nextBtn || !grid) return;
-    
+
     prevBtn.addEventListener('click', function () { scrollGrid(-1); });
     nextBtn.addEventListener('click', function () { scrollGrid(1);  });
 
@@ -228,32 +226,49 @@
       "type": "range",
       "id": "product_count",
       "label": "t:sections.featured_collection.settings.product_count.label",
-      "min": 2, "max": 12, "step": 1, "default": 8
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
     },
     {
       "type": "range",
       "id": "columns",
       "label": "t:sections.featured_collection.settings.columns.label",
-      "min": 2, "max": 5, "step": 1, "default": 4
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
     },
     {
       "type": "select",
       "id": "mobile_columns",
       "label": "t:sections.featured_collection.settings.mobile_columns.label",
-      "options": [{ "value": "1", "label": "1" }, { "value": "2", "label": "2" }],
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
       "default": "2"
     },
     {
       "type": "range",
       "id": "h_gap",
       "label": "t:sections.featured_collection.settings.h_gap.label",
-      "min": 0, "max": 60, "step": 2, "unit": "px", "default": 8
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 8
     },
     {
       "type": "range",
       "id": "v_gap",
       "label": "t:sections.featured_collection.settings.v_gap.label",
-      "min": 0, "max": 60, "step": 2, "unit": "px", "default": 24
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
     },
     {
       "type": "header",
@@ -301,7 +316,10 @@
       "type": "select",
       "id": "section_width",
       "label": "t:sections.featured_collection.settings.width.label",
-      "options": [{ "value": "page", "label": "Page" }, { "value": "full", "label": "Full" }],
+      "options": [
+        { "value": "page", "label": "Page" },
+        { "value": "full", "label": "Full" }
+      ],
       "default": "page"
     },
     {
@@ -319,7 +337,11 @@
       "type": "range",
       "id": "header_gap",
       "label": "t:sections.featured_collection.settings.gap.label",
-      "min": 0, "max": 60, "step": 2, "unit": "px", "default": 28
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 28
     },
     {
       "type": "color_scheme",
@@ -335,13 +357,21 @@
       "type": "range",
       "id": "padding_top",
       "label": "t:general.padding_top",
-      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
     },
     {
       "type": "range",
       "id": "padding_bottom",
       "label": "t:general.padding_bottom",
-      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 48
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
     },
     {
       "type": "textarea",

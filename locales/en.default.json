@@ -478,6 +478,10 @@
     "upsell_label": "You might also like"
   },
   "sections": {
+    "hero_banner": {
+      "aria_label": "Hero banner",
+      "slide_nav_label": "Slide navigation"
+    },
     "featured_collection": {
       "name": "Featured collection",
       "settings": {

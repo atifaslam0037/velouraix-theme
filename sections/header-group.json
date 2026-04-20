@@ -1,16 +1,27 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "type": "header",
   "name": "t:general.header",
   "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Welcome to our store",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1"
+      ],
+      "settings": {
+        "show_announcement": true,
+        "color_scheme": "scheme-1",
+        "autoplay_speed": 5
+      }
+    },
     "header": {
       "type": "header",
       "blocks": {
@@ -55,6 +66,7 @@
     }
   },
   "order": [
+    "announcement_bar",
     "header"
   ]
 }

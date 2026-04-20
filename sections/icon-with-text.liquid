@@ -1,0 +1,187 @@
+{%- comment -%}
+  Section: icon-with-text
+  Path: sections/icon-with-text.liquid
+  Description: Responsive grid of icon + text columns.
+{%- endcomment -%}
+
+{% stylesheet %}
+  .icon-with-text {
+    background-color: var(--color-background);
+    padding-block: clamp(var(--space-10), 6vw, var(--space-16));
+  }
+
+  .icon-with-text__inner {
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .icon-with-text__header {
+    margin-bottom: var(--space-10);
+  }
+
+  .icon-with-text__title {
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-size: var(--font-h2-size);
+    line-height: var(--font-heading-line-height);
+    color: var(--color-heading);
+    margin: 0 0 var(--space-2);
+  }
+
+  .icon-with-text__subtitle {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .icon-with-text__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+    gap: var(--space-8) var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .icon-with-text__grid--dividers > .block-group:not(:last-child) {
+      border-right: 1px solid var(--color-border);
+      padding-right: var(--space-6);
+    }
+  }
+
+  .icon-with-text__grid > .block-group {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    gap: var(--space-4);
+  }
+{% endstylesheet %}
+
+{%- liquid
+  assign has_header = false
+  if section.settings.title != blank or section.settings.subtitle != blank
+    assign has_header = true
+  endif
+  assign header_align = section.settings.header_alignment
+  assign show_dividers = section.settings.show_column_dividers
+-%}
+
+<section
+  class="icon-with-text"
+  id="icon-with-text-{{ section.id }}"
+  {%- if section.settings.title != blank -%}
+    aria-labelledby="iwt-title-{{ section.id }}"
+  {%- else -%}
+    aria-label="Icon features"
+  {%- endif -%}
+>
+  <div class="icon-with-text__inner">
+    {%- if has_header -%}
+      <header
+        class="icon-with-text__header"
+        style="text-align: {{ header_align }};"
+      >
+        {%- if section.settings.title != blank -%}
+          <h2
+            id="iwt-title-{{ section.id }}"
+            class="icon-with-text__title"
+          >
+            {{- section.settings.title | escape -}}
+          </h2>
+        {%- endif -%}
+
+        {%- if section.settings.subtitle != blank -%}
+          <p class="icon-with-text__subtitle">
+            {{- section.settings.subtitle | escape -}}
+          </p>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    <div
+      class="icon-with-text__grid{% if show_dividers %} icon-with-text__grid--dividers{% endif %}"
+      role="list"
+    >
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Icons with text",
+  "tag": "section",
+  "class": "icon-with-text-section",
+  "blocks": [{ "type": "group" }, { "type": "@app" }],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subheading"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_column_dividers",
+      "label": "Show column dividers",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icons with text",
+      "blocks": [
+        {
+          "type": "group",
+          "settings": {
+            "direction": "vertical",
+            "alignment": "center",
+            "gap": 16
+          }
+        },
+        {
+          "type": "group",
+          "settings": {
+            "direction": "vertical",
+            "alignment": "center",
+            "gap": 16
+          }
+        },
+        {
+          "type": "group",
+          "settings": {
+            "direction": "vertical",
+            "alignment": "center",
+            "gap": 16
+          }
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6
+}
+{% endschema %}

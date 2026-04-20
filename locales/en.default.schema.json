@@ -572,6 +572,74 @@
     "header_group": {
       "name": "Header group"
     },
+    "hero_banner": {
+      "name": "Hero banner",
+      "settings": {
+        "layout_header": "Layout",
+        "text_h_align": {
+          "label": "Horizontal alignment"
+        },
+        "text_v_align": {
+          "label": "Vertical alignment",
+          "top": "Top",
+          "center": "Middle",
+          "bottom": "Bottom"
+        },
+        "min_height": {
+          "label": "Section height"
+        },
+        "overlay_header": "Overlay",
+        "overlay_opacity": {
+          "label": "Overlay opacity"
+        },
+        "animation_header": "Image animation",
+        "slide_animation": {
+          "label": "Animation style",
+          "none": "None (static)",
+          "zoom_in": "Zoom in (Ken Burns)",
+          "zoom_out": "Zoom out",
+          "pan_left": "Pan left",
+          "pan_right": "Pan right"
+        },
+        "slider_header": "Slider controls",
+        "show_arrows": {
+          "label": "Show navigation arrows",
+          "info": "Only visible when 2 or more slides are added"
+        },
+        "show_dots": {
+          "label": "Show pagination dots",
+          "info": "Only visible when 2 or more slides are added"
+        },
+        "enable_autoplay": {
+          "label": "Enable autoplay"
+        },
+        "autoplay_delay": {
+          "label": "Slide duration"
+        }
+      },
+      "blocks": {
+        "slide": {
+          "name": "Slide",
+          "settings": {
+            "media_header": "Background media",
+            "video_label": "Background video",
+            "video_info": "Loops silently. Leave blank to use image instead.",
+            "image_label": "Background image",
+            "image_info": "Also used as video poster frame while loading.",
+            "content_header": "Content",
+            "eyebrow_label": "Eyebrow label",
+            "subheading_label": "Subheading",
+            "alignment_header": "Alignment (this slide)",
+            "alignment_override_info": "Overrides the section default",
+            "btn1_header": "Primary button",
+            "btn2_header": "Secondary button"
+          }
+        }
+      },
+      "presets": {
+        "name": "Hero banner"
+      }
+    },
     "announcement_bar": {
       "name": "Announcement bar",
       "settings": {
@@ -902,76 +970,7 @@
         }
       }
     },
-    "hero_banner": {
-      "name": "Hero banner",
-      "settings": {
-        "image": {
-          "label": "Background image"
-        },
-        "video_url": {
-          "label": "Background video URL"
-        },
-        "overlay_opacity": {
-          "label": "Overlay opacity"
-        },
-        "content_position": {
-          "label": "Content position"
-        },
-        "full_height": {
-          "label": "Full viewport height"
-        },
-        "min_height": {
-          "label": "Minimum height"
-        }
-      },
-      "blocks": {
-        "heading": {
-          "name": "Heading",
-          "settings": {
-            "text": {
-              "label": "Heading"
-            },
-            "size": {
-              "label": "Size"
-            }
-          }
-        },
-        "subheading": {
-          "name": "Subheading",
-          "settings": {
-            "text": {
-              "label": "Subheading"
-            }
-          }
-        },
-        "text": {
-          "name": "Text",
-          "settings": {
-            "text": {
-              "label": "Text"
-            }
-          }
-        },
-        "button": {
-          "name": "Button",
-          "settings": {
-            "label": {
-              "label": "Button label"
-            },
-            "link": {
-              "label": "Button link"
-            },
-            "style": {
-              "label": "Button style",
-              "options": {
-                "primary": "Primary",
-                "secondary": "Secondary"
-              }
-            }
-          }
-        }
-      }
-    },
+
     "featured_collection": {
       "name": "Featured collection",
       "settings": {
