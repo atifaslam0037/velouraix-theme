@@ -52,7 +52,7 @@
       {
         "type": "font_picker",
         "id": "type_primary_font",
-        "default": "sans-serif",
+        "default": "assistant_n4",
         "label": "t:general.primary"
       },
       {
@@ -257,114 +257,148 @@
     "name": "t:general.colors",
     "settings": [
       {
+        "type": "color_scheme_group",
+        "id": "color_schemes",
+        "definition": [
+          {
+            "type": "color",
+            "id": "background",
+            "label": "Background",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color_background",
+            "id": "background_gradient",
+            "label": "Background gradient"
+          },
+          {
+            "type": "color",
+            "id": "text",
+            "label": "Text",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "text_muted",
+            "label": "Muted text",
+            "default": "#666666"
+          },
+          {
+            "type": "color",
+            "id": "heading",
+            "label": "Heading",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "border",
+            "label": "Border & inputs",
+            "default": "#E8E8E8"
+          },
+          {
+            "type": "color",
+            "id": "button",
+            "label": "Button background",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "button_label",
+            "label": "Button label",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color",
+            "id": "button_hover",
+            "label": "Button hover background",
+            "default": "#333333"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button_label",
+            "label": "Secondary button label",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "input_background",
+            "label": "Input background",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color",
+            "id": "input_text",
+            "label": "Input text",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "input_border",
+            "label": "Input border",
+            "default": "#E8E8E8"
+          },
+          {
+            "type": "color",
+            "id": "input_focus",
+            "label": "Input focus",
+            "default": "#93C5FD"
+          },
+          {
+            "type": "color",
+            "id": "button_label_hover",
+            "label": "Button hover label",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button",
+            "label": "Secondary button background",
+            "default": "#F2F2F2"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button_hover",
+            "label": "Secondary button hover background",
+            "default": "#E0E0E0"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button_label_hover",
+            "label": "Secondary button hover label",
+            "default": "#121212"
+          },
+          {
+            "type": "color",
+            "id": "sale_price",
+            "label": "Sale price",
+            "default": "#B91C1C"
+          },
+          {
+            "type": "color",
+            "id": "compare_price",
+            "label": "Compare-at price",
+            "default": "#999999"
+          }
+        ],
+        "role": {
+          "text": "text",
+          "background": {
+            "solid": "background",
+            "gradient": "background_gradient"
+          },
+          "links": "secondary_button_label",
+          "icons": "text",
+          "primary_button": "button",
+          "on_primary_button": "button_label",
+          "primary_button_border": "button",
+          "secondary_button": "background",
+          "on_secondary_button": "secondary_button_label",
+          "secondary_button_border": "secondary_button_label"
+        }
+      },
+      {
         "type": "header",
-        "content": "t:labels.base_colors"
-      },
-      {
-        "type": "color",
-        "id": "background_color",
-        "default": "#FFFFFF",
-        "label": "t:labels.background"
-      },
-      {
-        "type": "color",
-        "id": "foreground_color",
-        "default": "#000000",
-        "label": "t:labels.foreground"
-      },
-      {
-        "type": "header",
-        "content": "t:labels.text_colors"
-      },
-      {
-        "type": "color",
-        "id": "color_text",
-        "default": "#000000",
-        "label": "t:labels.color_text"
-      },
-      {
-        "type": "color",
-        "id": "color_text_muted",
-        "default": "#999999",
-        "label": "t:labels.color_text_muted"
-      },
-      {
-        "type": "color",
-        "id": "color_heading",
-        "default": "#000000",
-        "label": "t:labels.color_heading"
-      },
-      {
-        "type": "header",
-        "content": "t:labels.border_input_colors"
-      },
-      {
-        "type": "color",
-        "id": "color_border",
-        "default": "#e8e8e8",
-        "label": "t:labels.color_border"
-      },
-      {
-        "type": "color",
-        "id": "color_input_background",
-        "default": "#FFFFFF",
-        "label": "t:labels.color_input_background"
-      },
-      {
-        "type": "color",
-        "id": "color_input_text",
-        "default": "#000000",
-        "label": "t:labels.color_input_text"
-      },
-      {
-        "type": "color",
-        "id": "color_input_border",
-        "default": "#e8e8e8",
-        "label": "t:labels.color_input_border"
-      },
-      {
-        "type": "color",
-        "id": "color_input_focus",
-        "default": "#00000000",
-        "label": "t:labels.color_input_focus"
-      },
-      {
-        "type": "range",
-        "id": "input_corner_radius",
-        "min": 0,
-        "max": 24,
-        "step": 1,
-        "unit": "px",
-        "label": "t:labels.input_corner_radius",
-        "default": 0
-      },
-      {
-        "type": "header",
-        "content": "t:labels.primary_button"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_primary_bg",
-        "default": "#000000",
-        "label": "t:labels.button_background"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_primary_text",
-        "default": "#FFFFFF",
-        "label": "t:labels.button_text"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_primary_bg_hover",
-        "default": "#333333",
-        "label": "t:labels.button_background_hover"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_primary_text_hover",
-        "default": "#FFFFFF",
-        "label": "t:labels.button_text_hover"
+        "content": "Button & input style"
       },
       {
         "type": "range",
@@ -377,51 +411,19 @@
         "default": 0
       },
       {
-        "type": "header",
-        "content": "t:labels.secondary_button"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_secondary_bg",
-        "default": "#f2f2f2",
-        "label": "t:labels.button_background"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_secondary_text",
-        "default": "#000000",
-        "label": "t:labels.button_text"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_secondary_bg_hover",
-        "default": "#e0e0e0",
-        "label": "t:labels.button_background_hover"
-      },
-      {
-        "type": "color",
-        "id": "color_btn_secondary_text_hover",
-        "default": "#000000",
-        "label": "t:labels.button_text_hover"
-      },
-      {
-        "type": "header",
-        "content": "t:labels.pricing_colors"
-      },
-      {
-        "type": "color",
-        "id": "color_price_sale",
-        "default": "#000000",
-        "label": "t:labels.color_price_sale"
-      },
-      {
-        "type": "color",
-        "id": "color_price_compare",
-        "default": "#999999",
-        "label": "t:labels.color_price_compare"
+        "type": "range",
+        "id": "input_corner_radius",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "unit": "px",
+        "label": "t:labels.input_corner_radius",
+        "default": 0
       }
     ]
   },
+
+
   {
     "name": "t:general.branding",
     "settings": [
@@ -508,6 +510,7 @@
         "type": "checkbox",
         "id": "predictive_search_enabled",
         "label": "t:labels.predictive_search",
+        "default": true
       }
     ]
   },
@@ -596,8 +599,14 @@
         "id": "variant_btn_width",
         "label": "t:labels.variant_btn_width",
         "options": [
-          { "value": "auto",  "label": "t:options.variant_btn_width.fit" },
-          { "value": "100%", "label": "t:options.variant_btn_width.fill" }
+          {
+            "value": "auto",
+            "label": "t:options.variant_btn_width.fit"
+          },
+          {
+            "value": "100%",
+            "label": "t:options.variant_btn_width.fill"
+          }
         ],
         "default": "auto"
       }

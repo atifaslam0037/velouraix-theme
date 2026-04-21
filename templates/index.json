@@ -1,20 +1,38 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
-      "type": "main-index",
+      "type": "hero-banner",
       "settings": {}
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Featured collection",
+        "heading_size": "h2",
+        "type": "grid",
+        "carousel_on_mobile": false,
+        "icon": "arrows",
+        "icon_background": "none",
+        "product_count": 8,
+        "columns": 4,
+        "mobile_columns": "2",
+        "h_gap": 8,
+        "v_gap": 24,
+        "show_view_all": true,
+        "view_all_label": "View all",
+        "view_all_style": "primary",
+        "view_all_alignment": "center",
+        "section_width": "page",
+        "alignment": "left",
+        "header_gap": 28,
+        "color_scheme": "scheme-1",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "featured_collection"
   ]
 }

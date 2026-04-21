@@ -1,4 +1,4 @@
-<footer>
+<footer class="color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}">
   <div class="footer__copyright">
     &copy;
     {{ 'now' | date: '%Y' }}
@@ -51,6 +51,12 @@
       "id": "show_payment_icons",
       "label": "t:labels.show_payment_icons",
       "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ]
 }

@@ -5,9 +5,11 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
+
+
 <h1>{{ collection.title }}</h1>
 
-<div class="collection-products">
+<div class="collection-products color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}">
   {% paginate collection.products by 20 %}
     {% for product in collection.products %}
       <div class="collection-product">
@@ -30,6 +32,13 @@
 {% schema %}
 {
   "name": "t:general.collection",
-  "settings": []
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ]
 }
 {% endschema %}

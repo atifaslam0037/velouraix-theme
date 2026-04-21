@@ -1,0 +1,220 @@
+/* =============================================================
+   component-recommended-products.css — VELOURAIX
+   Supports: grid / carousel on desktop + mobile independently
+   ============================================================= */
+
+.recommended-products {
+  background: var(--color-background);
+}
+
+.recommended-products__container {
+  max-width: var(--page-width, 1280px);
+  margin-inline: auto;
+  padding-inline: var(--space-6, 1.5rem);
+}
+
+.recommended-products__container--full {
+  max-width: 100%;
+  padding-inline: 0;
+}
+
+/* ── Header block (rich text) ── */
+.recommended-products__header {
+  margin-bottom: var(--space-8, 2rem);
+}
+
+.recommended-products__heading.rte h1,
+.recommended-products__heading.rte h2,
+.recommended-products__heading.rte h3,
+.recommended-products__heading.rte h4 {
+  font-family: var(--font-heading-family, var(--font-body-family));
+  font-size: clamp(1.25rem, 2.5vw, 1.875rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.recommended-products__heading.rte p {
+  font-size: var(--font-body-size, 1rem);
+  color: var(--color-text-muted);
+  margin: var(--space-2, 0.5rem) 0 0;
+}
+
+/* ── Slider wrap (positions arrows) ── */
+.recommended-products__slider-wrap {
+  position: relative;
+}
+
+/* ── GRID (default desktop) ── */
+.recommended-products__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--rp-columns, 4), 1fr);
+  column-gap: var(--rp-h-gap, 1rem);
+  row-gap: var(--rp-v-gap, 1.5rem);
+}
+
+/* ── CAROUSEL — desktop ── */
+[data-desktop-style="carousel"] .recommended-products__grid {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  gap: var(--rp-h-gap, 1rem);
+  /* Add side padding so arrows don't overlap first/last card */
+  padding-inline: 0;
+}
+
+[data-desktop-style="carousel"] .recommended-products__grid::-webkit-scrollbar {
+  display: none;
+}
+
+[data-desktop-style="carousel"] .recommended-products__item {
+  flex: 0 0 calc(100% / var(--rp-columns, 4) - var(--rp-h-gap, 1rem) * (var(--rp-columns, 4) - 1) / var(--rp-columns, 4));
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  min-width: 0;
+}
+
+/* ── Carousel arrows ── */
+.rp-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: var(--color-background, #fff);
+  border: 1px solid var(--color-border, #d4d1ca);
+  border-radius: 50%;
+  color: var(--color-text, #111);
+  cursor: pointer;
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, .08));
+  transition: background var(--transition-interactive, 180ms),
+    box-shadow var(--transition-interactive, 180ms);
+}
+
+.rp-arrow:hover {
+  background: var(--color-surface-2, #f5f5f3);
+  box-shadow: var(--shadow-lg, 0 8px 24px rgba(0, 0, 0, .12));
+}
+
+.rp-arrow:focus-visible {
+  outline: 2px solid var(--color-primary, #01696f);
+  outline-offset: 3px;
+}
+
+.rp-arrow svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.rp-arrow--prev {
+  left: -21px;
+}
+
+.rp-arrow--next {
+  right: -21px;
+}
+
+/* Hide arrows on desktop grid */
+[data-desktop-style="grid"] .rp-arrow {
+  display: none;
+}
+
+/* ── Mobile overrides ── */
+@media (max-width: 989px) {
+
+  /* Grid on mobile */
+  [data-mobile-style="grid"] .recommended-products__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--rp-mob-columns, 2), 1fr);
+    overflow: visible;
+  }
+
+  /* Carousel on mobile */
+  [data-mobile-style="carousel"] .recommended-products__grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    gap: var(--rp-h-gap, 1rem);
+  }
+
+  [data-mobile-style="carousel"] .recommended-products__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-mobile-style="carousel"] .recommended-products__item {
+    flex: 0 0 calc(100% / var(--rp-mob-columns, 2) - var(--rp-h-gap, 1rem) * (var(--rp-mob-columns, 2) - 1) / var(--rp-mob-columns, 2));
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  /* Hide arrows on mobile (swipe instead) */
+  .rp-arrow {
+    display: none !important;
+  }
+}
+
+.recommended-products__item {
+  min-width: 0;
+}
+
+/* ── Skeleton loaders ── */
+@keyframes rp-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+      var(--color-surface-offset, #ebebeb) 25%,
+      var(--color-surface-dynamic, #f5f5f5) 50%,
+      var(--color-surface-offset, #ebebeb) 75%);
+  background-size: 200% 100%;
+  animation: rp-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+.skeleton-text {
+  height: 0.875rem;
+  border-radius: 2px;
+}
+
+.skeleton-text--short {
+  width: 55%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}

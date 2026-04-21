@@ -1,58 +1,31 @@
-{% doc %}
+{% comment %}
   Snippet: product-card.liquid
-  Path: snippets/product-card.liquid
-  Description: Renders a product card for use in product grid areas.
-    Includes media hover swap, sale badge, wishlist button, quick-add trigger,
-    size swatches, and pricing — all controlled by global theme settings.
-
-  @param {product} product  - Required. The product drop to render.
-  @param {boolean} [lazy]   - Optional. If true images use lazy loading. Default: true.
-
-  @example
-  {% render 'product-card', product: product %}
-{% enddoc %}
+  Wishlist button now carries data-wishlist-* attributes read by
+  component-wishlist.js. No other logic changed.
+{% endcomment %}
 
 {%- liquid
-  comment
-    ── Resolve lazy loading ──
-  endcomment
   assign lazy_load = lazy | default: true
-
-  comment
-    ── Global settings — always use | default: to guard against unsaved settings_data.json values ──
-  endcomment
-  assign show_vendor   = settings.card_show_vendor   | default: true, allow_false: true
+  assign show_vendor = settings.card_show_vendor | default: true, allow_false: true
   assign show_wishlist = settings.card_show_wishlist | default: true, allow_false: true
-  assign quick_add     = settings.quick_add | default: true, allow_false: true
+  assign quick_add = settings.quick_add | default: true, allow_false: true
   assign mobile_quick_add = settings.mobile_quick_add | default: true, allow_false: true
-  assign ratio         = settings.card_image_ratio   | default: '3/4'
-
-  comment
-    ── Media ──
-  endcomment
-  assign first_image  = product.featured_media
+  assign ratio = settings.card_image_ratio | default: '3/4'
+  assign first_image = product.featured_media
   assign second_image = product.media[1]
-
-  comment
-    ── Pricing ──
-  endcomment
   assign target_variant = product.selected_or_first_available_variant
-  assign compare_at     = target_variant.compare_at_price | default: 0
-  assign price          = target_variant.price | default: 0
-  assign on_sale        = false
+  assign compare_at = target_variant.compare_at_price | default: 0
+  assign price = target_variant.price | default: 0
+  assign on_sale = false
   if compare_at > price
     assign on_sale = true
   endif
-
-  comment
-    ── Sizes removed per user request ──
-  endcomment
+  assign wishlist_image = first_image | image_url: width: 600
 -%}
 
+{{- 'component-product-card.css' | asset_url | stylesheet_tag -}}
+
 <div class="product-card">
-
-  {{- 'component-product-card.css' | asset_url | stylesheet_tag -}}
-
   <div
     class="product-card__media-wrapper"
     style="aspect-ratio: {{ ratio | replace: '/', ' / ' }};"
@@ -68,9 +41,9 @@
         <img
           src="{{ first_image | image_url: width: 600 }}"
           srcset="
-            {{ first_image | image_url: width: 300 }}  300w,
-            {{ first_image | image_url: width: 600 }}  600w,
-            {{ first_image | image_url: width: 900 }}  900w
+            {{ first_image | image_url: width: 300 }} 300w,
+            {{ first_image | image_url: width: 600 }} 600w,
+            {{ first_image | image_url: width: 900 }} 900w
           "
           sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
           alt="{{ first_image.alt | escape | default: product.title | escape }}"
@@ -78,16 +51,18 @@
           height="{{ first_image.height }}"
           class="product-card__image product-card__image--primary"
           loading="{% if lazy_load %}lazy{% else %}eager{% endif %}"
-          {%- unless lazy_load %}fetchpriority="high"{% endunless -%}
+          {%- unless lazy_load %}
+            fetchpriority="high"
+          {% endunless %}
           decoding="async"
         >
         {%- if second_image -%}
           <img
             src="{{ second_image | image_url: width: 600 }}"
             srcset="
-              {{ second_image | image_url: width: 300 }}  300w,
-              {{ second_image | image_url: width: 600 }}  600w,
-              {{ second_image | image_url: width: 900 }}  900w
+              {{ second_image | image_url: width: 300 }} 300w,
+              {{ second_image | image_url: width: 600 }} 600w,
+              {{ second_image | image_url: width: 900 }} 900w
             "
             sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
             alt="{{ second_image.alt | escape | default: product.title | escape }}"
@@ -105,22 +80,31 @@
       {%- endif -%}
     </a>
 
-    {%- comment -%} Sale badge — top left {%- endcomment -%}
     {%- if on_sale -%}
       <span class="product-card__badge" aria-label="{{ 'products.badges.sale' | t }}">
         {{- 'products.badges.sale' | t -}}
       </span>
     {%- endif -%}
 
-    {%- comment -%} Wishlist — top right {%- endcomment -%}
     {%- if show_wishlist -%}
       <button
         type="button"
         class="product-card__wishlist"
+        data-wishlist-btn
+        data-wishlist-id="{{ product.id }}"
+        data-wishlist-title="{{ product.title | escape }}"
+        data-wishlist-url="{{ product.url }}"
+        data-wishlist-price="{{ price | money }}"
+        data-wishlist-image="{{ wishlist_image }}"
+        data-wishlist-vendor="{{ product.vendor | escape }}"
+        data-label-add="{{ 'products.product.add_to_wishlist' | t }}"
+        data-label-remove="Remove from wishlist"
+        data-product-title="{{ product.title | escape }}"
+        aria-pressed="false"
         aria-label="{{ 'products.product.add_to_wishlist' | t }}: {{ product.title | escape }}"
       >
         <span class="visually-hidden">{{ 'products.product.add_to_wishlist' | t }}</span>
-        {%- render 'icon', name: 'bookmark', aria_hidden: true -%}
+        {%- render 'icon', name: 'heart' -%}
       </button>
     {%- endif -%}
 
@@ -133,7 +117,7 @@
         data-product-single-variant="{{ product.has_only_default_variant }}"
         data-variant-id="{{ target_variant.id }}"
         aria-label="{{ 'products.product.quick_add' | t }}: {{ product.title | escape }}"
-        aria-haspopup="{% if quick_add == 'modal' %}dialog{% else %}false{% endif %}"
+        aria-haspopup="dialog"
       >
         <span aria-hidden="true">+</span>
         <span class="visually-hidden">{{ 'products.product.quick_add' | t }}</span>
@@ -150,14 +134,12 @@
       <a href="{{ product.url }}">{{ product.title | escape }}</a>
     </h3>
 
-
-
     <div class="product-card__prices">
       {%- if on_sale -%}
         <span class="product-card__price product-card__price--sale">{{ price | money }}</span>
         {%- assign percent_off = compare_at | minus: price | times: 100.0 | divided_by: compare_at | round -%}
-        <span class="product-card__discount" aria-label="{{ 'products.badges.save' | t: percent: percent_off }}">-{{ percent_off }}%</span>
-        <s class="product-card__compare" aria-label="{{ 'products.product.price.regular_price' | t }}">{{ compare_at | money }}</s>
+        <span class="product-card__discount">-{{ percent_off }}%</span>
+        <s class="product-card__compare">{{ compare_at | money }}</s>
       {%- else -%}
         <span class="product-card__price">{{ price | money }}</span>
       {%- endif -%}

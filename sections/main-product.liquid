@@ -14,11 +14,13 @@
   assign first_model_media = product.media | where: 'media_type', 'model' | first
 -%}
 
+
+
 <script src="{{ 'component-product-gallery.js'  | asset_url }}" defer="defer"></script>
 <script src="{{ 'component-variant-picker.js'   | asset_url }}" defer="defer"></script>
 <script src="{{ 'component-quantity-selector.js'| asset_url }}" defer="defer"></script>
 
-<div class="product page-width" id="MainProduct-{{ section.id }}">
+<div class="product page-width color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}" id="MainProduct-{{ section.id }}">
   <div class="product__grid">
     {%- comment -%}
       ─────────────────────────────────────────
@@ -657,7 +659,14 @@
   "name": "t:sections.main-product.name",
   "tag": "section",
   "class": "section-main-product",
-  "settings": [],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
+    }
+  ],
   "blocks": [{ "type": "@theme" }, { "type": "@app" }],
   "max_blocks": 12,
   "enabled_on": {

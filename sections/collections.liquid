@@ -8,7 +8,7 @@
 <h1>{{ 'collections.title' | t }}</h1>
 
 <div
-  class="collections {{ section.settings.grid_item_width }}"
+  class="collections {{ section.settings.grid_item_width }} color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}"
   style="--grid-gap: calc(var(--space-1) * {{ section.settings.grid_gap | divided_by: 4.0 }})"
 >
   {% for collection in collections %}
@@ -56,6 +56,8 @@
 {% schema %}
 {
   "name": "t:general.collections_grid",
+  "tag": "section",
+  "class": "collections page-width",
   "settings": [
     {
       "type": "select",
@@ -76,6 +78,12 @@
       "step": 5,
       "unit": "px",
       "default": 10
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ],
   "presets": [{ "name": "t:general.collections_grid" }]

@@ -1,9 +1,9 @@
 {% doc %}
   Block: accelerated-checkout.liquid
   Path: blocks/accelerated-checkout.liquid
-  Description: Renders Shopify dynamic checkout buttons (Shop Pay, Apple Pay, PayPal, etc.)
-    inside the buy-buttons product form. Respects the parent block's show_dynamic_checkout setting.
-  Sections using this block: used inside blocks/buy-buttons.liquid.
+  Description: Renders Shopify dynamic checkout buttons (Shop Pay, Apple Pay,
+    PayPal, etc.) inside the buy-buttons product form. Falls back to a
+    "BUY IT NOW" button when product is blank (theme editor preview).
 {% enddoc %}
 
 <div class="product-form__dynamic-checkout" {{ block.shopify_attributes }}>
@@ -17,64 +17,71 @@
       disabled
       aria-disabled="true"
     >
-      {{ 'products.product.buy_it_now' | t }}
+      {{- 'products.product.buy_it_now' | t | upcase -}}
     </button>
   {%- endif -%}
 </div>
 
-{% schema %}
-{
-  "name": "t:blocks.accelerated_checkout.name",
-  "settings": [],
-  "presets": [
-    {
-      "name": "t:blocks.accelerated_checkout.name"
-    }
-  ]
-}
-{% endschema %}
-
 {% stylesheet %}
-.product-form__dynamic-checkout {
-  width: 100%;
-  margin-top: var(--space-2);
-}
+  /* ══════════════════════════════════════════════
+   Accelerated Checkout block
+   ══════════════════════════════════════════════ */
 
-.product-form__dynamic-checkout .shopify-payment-button {
-  width: 100%;
-}
+  .product-form__dynamic-checkout {
+    flex: 1 1 100%;
+    width: 100%;
+  }
 
-.product-form__dynamic-checkout .shopify-payment-button__button--unbranded {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 52px;
-  background: var(--color-text);
-  color: var(--color-background);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border: none;
-  border-radius: var(--button-radius);
-  cursor: pointer;
-}
+  /* Shopify injects .shopify-payment-button wrapper */
+  .product-form__dynamic-checkout .shopify-payment-button {
+    width: 100%;
+  }
 
-@media screen and (prefers-reduced-motion: no-preference) {
+  .product-form__dynamic-checkout .shopify-payment-button__button {
+    border-radius: var(--button-radius, 0px) !important;
+  }
+
+  /* Editor preview / fallback unbranded button */
   .product-form__dynamic-checkout .shopify-payment-button__button--unbranded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    padding-inline: var(--space-5);
+    background: var(--color-text);
+    color: var(--color-background);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--button-radius, 0px);
+    cursor: pointer;
     transition: opacity var(--transition-base);
   }
 
-  .product-form__dynamic-checkout .shopify-payment-button__button--unbranded:hover {
-    opacity: 0.85;
+  .product-form__dynamic-checkout .shopify-payment-button__button--unbranded:hover:not(:disabled) {
+    background: var(--color-primary);
   }
-}
 
-@media screen and (prefers-reduced-motion: reduce) {
-  .product-form__dynamic-checkout .shopify-payment-button__button--unbranded {
-    transition-duration: 0.001ms !important;
+  .product-form__dynamic-checkout .shopify-payment-button__button--unbranded:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
   }
-}
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .product-form__dynamic-checkout .shopify-payment-button__button--unbranded {
+      transition-duration: 0.001ms !important;
+    }
+  }
 {% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Buy it now",
+  "settings": [],
+  "presets": [{ "name": "Buy it now" }]
+}
+{% endschema %}

@@ -162,37 +162,48 @@
     </svg>
 
   {%- when 'chevron-left' -%}
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <polyline points="15 18 9 12 15 6"/>
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 5.5L7 9.5L3 5.5" stroke="currentColor" stroke-width="var(--icon-stroke-width)" stroke-linecap="round" stroke-linejoin="round"></path>
     </svg>
 
   {%- when 'chevron-right' -%}
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 5.5L7 9.5L3 5.5" stroke="currentColor" stroke-width="var(--icon-stroke-width)" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+
+  {%- when 'arrow-right' -%}
     <svg
-      width="10"
-      height="10"
-      viewBox="0 0 24 24"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      width="32"
+      height="11"
+      viewBox="0 0 18 14"
       stroke="currentColor"
-      stroke-width="1.5"
+      stroke-width="1"
       stroke-linecap="round"
       stroke-linejoin="round"
       aria-hidden="true"
       focusable="false"
     >
-      <polyline points="9 18 15 12 9 6"/>
+      <path fill="currentColor" d="M16 7.875a.875.875 0 0 0 0-1.75H1a.875.875 0 1 0 0 1.75h15Z"></path><path fill="#181817" d="M10.81 13.188a.876.876 0 0 0 1.239 0l5.568-5.569a.876.876 0 0 0 0-1.238L12.05.813a.876.876 0 0 0-1.238 1.237L15.76 7l-4.95 4.95a.875.875 0 0 0 0 1.238Z"></path>
+    </svg>
+
+  {%- when 'arrow-left' -%}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      width="32"
+      height="11"
+      viewBox="0 0 18 14"
+      stroke="currentColor"
+      stroke-width="1"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path fill="currentColor" d="M1.996 7.875a.875.875 0 1 1 0-1.75h15a.875.875 0 0 1 0 1.75h-15Z"></path>
+      <path fill="currentColor" d="M7.185 13.188a.876.876 0 0 1-1.238 0L.38 7.619a.876.876 0 0 1 0-1.238L5.947.813A.876.876 0 0 1 7.185 2.05L2.235 7l4.95 4.95a.875.875 0 0 1 0 1.238Z"></path>
     </svg>
 
   {%- when 'trash' -%}
@@ -254,5 +265,21 @@
       <circle cx="9" cy="9" r="2"/>
       <circle cx="15" cy="15" r="2"/>
       <line x1="16" y1="8" x2="8" y2="16"/>
+    </svg>
+  {%- when 'heart' -%}
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path fill="transparent" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
     </svg>
 {%- endcase -%}

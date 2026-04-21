@@ -66,7 +66,14 @@
             >
               <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
               {%- render 'icon', name: 'cart' -%}
-              <span class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
+              <span
+                class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}"
+                id="cart-count-mobile"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {{- cart_qty_sum -}}
+              </span>
             </button>
           {%- else -%}
             <a
@@ -76,7 +83,14 @@
             >
               <span class="visually-hidden">{{ 'sections.header.cart_label' | t }}</span>
               {%- render 'icon', name: 'cart' -%}
-              <span class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}" id="cart-count-mobile" aria-live="polite" aria-atomic="true">{{ cart_qty_sum }}</span>
+              <span
+                class="header-action-text__badge{% if cart_qty_sum == 0 %} hidden{% endif %}"
+                id="cart-count-mobile"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {{- cart_qty_sum -}}
+              </span>
             </a>
           {%- endif -%}
         {%- endif -%}
@@ -84,11 +98,7 @@
 
       <div class="header-end--desktop">
         {%- if nav_right_block != null -%}
-          {%- render 'header-icons',
-            block: nav_right_block,
-            search_style: search_style,
-            cart_style: cart_style
-          -%}
+          {%- render 'header-icons', block: nav_right_block, search_style: search_style, cart_style: cart_style -%}
         {%- endif -%}
       </div>
     </div>

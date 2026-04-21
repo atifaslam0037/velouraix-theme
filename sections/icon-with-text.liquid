@@ -1,0 +1,605 @@
+{%- comment -%}
+  Section: icon-with-text
+  Path: sections/icon-with-text.liquid
+{%- endcomment -%}
+
+{% stylesheet %}
+  .icon-with-text {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background);
+    color: var(--color-text);
+  }
+
+  /* ── Height ── */
+  .icon-with-text--height-auto {
+    height: auto;
+  }
+  .icon-with-text--height-small {
+    min-height: 300px;
+  }
+  .icon-with-text--height-medium {
+    min-height: 500px;
+  }
+  .icon-with-text--height-large {
+    min-height: 700px;
+  }
+  .icon-with-text--height-full {
+    min-height: 100vh;
+  }
+
+  /* ── Border ── */
+  .icon-with-text--border-none {
+    border: none;
+  }
+  .icon-with-text--border-solid {
+    border: 1px solid var(--iwt-border-color, currentColor);
+  }
+
+  /* ── Background media ── */
+  .icon-with-text__bg-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── Overlay ── */
+  .icon-with-text__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ── Inner ── */
+  .icon-with-text__inner {
+    position: relative;
+    z-index: 2;
+    flex: 1;               /* Grow to fill section height so Position works */
+    display: flex;
+    flex-direction: column;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+    width: 100%;           /* Keep it centered even as flex child */
+  }
+
+  .icon-with-text--width-full .icon-with-text__inner {
+    max-width: 100%;
+    padding-inline: var(--page-margin);
+  }
+
+  /* ── Grid ── */
+  .icon-with-text__grid {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;               /* Grow to fill inner so align-items (Position) has effect */
+  }
+
+  /* Direction */
+  .icon-with-text__grid--vertical {
+    flex-direction: column;
+  }
+  .icon-with-text__grid--horizontal {
+    flex-direction: row;
+  }
+
+  /* Alignment controls main-axis (horizontal distribution in row mode) */
+  .icon-with-text__grid--align-left {
+    justify-content: flex-start;
+  }
+  .icon-with-text__grid--align-center {
+    justify-content: center;
+  }
+  .icon-with-text__grid--align-right {
+    justify-content: flex-end;
+  }
+  .icon-with-text__grid--align-space-between {
+    justify-content: space-between;
+  }
+
+  /* Position controls cross-axis (vertical alignment in row mode) */
+  .icon-with-text__grid--justify-top {
+    align-items: flex-start;
+  }
+  .icon-with-text__grid--justify-center {
+    align-items: center;
+  }
+  .icon-with-text__grid--justify-bottom {
+    align-items: flex-end;
+  }
+
+  /* Dividers */
+  @media (min-width: 768px) {
+    .icon-with-text__grid--dividers > .block-group:not(:last-child) {
+      border-right: 1px solid var(--color-border);
+      padding-right: var(--space-6);
+    }
+  }
+
+  /* Default grid children: equal-width columns */
+  .icon-with-text__grid > .block-group {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  /* Fill: take full row */
+  .icon-with-text__grid > .block-group--width-fill {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  /* Fit: shrink to content, never grow */
+  .icon-with-text__grid > .block-group--width-fit {
+    flex: 0 0 auto;
+    width: auto;
+  }
+  /* Custom: respect the explicit % width */
+  .icon-with-text__grid > .block-group--width-custom {
+    flex: 0 0 auto;
+  }
+
+  /* ── Mobile: vertical stacking ── */
+  @media (max-width: 749px) {
+    .icon-with-text__grid--mobile-vertical {
+      flex-direction: column !important;
+    }
+
+    .icon-with-text__grid--mobile-vertical > .block-group {
+      flex: none;
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{%- liquid
+  assign show_dividers = section.settings.show_column_dividers
+  assign direction = section.settings.direction
+  assign mobile_vertical = section.settings.vertical_on_mobile
+  assign alignment = section.settings.alignment
+  assign position = section.settings.position
+  assign col_gap = section.settings.gap
+
+  assign width = section.settings.width
+  assign height = section.settings.height
+  assign custom_height = section.settings.custom_height
+
+  assign bg_media_type = section.settings.bg_media_type
+  assign has_bg_image = false
+  if bg_media_type == 'image' and section.settings.bg_image != blank
+    assign has_bg_image = true
+  endif
+
+  assign border = section.settings.border
+  assign border_color = section.settings.border_color
+  assign corner_radius = section.settings.corner_radius
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+
+  assign height_style = ''
+  if height == 'custom'
+    assign height_style = 'min-height: ' | append: custom_height | append: 'px;'
+  endif
+-%}
+
+<section
+  class="
+    icon-with-text
+    icon-with-text--width-{{ width }}
+    icon-with-text--height-{{ height }}
+    icon-with-text--border-{{ border }}
+    color-{{ section.settings.color_scheme }}
+  "
+  id="icon-with-text-{{ section.id }}"
+  aria-label="Icon features"
+  style="
+    padding-top: {{ padding_top }}px;
+    padding-bottom: {{ padding_bottom }}px;
+    border-radius: {{ corner_radius }}px;
+    --iwt-border-color: {{ border_color }};
+    {{ height_style }}
+    --color-background:               {{ section.settings.color_scheme.settings.background        | default: '#FFFFFF' }};
+    --color-bg:                       {{ section.settings.color_scheme.settings.background        | default: '#FFFFFF' }};
+    --color-text:                     {{ section.settings.color_scheme.settings.text              | default: '#121212' }};
+    --color-heading:                  {{ section.settings.color_scheme.settings.heading           | default: '#121212' }};
+    --color-text-muted:               {{ section.settings.color_scheme.settings.text_muted        | default: '#666666' }};
+    --color-border:                   {{ section.settings.color_scheme.settings.border            | default: '#E8E8E8' }};
+    --color-btn-primary-bg:           {{ section.settings.color_scheme.settings.button            | default: '#121212' }};
+    --color-btn-primary-text:         {{ section.settings.color_scheme.settings.button_label      | default: '#FFFFFF' }};
+    --color-btn-primary-bg-hover:     {{ section.settings.color_scheme.settings.button_hover      | default: '#333333' }};
+    --color-btn-primary-text-hover:   {{ section.settings.color_scheme.settings.button_label_hover| default: '#FFFFFF' }};
+    --color-btn-secondary-bg:         {{ section.settings.color_scheme.settings.secondary_button             | default: '#F2F2F2' }};
+    --color-btn-secondary-text:       {{ section.settings.color_scheme.settings.secondary_button_label       | default: '#121212' }};
+    --color-btn-secondary-bg-hover:   {{ section.settings.color_scheme.settings.secondary_button_hover       | default: '#E0E0E0' }};
+    --color-btn-secondary-text-hover: {{ section.settings.color_scheme.settings.secondary_button_label_hover | default: '#121212' }};
+    --color-input-background:         {{ section.settings.color_scheme.settings.input_background  | default: '#FFFFFF' }};
+    --color-input-text:               {{ section.settings.color_scheme.settings.input_text        | default: '#121212' }};
+    --color-input-border:             {{ section.settings.color_scheme.settings.input_border      | default: '#E8E8E8' }};
+    --color-price-sale:               {{ section.settings.color_scheme.settings.sale_price        | default: '#B91C1C' }};
+    background-color: var(--color-background);
+    color: var(--color-text);
+  "
+>
+  {%- if has_bg_image -%}
+    {{
+      section.settings.bg_image
+      | image_url: width: 1920
+      | image_tag:
+        class: 'icon-with-text__bg-media',
+        loading: 'lazy',
+        alt: '',
+        widths: '375, 750, 1100, 1500, 1920',
+        sizes: '100vw'
+    }}
+  {%- endif -%}
+
+  {%- if overlay_opacity > 0 -%}
+    <div
+      class="icon-with-text__overlay"
+      aria-hidden="true"
+      style="background-color: {{ overlay_color }}; opacity: {{ overlay_opacity }};"
+    ></div>
+  {%- endif -%}
+
+  <div class="icon-with-text__inner">
+    <div
+      class="
+        icon-with-text__grid
+        icon-with-text__grid--{{ direction }}
+        icon-with-text__grid--align-{{ alignment }}
+        icon-with-text__grid--justify-{{ position }}
+        {% if show_dividers %} icon-with-text__grid--dividers{% endif %}
+        {% if mobile_vertical %} icon-with-text__grid--mobile-vertical{% endif %}
+      "
+      style="gap: {{ col_gap }}px;"
+      role="list"
+    >
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Icons with text",
+  "tag": "section",
+  "class": "icon-with-text-section",
+  "blocks": [{ "type": "group" }, { "type": "@app" }],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "vertical", "label": "Vertical" },
+        { "value": "horizontal", "label": "Horizontal" }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "Vertical on mobile",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "space-between", "label": "Space between" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "page", "label": "Page" },
+        { "value": "full", "label": "Full" }
+      ],
+      "default": "page"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "full", "label": "Full screen" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "Custom height (px)",
+      "min": 100,
+      "max": 1000,
+      "step": 20,
+      "default": 400,
+      "unit": "px",
+      "visible_if": "{{ section.settings.height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "bg_media_type",
+      "label": "Background media",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "image", "label": "Image" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image",
+      "visible_if": "{{ section.settings.bg_media_type == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Borders",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "solid", "label": "Solid" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.border == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Background overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 0,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Column dividers"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_column_dividers",
+      "label": "Show column dividers",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icons with text",
+      "settings": {
+        "direction": "horizontal",
+        "alignment": "center",
+        "position": "top",
+        "gap": 24,
+        "width": "page",
+        "height": "auto",
+        "padding_top": 40,
+        "padding_bottom": 40
+      },
+      "blocks": [
+        {
+          "type": "group",
+          "settings": {
+            "direction": "vertical",
+            "alignment": "center",
+            "position": "top",
+            "gap": 12
+          },
+          "blocks": [
+            {
+              "type": "icon",
+              "settings": {
+                "custom_svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg>",
+                "icon_size": 40,
+                "icon_color": "#000000"
+              }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>Intentional Design</p>",
+                "typography_preset": "h3",
+                "alignment": "center",
+                "width": "fill"
+              }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>Everything we do starts with why</p>",
+                "typography_preset": "paragraph",
+                "alignment": "center",
+                "width": "fill",
+                "text_color": "#6b7280"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "settings": {
+            "direction": "vertical",
+            "alignment": "center",
+            "position": "top",
+            "gap": 12
+          },
+          "blocks": [
+            {
+              "type": "icon",
+              "settings": {
+                "custom_svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'/></svg>",
+                "icon_size": 40,
+                "icon_color": "#000000"
+              }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>Made With Care</p>",
+                "typography_preset": "h3",
+                "alignment": "center",
+                "width": "fill"
+              }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>We believe in building better</p>",
+                "typography_preset": "paragraph",
+                "alignment": "center",
+                "width": "fill",
+                "text_color": "#6b7280"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "settings": {
+            "direction": "vertical",
+            "alignment": "center",
+            "position": "top",
+            "gap": 12
+          },
+          "blocks": [
+            {
+              "type": "icon",
+              "settings": {
+                "custom_svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/><circle cx='12' cy='7' r='4'/></svg>",
+                "icon_size": 40,
+                "icon_color": "#000000"
+              }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>A Team With a Goal</p>",
+                "typography_preset": "h3",
+                "alignment": "center",
+                "width": "fill"
+              }
+            },
+            {
+              "type": "text",
+              "settings": {
+                "text": "<p>Real people making great products</p>",
+                "typography_preset": "paragraph",
+                "alignment": "center",
+                "width": "fill",
+                "text_color": "#6b7280"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6
+}
+{% endschema %}

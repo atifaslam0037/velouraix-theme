@@ -1,27 +1,184 @@
 {%- comment -%}
   Block: text
   Path: blocks/text.liquid
-  Description: Reusable rich text block with alignment control.
-  Used in sections that support @theme blocks.
+  Description: Standalone rich text block with full typography,
+               layout, color, appearance and padding controls.
 {%- endcomment -%}
 
-<div class="block-text block-text--{{ block.settings.alignment }}" {{ block.shopify_attributes }}>
-  <div class="block-text__content rte">{{ block.settings.text }}</div>
-</div>
-
 {% stylesheet %}
-.block-text {
-  display: block;
-}
+  /* ── text block ── */
+  .block-text {
+    display: block;
+  }
 
-.block-text__content {
-  color: var(--color-text);
-}
+  /* ── Width ── */
+  .block-text--width-fit {
+    width: fit-content;
+  }
+  .block-text--width-fill {
+    width: 100%;
+  }
 
-.block-text--left .block-text__content { text-align: left; }
-.block-text--center .block-text__content { text-align: center; }
-.block-text--right .block-text__content { text-align: right; }
+  /* ── Max width ── */
+  .block-text--maxwidth-narrow .block-text__content {
+    max-width: 400px;
+  }
+  .block-text--maxwidth-normal .block-text__content {
+    max-width: 640px;
+  }
+  .block-text--maxwidth-none .block-text__content {
+    max-width: none;
+  }
+
+  /* ── Alignment ── */
+  .block-text--left {
+    text-align: left;
+  }
+  .block-text--center {
+    text-align: center;
+  }
+  .block-text--right {
+    text-align: right;
+  }
+
+  /* ── Typography presets ── */
+  .block-text--preset-paragraph .block-text__content {
+    font-size: var(--font-size-md, 1rem);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .block-text--preset-h1 .block-text__content {
+    font-size: var(--font-h1-size, 2.5rem);
+    font-weight: var(--font-heading-weight, 700);
+    line-height: 1.15;
+    font-family: var(--font-heading);
+  }
+
+  .block-text--preset-h2 .block-text__content {
+    font-size: var(--font-h2-size, 2rem);
+    font-weight: var(--font-heading-weight, 700);
+    line-height: 1.2;
+    font-family: var(--font-heading);
+  }
+
+  .block-text--preset-h3 .block-text__content {
+    font-size: var(--font-h3-size, 1.5rem);
+    font-weight: var(--font-heading-weight, 700);
+    line-height: 1.25;
+    font-family: var(--font-heading);
+  }
+
+  .block-text--preset-h4 .block-text__content {
+    font-size: var(--font-h4-size, 1.25rem);
+    font-weight: var(--font-heading-weight, 600);
+    line-height: 1.3;
+    font-family: var(--font-heading);
+  }
+
+  .block-text--preset-h5 .block-text__content {
+    font-size: var(--font-h5-size, 1.125rem);
+    font-weight: var(--font-heading-weight, 600);
+    line-height: 1.35;
+    font-family: var(--font-heading);
+  }
+
+  .block-text--preset-h6 .block-text__content {
+    font-size: var(--font-h6-size, 1rem);
+    font-weight: var(--font-heading-weight, 600);
+    line-height: 1.4;
+    font-family: var(--font-heading);
+  }
+
+  /* ── RTE base styles ── */
+  .block-text__content p {
+    margin: 0 0 var(--space-3, 0.75rem);
+  }
+  .block-text__content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .block-text__content strong,
+  .block-text__content b {
+    font-weight: var(--font-heading-weight, 700);
+  }
+
+  .block-text__content a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: opacity 180ms ease;
+  }
+
+  .block-text__content a:hover {
+    opacity: 0.75;
+  }
+
+  .block-text__content ul,
+  .block-text__content ol {
+    padding-left: var(--space-6, 1.5rem);
+    margin: 0 0 var(--space-3, 0.75rem);
+  }
+
+  .block-text__content li {
+    margin-bottom: var(--space-1, 0.25rem);
+  }
 {% endstylesheet %}
+
+{%- liquid
+  assign preset = block.settings.typography_preset
+  assign width = block.settings.width
+  assign max_width = block.settings.max_width
+  assign alignment = block.settings.alignment
+  assign text_color = block.settings.text_color
+  assign bg_color = block.settings.background_color
+
+  assign custom_font_size = block.settings.custom_font_size
+  assign custom_font_weight = block.settings.custom_font_weight
+  assign custom_line_height = block.settings.custom_line_height
+
+  assign has_custom_style = false
+  if preset == 'custom'
+    assign has_custom_style = true
+  endif
+-%}
+
+<div
+  class="
+    block-text
+    block-text--width-{{ width }}
+    block-text--maxwidth-{{ max_width }}
+    block-text--{{ alignment }}
+    block-text--preset-{{ preset }}
+  "
+  style="
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+    padding-left: {{ block.settings.padding_left }}px;
+    padding-right: {{ block.settings.padding_right }}px;
+    {% if bg_color != 'rgba(0,0,0,0)' and bg_color != blank %}
+      background-color: {{ bg_color }};
+    {% endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.text != blank -%}
+    <div
+      class="block-text__content rte"
+      style="
+        {% if text_color != 'rgba(0,0,0,0)' and text_color != blank %}
+          color: {{ text_color }};
+        {% endif %}
+        {% if has_custom_style %}
+          font-size: {{ custom_font_size }}px;
+          font-weight: {{ custom_font_weight }};
+          line-height: {{ custom_line_height }};
+        {% endif %}
+      "
+    >
+      {{ block.settings.text }}
+    </div>
+  {%- endif -%}
+</div>
 
 {% schema %}
 {
@@ -30,19 +187,168 @@
     {
       "type": "richtext",
       "id": "text",
-      "label": "t:blocks.text.settings.text.label",
-      "default": "<p>t:blocks.text.settings.text.default</p>"
+      "label": "Text",
+      "default": "<p>Made with care</p>"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "Max width",
+      "options": [
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "normal"
     },
     {
       "type": "select",
       "id": "alignment",
-      "label": "t:blocks.text.settings.alignment.label",
+      "label": "Alignment",
       "options": [
-        { "value": "left", "label": "t:blocks.text.settings.alignment.options.left" },
-        { "value": "center", "label": "t:blocks.text.settings.alignment.options.center" },
-        { "value": "right", "label": "t:blocks.text.settings.alignment.options.right" }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
       "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "typography_preset",
+      "label": "Preset",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "paragraph", "label": "Paragraph" },
+        { "value": "h1", "label": "Heading 1" },
+        { "value": "h2", "label": "Heading 2" },
+        { "value": "h3", "label": "Heading 3" },
+        { "value": "h4", "label": "Heading 4" },
+        { "value": "h5", "label": "Heading 5" },
+        { "value": "h6", "label": "Heading 6" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "range",
+      "id": "custom_font_size",
+      "label": "Custom font size",
+      "info": "Only applies when preset is set to Custom.",
+      "min": 10,
+      "max": 80,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "custom_font_weight",
+      "label": "Custom font weight",
+      "info": "Only applies when preset is set to Custom.",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semibold (600)" },
+        { "value": "700", "label": "Bold (700)" },
+        { "value": "800", "label": "Extrabold (800)" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "custom_line_height",
+      "label": "Custom line height",
+      "info": "Only applies when preset is set to Custom.",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "1.2", "label": "1.2" },
+        { "value": "1.4", "label": "1.4" },
+        { "value": "1.6", "label": "1.6" },
+        { "value": "1.8", "label": "1.8" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1.6"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
     }
   ],
   "presets": [{ "name": "t:blocks.text.presets.name" }]

@@ -1,6 +1,10 @@
 {% doc %}
-  Renders all global theme settings as CSS custom properties on :root.
-  Inject this snippet inside <head> so every page has access to design tokens.
+  Snippet: css-variables.liquid
+  Path: snippets/css-variables.liquid
+  Description: Outputs ALL global design tokens as CSS custom properties on :root
+    and generates classes for all color schemes (.color-scheme-1, etc.).
+    Shopify's Theme Editor relies on .color-{scheme.id} conventions to live-update
+    colors without page reloads.
 {% enddoc %}
 
 {%- liquid
@@ -10,144 +14,31 @@
 -%}
 
 <style>
+  {%- comment -%} ── @font-face declarations ── {%- endcomment -%}
   {%- unless body_font.system? -%}
     {{ body_font | font_face: font_display: 'swap' }}
     {%- if body_font_bold -%}
       {{ body_font_bold | font_face: font_display: 'swap' }}
     {%- endif -%}
   {%- endunless -%}
-
   {%- unless heading_font.system? -%}
     {{ heading_font | font_face: font_display: 'swap' }}
   {%- endunless -%}
 
+  /* ══════════════════════════════════════════════════════════
+     :root  ──  GLOBAL DESIGN TOKENS
+     ══════════════════════════════════════════════════════════ */
   :root {
-    /* ── Layout ── */
-    --page-width:  {{ settings.max_page_width }};
-    --page-margin: calc(var(--space-1) * {{ settings.min_page_margin | divided_by: 4.0 }});
-
-    /* ── Branding ── */
-    --logo-width: calc(var(--space-1) * {{ settings.logo_width | divided_by: 4.0 }});
-
-    /* ── Base ── */
-    --color-background: {{ settings.background_color }};
-    --color-foreground: {{ settings.foreground_color }};
-
-    /* ── Text ── */
-    --color-text:       {{ settings.color_text }};
-    --color-text-muted: {{ settings.color_text_muted }};
-    --color-heading:    {{ settings.color_heading }};
-
-    /* ── Borders & Inputs ── */
-    --color-border:           {{ settings.color_border }};
-    --color-input-background: {{ settings.color_input_background }};
-    --color-input-text:       {{ settings.color_input_text }};
-    --color-input-border:     {{ settings.color_input_border }};
-    --color-input-focus:      {{ settings.color_input_focus }};
-
-    /* ── Buttons ── */
-    --color-btn-primary-bg:         {{ settings.color_btn_primary_bg }};
-    --color-btn-primary-text:       {{ settings.color_btn_primary_text }};
-    --color-btn-primary-bg-hover:   {{ settings.color_btn_primary_bg_hover }};
-    --color-btn-primary-text-hover: {{ settings.color_btn_primary_text_hover }};
-
-    --color-btn-secondary-bg:         {{ settings.color_btn_secondary_bg }};
-    --color-btn-secondary-text:       {{ settings.color_btn_secondary_text }};
-    --color-btn-secondary-bg-hover:   {{ settings.color_btn_secondary_bg_hover }};
-    --color-btn-secondary-text-hover: {{ settings.color_btn_secondary_text_hover }};
-
-    /* ── Pricing ── */
-    --color-price-sale:    {{ settings.color_price_sale }};
-    --color-price-compare: {{ settings.color_price_compare }};
-
-    /* ── Variant picker buttons (global) ── */
-    --vp-btn-border: {{ settings.variant_btn_border_thickness | default: 1 }}px;
-    --vp-btn-radius: {{ settings.variant_btn_corner_radius | default: 0 }}px;
-    --vp-btn-width:  {{ settings.variant_btn_width | default: 'auto' }};
-
-    /* ── Radius & Icons ── */
-    --style-border-radius-inputs:  calc(var(--space-1) * {{ settings.input_corner_radius | divided_by: 4.0 }});
-    --style-border-radius-buttons: calc(var(--space-1) * {{ settings.button_corner_radius | divided_by: 4.0 }});
-    --icon-weight: {{ settings.icon_weight | default: 1.5 }};
-
-    /* ── Typography ── */
-    {%- if body_font != blank -%}
-      --font-primary: {{ body_font.family }}, {{ body_font.fallback_families }}, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      --font-primary--style:  {{ body_font.style }};
-      --font-primary--weight: {{ body_font.weight }};
-    {%- else -%}
-      --font-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      --font-primary--style:  normal;
-      --font-primary--weight: 400;
-    {%- endif -%}
-
-    {%- if heading_font != blank -%}
-      --font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }}, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      --font-heading--style:  {{ heading_font.style }};
-      --font-heading--weight: {{ heading_font.weight }};
-    {%- else -%}
-      --font-heading: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      --font-heading--style:  normal;
-      --font-heading--weight: 600;
-    {%- endif -%}
-
-    /* ── Body ── */
-    --font-body-size:        calc(var(--space-1) * {{ settings.font_body_size | divided_by: 4.0 }});
-    --font-body-weight:      {{ settings.font_body_weight }};
-    --font-body-line-height: {{ settings.font_body_line_height }};
-
-    /* ── Headings ── */
-    --font-heading-weight:      {{ settings.font_heading_weight }};
-    --font-heading-line-height: {{ settings.font_heading_line_height }};
-    --font-h1-size: calc(var(--space-1) * {{ settings.font_h1_size | divided_by: 4.0 }});
-    --font-h2-size: calc(var(--space-1) * {{ settings.font_h2_size | divided_by: 4.0 }});
-    --font-h3-size: calc(var(--space-1) * {{ settings.font_h3_size | divided_by: 4.0 }});
-    --font-h4-size: calc(var(--space-1) * {{ settings.font_h4_size | divided_by: 4.0 }});
-    --font-h5-size: calc(var(--space-1) * {{ settings.font_h5_size | divided_by: 4.0 }});
-    --font-h6-size: calc(var(--space-1) * {{ settings.font_h6_size | divided_by: 4.0 }});
-
-    /* ── Header (set defaults, overridden per section inline style) ── */
-    --header-height: var(--space-14);
-    --header-offset: var(--space-14);
-    --header-bg:     {{ settings.background_color }};
-    --header-color:  {{ settings.color_text }};
-    --header-border: {{ settings.color_border }};
-
-    /* Required VELOURAIX token aliases */
-    --color-bg: var(--color-background);
-    --color-surface: var(--color-background);
-    --color-surface-2: color-mix(in srgb, var(--color-background) 92%, var(--color-text) 8%);
-    --color-surface-offset: color-mix(in srgb, var(--color-background) 85%, var(--color-text) 15%);
-    --color-text-faint: color-mix(in srgb, var(--color-text) 70%, transparent);
-    --color-text-inverse: var(--color-background);
-    --color-primary: {{ settings.color_btn_primary_bg }};
-    --color-primary-hover: {{ settings.color_btn_primary_bg_hover }};
-    --color-primary-active: color-mix(in srgb, {{ settings.color_btn_primary_bg_hover }} 85%, var(--color-text) 15%);
-    --color-primary-highlight: color-mix(in srgb, {{ settings.color_btn_primary_bg }} 18%, transparent);
-    --color-button: var(--color-btn-primary-bg);
-    --color-button-text: var(--color-btn-primary-text);
-    --color-error: #b91c1c;
-    --color-success: #166534;
-    --color-sale: var(--color-price-sale);
-
-    --font-body: var(--font-primary);
-    --font-display: var(--font-primary);
-    --font-size-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
-    --font-size-sm: clamp(0.875rem, 0.84rem + 0.2vw, 0.9375rem);
-    --font-size-md: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
-    --font-size-lg: clamp(1.125rem, 1.02rem + 0.5vw, 1.25rem);
-    --font-size-xl: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
-    --font-size-2xl: clamp(1.75rem, 1.3rem + 1.7vw, 3.5rem);
-
-    --space-1: 0.25rem;
-    --space-2: 0.5rem;
-    --space-3: 0.75rem;
-    --space-4: 1rem;
-    --space-5: 1.25rem;
-    --space-6: 1.5rem;
-    --space-7: 1.75rem;
-    --space-8: 2rem;
-    --space-9: 2.25rem;
+    /* ── SPACING SCALE (4 px base unit) ────────────────────── */
+    --space-1:  0.25rem;
+    --space-2:  0.5rem;
+    --space-3:  0.75rem;
+    --space-4:  1rem;
+    --space-5:  1.25rem;
+    --space-6:  1.5rem;
+    --space-7:  1.75rem;
+    --space-8:  2rem;
+    --space-9:  2.25rem;
     --space-10: 2.5rem;
     --space-11: 2.75rem;
     --space-12: 3rem;
@@ -156,63 +47,206 @@
     --space-15: 3.75rem;
     --space-16: 4rem;
 
-    --radius-sm: 0.25rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
+    /* ── LAYOUT ─────────────────────────────────────────────── */
+    --page-width:  {{ settings.max_page_width | default: '90rem' }};
+    --page-margin: calc(var(--space-1) * {{ settings.min_page_margin | default: 20 | divided_by: 4.0 }});
+
+    /* ── LOGO ───────────────────────────────────────────────── */
+    --logo-width: calc(var(--space-1) * {{ settings.logo_width | default: 120 | divided_by: 4.0 }});
+
+    /* ── BORDER RADIUS ──────────────────────────────────────── */
+    --radius-sm:   0.25rem;
+    --radius-md:   0.5rem;
+    --radius-lg:   0.75rem;
+    --radius-xl:   1rem;
     --radius-full: 100vmax;
+    --style-border-radius-buttons: calc(var(--space-1) * {{ settings.button_corner_radius | default: 0 | divided_by: 4.0 }});
+    --style-border-radius-inputs:  calc(var(--space-1) * {{ settings.input_corner_radius  | default: 0 | divided_by: 4.0 }});
     --button-radius: var(--style-border-radius-buttons);
 
+    /* ── SHADOWS ────────────────────────────────────────────── */
     --shadow-sm: 0 1px 2px oklch(35% 0.02 40 / 0.08);
     --shadow-md: 0 6px 20px oklch(30% 0.02 40 / 0.12);
     --shadow-lg: 0 14px 36px oklch(25% 0.03 40 / 0.18);
+    --shadow-xl: 0 24px 60px oklch(20% 0.03 40 / 0.22);
+
+    /* ── TRANSITIONS ────────────────────────────────────────── */
     --transition-base: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     --transition-slow: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
-    --content-narrow: 60rem;
+    /* ── CONTENT WIDTHS ─────────────────────────────────────── */
+    --content-narrow:  60rem;
     --content-default: 80rem;
-    --content-wide: 110rem;
+    --content-wide:    110rem;
+
+    /* ── TYPOGRAPHY — FONTS ─────────────────────────────────── */
+    {%- if body_font != blank -%}
+      --font-primary:          {{ body_font.family }}, {{ body_font.fallback_families }}, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-primary--style:   {{ body_font.style }};
+      --font-primary--weight:  {{ body_font.weight }};
+    {%- else -%}
+      --font-primary:         'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-primary--style:   normal;
+      --font-primary--weight:  400;
+    {%- endif -%}
+
+    {%- if heading_font != blank -%}
+      --font-heading:          {{ heading_font.family }}, {{ heading_font.fallback_families }}, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-heading--style:   {{ heading_font.style }};
+      --font-heading--weight:  {{ heading_font.weight }};
+    {%- else -%}
+      --font-heading:         'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-heading--style:   normal;
+      --font-heading--weight:  600;
+    {%- endif -%}
+
+    /* Aliases kept for legacy component CSS */
+    --font-body:    var(--font-primary);
+    --font-display: var(--font-heading);
+
+    /* ── TYPOGRAPHY — FLUID SIZE SCALE ──────────────────────── */
+    --font-size-xs:  clamp(0.75rem,   0.72rem + 0.15vw, 0.8125rem);
+    --font-size-sm:  clamp(0.875rem,  0.84rem + 0.2vw,  0.9375rem);
+    --font-size-md:  clamp(1rem,      0.96rem + 0.2vw,  1.0625rem);
+    --font-size-lg:  clamp(1.125rem,  1.02rem + 0.5vw,  1.25rem);
+    --font-size-xl:  clamp(1.375rem,  1.2rem  + 0.8vw,  1.75rem);
+    --font-size-2xl: clamp(1.75rem,   1.3rem  + 1.7vw,  3.5rem);
+
+    /* ── TYPOGRAPHY — BODY ──────────────────────────────────── */
+    --font-body-size:        calc(var(--space-1) * {{ settings.font_body_size | default: 14 | divided_by: 4.0 }});
+    --font-body-weight:      {{ settings.font_body_weight | default: '400' }};
+    --font-body-line-height: {{ settings.font_body_line_height | default: '1.6' }};
+
+    /* ── TYPOGRAPHY — HEADINGS ──────────────────────────────── */
+    --font-heading-weight:      {{ settings.font_heading_weight | default: '400' }};
+    --font-heading-line-height: {{ settings.font_heading_line_height | default: '1.1' }};
+    --font-h1-size: calc(var(--space-1) * {{ settings.font_h1_size | default: 48 | divided_by: 4.0 }});
+    --font-h2-size: calc(var(--space-1) * {{ settings.font_h2_size | default: 32 | divided_by: 4.0 }});
+    --font-h3-size: calc(var(--space-1) * {{ settings.font_h3_size | default: 22 | divided_by: 4.0 }});
+    --font-h4-size: calc(var(--space-1) * {{ settings.font_h4_size | default: 16 | divided_by: 4.0 }});
+    --font-h5-size: calc(var(--space-1) * {{ settings.font_h5_size | default: 14 | divided_by: 4.0 }});
+    --font-h6-size: calc(var(--space-1) * {{ settings.font_h6_size | default: 12 | divided_by: 4.0 }});
+
+    /* ── ICONS ──────────────────────────────────────────────── */
+    --icon-weight: {{ settings.icon_weight | default: '1.5' }};
+
+    /* ── VARIANT PICKER ─────────────────────────────────────── */
+    --vp-btn-border: {{ settings.variant_btn_border_thickness | default: 1 }}px;
+    --vp-btn-radius: {{ settings.variant_btn_corner_radius    | default: 0 }}px;
+    --vp-btn-width:  {{ settings.variant_btn_width            | default: 'auto' }};
+    
+    /* ── Header defaults ────────────────────────────────────── */
+    --header-height:  var(--space-14);
+    --header-offset:  var(--space-14);
   }
 
-  [data-theme="dark"] {
-    --color-background: #101114;
-    --color-bg: #101114;
-    --color-surface: #171a1f;
-    --color-surface-2: #1d2128;
-    --color-surface-offset: #242a33;
-    --color-text: #f5f7fb;
-    --color-text-muted: #c7ced9;
-    --color-text-faint: #9aa5b4;
-    --color-text-inverse: #101114;
-    --color-heading: #ffffff;
-    --color-border: #2b313b;
-    --color-input-background: #171a1f;
-    --color-input-text: #f5f7fb;
-    --color-input-border: #3a4250;
-    --color-input-focus: #93c5fd;
-  }
+  /* ════════════════════════════════════════════════════════
+     COLOUR SCHEMES
+     Shopify OS 2.0 Color Schemes define scoped CSS classes.
+     These apply to the html/body fallback layer, and explicitly
+     on any wrapper using class="color-[scheme_id]"
+     ════════════════════════════════════════════════════════ */
+  {%- for scheme in settings.color_schemes -%}
+    {%- capture scheme_vars -%}
+      --color-background:     {{ scheme.settings.background        | default: '#FFFFFF' }};
+      --color-bg:             {{ scheme.settings.background        | default: '#FFFFFF' }};
+      --color-surface:        {{ scheme.settings.background        | default: '#FFFFFF' }};
+      --color-surface-2:      color-mix(in srgb, {{ scheme.settings.background | default: '#FFFFFF' }} 92%, {{ scheme.settings.text | default: '#121212' }} 8%);
+      --color-surface-offset: color-mix(in srgb, {{ scheme.settings.background | default: '#FFFFFF' }} 85%, {{ scheme.settings.text | default: '#121212' }} 15%);
+      --color-foreground:     {{ scheme.settings.text              | default: '#121212' }};
 
-  /* ── Base resets that use design tokens ── */
-  *, *::before, *::after { box-sizing: border-box; }
+      --color-text:         {{ scheme.settings.text       | default: '#121212' }};
+      --color-text-muted:   {{ scheme.settings.text_muted | default: '#666666' }};
+      --color-heading:      {{ scheme.settings.heading    | default: '#121212' }};
+      --color-text-faint:   color-mix(in srgb, {{ scheme.settings.text | default: '#121212' }} 45%, transparent);
+      --color-text-inverse: {{ scheme.settings.background | default: '#FFFFFF' }};
+
+      --color-border:           {{ scheme.settings.border           | default: '#E8E8E8' }};
+      --color-input-background: {{ scheme.settings.input_background | default: '#FFFFFF' }};
+      --color-input-text:       {{ scheme.settings.input_text       | default: '#121212' }};
+      --color-input-border:     {{ scheme.settings.input_border     | default: '#E8E8E8' }};
+      --color-input-focus:      {{ scheme.settings.input_focus      | default: '#93C5FD' }};
+
+      --color-btn-primary-bg:         {{ scheme.settings.button             | default: '#121212' }};
+      --color-btn-primary-text:       {{ scheme.settings.button_label       | default: '#FFFFFF' }};
+      --color-btn-primary-bg-hover:   {{ scheme.settings.button_hover       | default: '#333333' }};
+      --color-btn-primary-text-hover: {{ scheme.settings.button_label_hover | default: '#FFFFFF' }};
+
+      --color-btn-secondary-bg:         {{ scheme.settings.secondary_button             | default: '#F2F2F2' }};
+      --color-btn-secondary-text:       {{ scheme.settings.secondary_button_label       | default: '#121212' }};
+      --color-btn-secondary-bg-hover:   {{ scheme.settings.secondary_button_hover       | default: '#E0E0E0' }};
+      --color-btn-secondary-text-hover: {{ scheme.settings.secondary_button_label_hover | default: '#121212' }};
+
+      --color-price-sale:    {{ scheme.settings.sale_price    | default: '#B91C1C' }};
+      --color-price-compare: {{ scheme.settings.compare_price | default: '#999999' }};
+      --color-sale:          var(--color-price-sale);
+
+      --color-error:   {{ scheme.settings.sale_price | default: '#B91C1C' }};
+      --color-success: color-mix(in srgb, {{ scheme.settings.text | default: '#121212' }} 55%, {{ scheme.settings.background | default: '#FFFFFF' }} 45%);
+
+      --color-primary:           var(--color-btn-primary-bg);
+      --color-primary-hover:     var(--color-btn-primary-bg-hover);
+      --color-primary-active:    color-mix(in srgb, var(--color-btn-primary-bg-hover) 85%, var(--color-text) 15%);
+      --color-primary-highlight: color-mix(in srgb, var(--color-btn-primary-bg) 18%, transparent);
+      --color-button:            var(--color-btn-primary-bg);
+      --color-button-text:       var(--color-btn-primary-text);
+      
+      --header-bg:      {{ scheme.settings.background | default: '#FFFFFF' }};
+      --header-color:   {{ scheme.settings.text       | default: '#121212' }};
+      --header-border:  {{ scheme.settings.border     | default: '#E8E8E8' }};
+    {%- endcapture -%}
+
+    {%- if forloop.first -%}
+    :root, .color-{{ scheme.id }} {
+      {{ scheme_vars }}
+      background-color: var(--color-background);
+      color: var(--color-text);
+    }
+    {%- else -%}
+    .color-{{ scheme.id }} {
+      {{ scheme_vars }}
+      background-color: var(--color-background);
+      color: var(--color-text);
+    }
+    {%- endif -%}
+  {%- endfor -%}
+
+  /* ════════════════════════════════════════════════════════
+     BASE RESETS  ──  applied once, globally.
+     ════════════════════════════════════════════════════════ */
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
   html {
-    font-family: var(--font-primary);
-    font-size: var(--font-body-size);
-    font-weight: var(--font-body-weight);
-    line-height: var(--font-body-line-height);
-    color: var(--color-text);
-    background-color: var(--color-background);
-    -webkit-font-smoothing: antialiased;
+    font-family:             var(--font-primary);
+    font-size:               var(--font-body-size);
+    font-weight:             var(--font-body-weight);
+    line-height:             var(--font-body-line-height);
+    color:                   var(--color-text);
+    background-color:        var(--color-background);
+    -webkit-font-smoothing:  antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior:         smooth;
   }
 
-  body { margin: 0; }
+  body {
+    margin:           0;
+    font-family:      var(--font-primary);
+    font-size:        var(--font-body-size);
+    font-weight:      var(--font-body-weight);
+    line-height:      var(--font-body-line-height);
+    background-color: var(--color-background);
+    color:            var(--color-text);
+  }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-primary);
-    font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
-    color: var(--color-heading);
-    margin: 0;
+    font-family:  var(--font-heading);
+    font-weight:  var(--font-heading-weight);
+    line-height:  var(--font-heading-line-height);
+    color:        var(--color-heading);
+    margin:       0;
   }
 
   h1 { font-size: var(--font-h1-size); }
@@ -224,19 +258,69 @@
 
   a { color: inherit; }
 
+  /* ── Utility classes ──────────────────────────────────────── */
   .page-width {
-    max-width: var(--page-width);
-    margin-inline: auto;
+    max-width:      var(--page-width);
+    margin-inline:  auto;
     padding-inline: var(--page-margin);
   }
 
-  .hidden { display: none !important; }
+  .hidden           { display: none !important; }
+  .overflow-hidden  { overflow: hidden !important; }
+
   .visually-hidden {
-    position: absolute;
-    width: var(--space-1); height: var(--space-1);
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    white-space: nowrap;
+    position:    absolute !important;
+    width:       1px !important;
+    height:      1px !important;
+    padding:     0 !important;
+    margin:      -1px !important;
+    overflow:    hidden !important;
+    clip:        rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border:      0 !important;
   }
-  .overflow-hidden { overflow: hidden !important; }
+
+  /* ── Skip link ───────────────────────────────────────────── */
+  .visually-hidden-focusable {
+    position:         absolute;
+    top:              -100%;
+    left:             var(--space-4);
+    z-index:          1000;
+    padding:          var(--space-3) var(--space-4);
+    background-color: var(--color-background);
+    color:            var(--color-text);
+    border:           1px solid var(--color-border);
+    border-radius:    var(--radius-sm);
+    text-decoration:  none;
+    font-family:      var(--font-primary);
+    font-size:        var(--font-size-sm);
+  }
+
+  .visually-hidden-focusable:focus-visible {
+    top:            0;
+    outline:        2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* ── Global focus ring ───────────────────────────────────── */
+  :focus-visible {
+    outline:        2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius:  var(--radius-sm);
+  }
+
+  /* ── dialog defaults ─────────────────────────────────────── */
+  dialog {
+    background-color: var(--color-background);
+    color:            var(--color-text);
+  }
+
+  /* ── Reduced motion ──────────────────────────────────────── */
+  @media screen and (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration:        0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration:       0.001ms !important;
+    }
+  }
 </style>

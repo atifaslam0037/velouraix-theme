@@ -2,88 +2,470 @@
   Block: group
   Path: blocks/group.liquid
   Description: Reusable group container block for spacing and alignment.
-  Used in sections that support @theme blocks.
+               Accepts ALL @theme blocks and @app blocks as children.
 {%- endcomment -%}
 
+{% stylesheet %}
+  .block-group {
+    display: flex;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .block-group--vertical {
+    flex-direction: column;
+  }
+  .block-group--horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .block-group--align-left {
+    align-items: flex-start;
+  }
+  .block-group--align-center {
+    align-items: center;
+  }
+  .block-group--align-right {
+    align-items: flex-end;
+  }
+
+  .block-group--justify-top {
+    justify-content: flex-start;
+  }
+  .block-group--justify-center {
+    justify-content: center;
+  }
+  .block-group--justify-bottom {
+    justify-content: flex-end;
+  }
+  .block-group--justify-space-between {
+    justify-content: space-between;
+  }
+
+  .block-group--width-fit {
+    width: fit-content;
+    flex-shrink: 0;
+  }
+  .block-group--width-fill {
+    width: 100%;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .block-group--width-custom {
+    min-width: 0;
+  }
+
+  .block-group--height-fit {
+    height: fit-content;
+  }
+  .block-group--height-fill {
+    height: 100%;
+    flex: 1 1 auto;
+  }
+
+  .block-group--border-none {
+    border: none;
+  }
+  .block-group--border-solid {
+    border: 1px solid var(--block-group-border-color, currentColor);
+  }
+
+  .block-group__bg-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .block-group__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .block-group__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: inherit;
+    align-items: inherit;
+    justify-content: inherit;
+    gap: inherit;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .block-group__link {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: block;
+  }
+
+  @media (max-width: 749px) {
+    .block-group--mobile-width-fit {
+      width: fit-content;
+      flex-shrink: 0;
+    }
+    .block-group--mobile-width-fill {
+      width: 100%;
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+    .block-group--mobile-width-custom {
+      width: var(--block-group-mobile-custom-width, 100%);
+      min-width: 0;
+    }
+  }
+{% endstylesheet %}
+
+{%- liquid
+  assign has_bg_image = false
+  assign has_overlay = false
+  assign has_link = false
+
+  if block.settings.bg_media_type == 'image' and block.settings.bg_image != blank
+    assign has_bg_image = true
+  endif
+
+  if block.settings.overlay_opacity > 0
+    assign has_overlay = true
+  endif
+
+  if block.settings.block_link != blank
+    assign has_link = true
+  endif
+
+  assign width_style = ''
+  assign height_style = ''
+
+  if block.settings.width == 'custom'
+    assign width_style = 'width: ' | append: block.settings.custom_width | append: '%;'
+  endif
+
+  if block.settings.height == 'custom'
+    assign height_style = 'height: ' | append: block.settings.custom_height | append: 'px;'
+  endif
+
+  assign overlay_opacity = block.settings.overlay_opacity | divided_by: 100.0
+-%}
+
 <div
-  class="block-group block-group--{{ block.settings.layout }} block-group--{{ block.settings.alignment }}"
+  class="
+    block-group
+    block-group--{{ block.settings.direction }}
+    block-group--align-{{ block.settings.alignment }}
+    block-group--justify-{{ block.settings.position }}
+    block-group--border-{{ block.settings.border }}
+    block-group--width-{{ block.settings.width }}
+    block-group--height-{{ block.settings.height }}
+    block-group--mobile-width-{{ block.settings.mobile_width }}
+    color-{{ block.settings.color_scheme }}
+  "
   style="
-    --block-group-gap: var(--space-{{ block.settings.gap }});
-    --block-group-padding: var(--space-{{ block.settings.padding }});
+    gap: {{ block.settings.gap }}px;
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+    padding-left: {{ block.settings.padding_left }}px;
+    padding-right: {{ block.settings.padding_right }}px;
+    border-radius: {{ block.settings.corner_radius }}px;
+    --block-group-border-color: {{ block.settings.border_color }};
+    --block-group-mobile-custom-width: {{ block.settings.custom_mobile_width }}%;
+    {{ width_style }}
+    {{ height_style }}
   "
   {{ block.shopify_attributes }}
 >
-  {%- if block.settings.text != blank -%}
-    <div class="block-group__text">{{ block.settings.text }}</div>
+  {%- if has_bg_image -%}
+    {{
+      block.settings.bg_image
+      | image_url: width: 1920
+      | image_tag:
+        class: 'block-group__bg-media',
+        loading: 'lazy',
+        alt: '',
+        widths: '375, 750, 1100, 1500, 1920',
+        sizes: '100vw'
+    }}
+  {%- endif -%}
+
+  {%- if has_overlay -%}
+    <div
+      class="block-group__overlay"
+      aria-hidden="true"
+      style="background-color: {{ block.settings.overlay_color }}; opacity: {{ overlay_opacity }};"
+    ></div>
+  {%- endif -%}
+
+  <div class="block-group__inner">
+    {% content_for 'blocks' %}
+  </div>
+
+  {%- if has_link -%}
+    <a
+      class="block-group__link"
+      href="{{ block.settings.block_link }}"
+      {% if block.settings.open_in_new_tab %}
+        target="_blank"
+        rel="noopener noreferrer"
+      {% endif %}
+      aria-label="{{ block.settings.block_link }}"
+    ></a>
   {%- endif -%}
 </div>
-
-{% stylesheet %}
-.block-group {
-  display: flex;
-  gap: var(--block-group-gap);
-  padding: var(--block-group-padding);
-  border: 1px solid oklch(from var(--color-text) l c h / 0.12);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-}
-
-.block-group--row { flex-direction: row; }
-.block-group--column { flex-direction: column; }
-
-.block-group--start { align-items: flex-start; }
-.block-group--center { align-items: center; }
-.block-group--end { align-items: flex-end; }
-{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:blocks.group.name",
+  "blocks": [{ "type": "@theme" }, { "type": "@app" }],
   "settings": [
     {
-      "type": "richtext",
-      "id": "text",
-      "label": "t:blocks.group.settings.text.label",
-      "default": "<p>t:blocks.group.settings.text.default</p>"
+      "type": "header",
+      "content": "Layout"
     },
     {
       "type": "select",
-      "id": "layout",
-      "label": "t:blocks.group.settings.layout.label",
+      "id": "direction",
+      "label": "Direction",
       "options": [
-        { "value": "row", "label": "t:blocks.group.settings.layout.options.row" },
-        { "value": "column", "label": "t:blocks.group.settings.layout.options.column" }
+        { "value": "vertical", "label": "Vertical" },
+        { "value": "horizontal", "label": "Horizontal" }
       ],
-      "default": "column"
+      "default": "vertical"
     },
     {
       "type": "select",
       "id": "alignment",
-      "label": "t:blocks.group.settings.alignment.label",
+      "label": "Alignment",
       "options": [
-        { "value": "start", "label": "t:blocks.group.settings.alignment.options.start" },
-        { "value": "center", "label": "t:blocks.group.settings.alignment.options.center" },
-        { "value": "end", "label": "t:blocks.group.settings.alignment.options.end" }
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
-      "default": "start"
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "space-between", "label": "Space between" }
+      ],
+      "default": "center"
     },
     {
       "type": "range",
       "id": "gap",
-      "label": "t:blocks.group.settings.gap.label",
-      "min": 1,
-      "max": 12,
-      "step": 1,
-      "default": 4
+      "label": "Gap",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fill"
     },
     {
       "type": "range",
-      "id": "padding",
-      "label": "t:blocks.group.settings.padding.label",
-      "min": 1,
-      "max": 12,
+      "id": "custom_width",
+      "label": "Custom width (%)",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%",
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_width",
+      "label": "Mobile width",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_mobile_width",
+      "label": "Custom mobile width (%)",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "visible_if": "{{ block.settings.mobile_width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "Custom height (px)",
+      "min": 50,
+      "max": 800,
+      "step": 10,
+      "default": 300,
+      "unit": "px",
+      "visible_if": "{{ block.settings.height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "bg_media_type",
+      "label": "Background media",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "image", "label": "Image" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Borders",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "solid", "label": "Solid" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 50,
       "step": 1,
-      "default": 4
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Background overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 0,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Block link"
+    },
+    {
+      "type": "url",
+      "id": "block_link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
     }
   ],
   "presets": [{ "name": "t:blocks.group.presets.name" }]

@@ -4,57 +4,74 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% # Inlined CSS Variables %}
+    {%- comment -%}
+      1. CSS Variables — rendered first so all var() tokens are available
+         to every subsequent stylesheet. Outputs :root{} design tokens,
+         @font-face, html/body/heading base styles, and utility classes.
+    {%- endcomment -%}
     {% render 'css-variables' %}
 
-    {% comment %}
-      Font preloading:
-      1. Preconnect to font CDN for faster connection
-      2. Preload only the base font variant (base weight)
-      3. Additional variants load on-demand via @font-face
-    {% endcomment %}
+    {%- comment -%} 2. Font CDN preconnect + preload ── {%- endcomment -%}
     {% unless settings.type_primary_font.system? %}
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
-
-      {% comment %} Preload the base font variant for initial page render {% endcomment %}
       {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
     {% endunless %}
-
     {% unless settings.type_heading_font.system? %}
       {{ settings.type_heading_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
     {% endunless %}
 
-    {% # Load and preload the base CSS %}
+    {%- comment -%} 3. Base CSS — reset, inputs, buttons, section grid ── {%- endcomment -%}
     {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
-    {{ 'component-quick-add.css' | asset_url | stylesheet_tag }}
+
+    {%- comment -%}
+      4. Global component CSS â€” loaded once here because these components
+         appear on every page type (product cards everywhere, quick-add modal
+         can open from any page).
+    {%- endcomment -%}
+    {{ 'component-product-card.css' | asset_url | stylesheet_tag }}
+    {{ 'component-quick-add.css'    | asset_url | stylesheet_tag }}
+
+    {%- comment -%} 5. SEO / Open Graph / meta tags ── {%- endcomment -%}
     {% render 'meta-tags' %}
 
+    {%- comment -%}
+      6. Global JS config object — synchronous inline so window.theme
+         is available before any deferred component scripts run.
+    {%- endcomment -%}
     <script>
       window.theme = {
+        moneyFormat: {{ shop.money_format | json }},
         settings: {
           cart_auto_open: {{ settings.cart_auto_open | json }}
         },
         routes: {
-          cart_add_url: '{{ routes.cart_add_url }}',
-          cart_url: '{{ routes.cart_url }}',
+          cart_url:        '{{ routes.cart_url }}',
+          cart_add_url:    '{{ routes.cart_add_url }}',
           cart_update_url: '{{ routes.cart_update_url }}',
           cart_change_url: '{{ routes.cart_change_url }}',
-          cart_clear_url: '{{ routes.cart_clear_url }}'
+          cart_clear_url:  '{{ routes.cart_clear_url }}',
+          all_products_collection_url: '{{ routes.all_products_collection_url }}'
         },
         strings: {
-          addToCart: {{ 'products.product.add_to_cart' | t | json }},
-          soldOut: {{ 'products.product.sold_out' | t | json }},
-          unavailable: {{ 'products.product.unavailable' | t | json }}
+          addToCart:          {{ 'products.product.add_to_cart'          | t | json }},
+          soldOut:            {{ 'products.product.sold_out'             | t | json }},
+          unavailable:        {{ 'products.product.unavailable'          | t | json }},
+          addToWishlist:      {{ 'products.product.add_to_wishlist'      | t | json }},
+          removeFromWishlist: {{ 'products.product.remove_from_wishlist' | t | json }}
         }
       };
     </script>
 
+    {%- comment -%} 7. Global theme utilities (trapFocus, themeDebounce) ── {%- endcomment -%}
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
+
     {{ content_for_header }}
   </head>
 
   <body>
-    <a class="skip-link visually-hidden-focusable" href="#main-content">{{ 'accessibility.skip_to_content' | t }}</a>
+    <a class="skip-link visually-hidden-focusable" href="#main-content">
+      {{- 'accessibility.skip_to_content' | t -}}
+    </a>
 
     {% sections 'header-group' %}
 
@@ -64,10 +81,16 @@
 
     {% sections 'footer-group' %}
 
-    {{ 'component-product-card.css' | asset_url | stylesheet_tag }}
-    <script src="{{ 'component-product-form.js' | asset_url }}" defer="defer"></script>
-    <script src="{{ 'component-quick-add.js' | asset_url }}" defer="defer"></script>
+    {%- comment -%}
+      End-of-body deferred scripts.
+      Only scripts needed on EVERY page belong here.
+      Section-specific JS is loaded from the section file itself.
+    {%- endcomment -%}
+    <script src="{{ 'component-product-form.js'   | asset_url }}" defer="defer"></script>
+    <script src="{{ 'component-variant-picker.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'component-quick-add.js'      | asset_url }}" defer="defer"></script>
 
+    {%- comment -%} Quick-add modal shell — always in DOM so it can open from any page ── {%- endcomment -%}
     <quick-add-modal>
       {%- render 'quick-add-modal' -%}
     </quick-add-modal>

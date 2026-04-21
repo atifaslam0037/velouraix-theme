@@ -5,13 +5,15 @@
   }
 {%- endstyle -%}
 
-<div class="custom-liquid-{{ section.id }} page-width">
+<div class="custom-liquid-{{ section.id }} page-width color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}">
   {{ section.settings.custom_liquid }}
 </div>
 
 {% schema %}
 {
   "name": "t:general.custom_liquid",
+  "tag": "section",
+  "class": "custom-liquid page-width",
   "settings": [
     {
       "type": "liquid",
@@ -38,6 +40,12 @@
       "unit": "px",
       "label": "t:general.padding_bottom",
       "default": 36
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ],
   "presets": [

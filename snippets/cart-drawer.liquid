@@ -4,8 +4,6 @@
   Description: VELOURAIX slide-in cart drawer
 {%- endcomment -%}
 
-
-
 {%- liquid
   assign show_view_cart = settings.cart_show_view_cart
   assign show_notes = settings.cart_notes_enabled
@@ -56,7 +54,7 @@
       <h2 class="cart-drawer__title" id="cart-drawer-title">
         <span class="cart-drawer__title-text">{{- 'cart.title' | t -}}</span>
         <span class="cart-drawer__title-count">
-          &nbsp;(<span id="cart-drawer-count" aria-live="polite" aria-atomic="true">{{- cart_qty_total -}}</span>)
+          (<span id="cart-drawer-count" aria-live="polite" aria-atomic="true">{{- cart_qty_total -}}</span>)
         </span>
       </h2>
 
@@ -128,7 +126,7 @@
                 data-upsell-prev
                 aria-label="Previous"
               >
-                {%- render 'icon', name: 'chevron-left' -%}
+                {%- render 'icon', name: 'arrow -left' -%}
               </button>
               <button
                 class="cart-upsell__next"
@@ -136,7 +134,7 @@
                 data-upsell-next
                 aria-label="Next"
               >
-                {%- render 'icon', name: 'chevron-right' -%}
+                {%- render 'icon', name: 'arrow-right' -%}
               </button>
             </div>
           </div>

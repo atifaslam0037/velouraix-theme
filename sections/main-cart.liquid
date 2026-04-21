@@ -6,6 +6,7 @@
     Settings from global theme settings control optional features (notes, free shipping).
 {%- endcomment -%}
 
+
 {{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
 {{ 'component-quantity-input.css' | asset_url | stylesheet_tag }}
 {{ 'section-main-cart.css' | asset_url | stylesheet_tag }}
@@ -17,7 +18,7 @@
   Line-item AJAX lives in cart-items-component inside the products block only. One layout tree so static block ids
   (cart-page-title, cart-page-items) are not duplicated.
 {%- endcomment -%}
-<div class="main-cart" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+<div class="main-cart color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
   <style>
     .cart-page__summary {
       --button-radius: {{ section.settings.corner_radius }}px;
@@ -83,12 +84,9 @@
       "default": "page"
     },
     {
-      "type": "select",
+      "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
-      "options": [
-        { "value": "scheme-1", "label": "Scheme 1" }
-      ],
+      "label": "t:general.color_scheme",
       "default": "scheme-1"
     },
     {

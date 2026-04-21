@@ -1,23 +1,26 @@
-/* ============================================================
+/* =============================================================
    component-quick-add.css  —  VELOURAIX
-   Desktop: 55% image slider | 45% product panel
-   Mobile:  stacked, image on top
-   ============================================================ */
+   Pixel-matched to reference:
+   · Left  = full-bleed image, arrows bottom-left
+   · Right = vendor / title / price / variants / qty+ATC / BIN
+   ============================================================= */
 
-/* ─── Dialog shell ─── */
+
+/* ── 1. <dialog> shell ──────────────────────────────────────── */
+
 .quick-add-modal {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 600;
-  padding: 0;
-  margin: 0;
   width: 100%;
   max-width: 100%;
   height: 100%;
   max-height: 100%;
+  padding: 0;
+  margin: 0;
   background: transparent;
-  border: none;
+  border: 0;
   overflow: hidden;
 }
 
@@ -31,130 +34,121 @@
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: oklch(from var(--color-text) l c h / 0.5);
+  background: rgba(0, 0, 0, 0.50);
   cursor: pointer;
 }
 
-.quick-add-modal__panel {
+/* white card — sharp corners */
+.quick-add-modal__content-wrapper {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  width: min(880px, calc(100vw - 2rem));
-  max-height: calc(100vh - 2.5rem);
-  background: var(--color-background);
-  border-radius: 3px;
+  width: min(860px, calc(100vw - 24px));
+  max-height: calc(100dvh - 32px);
+  background: #fff;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow:
-    0 4px 16px oklch(0 0 0 / 0.12),
-    0 24px 64px oklch(0 0 0 / 0.2);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
 }
 
-.quick-add-modal__body {
+[data-quick-add-content] {
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   flex: 1;
 }
 
-/* × close button */
+
+/* ── × close ────────────────────────────────────────────────── */
+
 .quick-add-modal__close {
   position: absolute;
   top: 12px;
-  right: 12px;
+  right: 14px;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: oklch(from var(--color-background) l c h / 0.9);
-  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
   cursor: pointer;
-  opacity: 0.7;
-  transition: opacity var(--transition-base);
   backdrop-filter: blur(4px);
+  transition: opacity 180ms;
 }
 
 .quick-add-modal__close:hover {
-  opacity: 1;
+  opacity: 0.6;
 }
 
 .quick-add-modal__close svg {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
 }
 
-.quick-add-modal__close:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
 
-/* ─── Layout ─── */
+/* ── 2. Two-column layout ───────────────────────────────────── */
+
 .qa__layout {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .qa__layout {
     flex-direction: row;
-    height: clamp(480px, 80vh, 700px);
-    max-height: calc(100vh - 2.5rem);
+    /* match reference: image ~55%, content ~45% */
+    height: clamp(460px, 76vh, 660px);
+    max-height: calc(100dvh - 32px);
   }
 }
 
-/* ─── Left: Image Slider ─── */
-.qa__media-wrap {
+
+/* ── 3. Left: full-bleed image ──────────────────────────────── */
+
+.qa__media {
   position: relative;
-  background: oklch(from var(--color-text) l c h / 0.04);
   flex-shrink: 0;
   overflow: hidden;
-  height: clamp(260px, 60vw, 480px);
+  background: #f0efed;
+  /* mobile: aspect ratio drives height */
+  aspect-ratio: 3 / 4;
 }
 
-@media (min-width: 640px) {
-  .qa__media-wrap {
+@media (min-width: 600px) {
+  .qa__media {
     flex: 0 0 55%;
     height: 100%;
+    aspect-ratio: unset;
   }
 }
 
-.qa__slider {
-  display: flex;
+
+/* slide stack — absolute, fade crossfade */
+.qa__slides {
+  position: relative;
+  width: 100%;
   height: 100%;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  cursor: grab;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.qa__slider:active {
-  cursor: grabbing;
-}
-
-.qa__slider::-webkit-scrollbar {
-  display: none;
 }
 
 .qa__slide {
-  display: flex;
-  flex: 0 0 100%;
-  width: 100%;
-  height: 100%;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.qa__slide.is-active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .qa__slide img,
@@ -163,71 +157,82 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  pointer-events: none;
   -webkit-user-drag: none;
+  user-select: none;
+  object-fit: contain;
 }
 
-.qa__slide--placeholder {
+.qa__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Circular prev/next arrows — bottom centre */
-.qa__slider-nav {
+.qa__placeholder .placeholder-svg {
+  width: 64px;
+  fill: #ccc;
+}
+
+
+/* ── Prev/Next — bottom-LEFT corner, matching reference ── */
+
+.qa__arrows {
   position: absolute;
-  bottom: 14px;
+  bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   z-index: 5;
-  pointer-events: none;
 }
 
-.qa__slider-btn {
-  pointer-events: auto;
+.qa__arrow-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: oklch(from var(--color-background) l c h / 0.88);
-  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
   cursor: pointer;
-  box-shadow: 0 2px 8px oklch(0 0 0 / 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(4px);
-  transition: background var(--transition-base);
+  transition: background 180ms;
 }
 
-.qa__slider-btn:hover {
-  background: var(--color-background);
+.qa__arrow-btn svg {
+  width: 32px;
+  height: 11px;
+  pointer-events: none;
 }
 
-.qa__slider-btn svg {
-  width: 14px;
-  height: 14px;
+.qa__arrow-btn:hover svg {
+  transform: scale(1.5);
 }
 
-.qa__slider-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
+.qa__arrow-btn:focus-visible {
+  outline: none;
 }
 
-/* ─── Right: Product Info ─── */
+
+/* ── 4. Right: product info ─────────────────────────────────── */
+
 .qa__content {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  border-left: 1px solid #e8e8e8;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 600px) {
   .qa__content {
     flex: 0 0 45%;
     height: 100%;
@@ -235,48 +240,65 @@
 }
 
 .qa__inner {
-  padding: 32px 28px 28px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 28px 28px 28px;
+  height: 100%;
+  gap: 0;
 }
 
-@media (max-width: 639px) {
+@media (max-width: 599px) {
   .qa__inner {
     padding: 20px 18px 24px;
   }
 }
 
+
+/* vendor */
 .qa__vendor {
-  font-family: var(--font-primary);
   font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: #888;
   margin: 0 0 6px;
+  line-height: 1.3;
 }
 
+
+/* title — large, light, linked */
 .qa__title {
-  font-family: var(--font-body-family, var(--font-primary));
-  font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+  font-size: clamp(1.55rem, 3.2vw, 2.4rem);
   font-weight: 300;
-  line-height: 1.1;
-  color: var(--color-text);
-  margin: 0 0 12px;
+  line-height: 1.08;
+  color: #111;
+  margin: 0 0 14px;
+  letter-spacing: -0.01em;
 }
 
+.qa__title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.qa__title-link:hover {
+  opacity: 0.65;
+}
+
+
+/* price */
 .qa__price-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .qa__price {
-  font-family: var(--font-primary);
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 400;
-  color: var(--color-text);
+  color: #111;
 }
 
 .qa__price--sale {
@@ -284,93 +306,175 @@
 }
 
 .qa__compare {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  color: #999;
   text-decoration: line-through;
 }
 
-/* ─── Variant picker (inherits block CSS) ─── */
+
+/* ── 5. Variant picker ──────────────────────────────────────── */
+
 .qa__variant-picker {
-  margin-bottom: 18px;
-  --vp-block-pt: 0px;
-  --vp-block-pb: 0px;
-  --vp-block-pl: 0px;
-  --vp-block-pr: 0px;
+  margin-bottom: 20px;
 }
 
-/* ─── Buy wrap ─── */
-.qa__buy-wrap.product-form-block {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.qa__buy-wrap .product-form__error-message-wrapper {
+/* label row: "TAGLIA  XXS" on one line */
+.qa__variant-picker .product-variant-picker-snippet__label-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   margin-bottom: 10px;
 }
 
-/* Quantity + ATC side-by-side row */
-.qa__atc-row {
+.qa__variant-picker .product-variant-picker-snippet__label {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.qa__variant-picker .product-variant-picker-snippet__current-value {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #111;
+}
+
+/* button grid */
+.qa__variant-picker .product-variant-picker-snippet__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* each size button */
+.qa__variant-picker .product-variant-picker-snippet__radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.qa__variant-picker .product-variant-picker-snippet__button-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.qa__variant-picker .product-variant-picker-snippet__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d0d0d0;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #111;
+  background: #fff;
+  transition: border-color 150ms, background 150ms;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* selected state */
+.qa__variant-picker .product-variant-picker-snippet__radio:checked+.product-variant-picker-snippet__button,
+.qa__variant-picker .product-variant-picker-snippet__radio:checked+.product-variant-picker-snippet__swatch {
+  border-color: #111;
+  border-width: 2px;
+}
+
+/* sold-out — strikethrough */
+.qa__variant-picker .product-variant-picker-snippet__radio:disabled+.product-variant-picker-snippet__button {
+  color: #bbb;
+  border-color: #e8e8e8;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.qa__variant-picker .product-variant-picker-snippet__button-wrapper:hover .product-variant-picker-snippet__button {
+  border-color: #111;
+}
+
+
+/* ── 6. Buy block ───────────────────────────────────────────── */
+
+.qa__buy-block {
+  padding-top: 8px;
+}
+
+.qa__error {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: #fff5f5;
+  border: 1px solid rgba(199, 25, 46, 0.3);
+  color: #c7192e;
+  font-size: 13px;
+}
+
+
+/* Qty + ATC row */
+.qa__action-row {
   display: flex;
   align-items: stretch;
-  gap: 10px;
+  gap: 8px;
   height: 50px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
+
+
+/* ── Quantity stepper ── */
 
 .qa__qty {
-  flex: 0 0 120px;
+  flex: 0 0 114px;
 }
 
-/* Normalise whatever quantity snippet renders */
-.qa__qty .quantity,
-.qa__qty [class*="quantity"] {
+.qa__qty .quantity-input {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   width: 100% !important;
-  height: 100% !important;
-  border: 1px solid oklch(from var(--color-text) l c h / 0.22) !important;
+  height: 50px !important;
+  padding: 0 !important;
+  border: 1px solid #d0d0d0 !important;
   border-radius: 0 !important;
-  background: var(--color-background) !important;
+  background: #fff !important;
 }
 
-.qa__qty .quantity__button,
-.qa__qty button[name="minus"],
-.qa__qty button[name="plus"] {
+.qa__qty .quantity-input__btn {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 38px !important;
+  flex-shrink: 0 !important;
+  width: 36px !important;
   height: 100% !important;
   background: none !important;
   border: 0 !important;
-  font-size: 1.15rem !important;
-  color: var(--color-text) !important;
+  color: #111 !important;
   cursor: pointer !important;
-  flex-shrink: 0 !important;
-  transition: opacity var(--transition-base) !important;
+  font-size: 18px !important;
+  transition: opacity 160ms !important;
 }
 
-.qa__qty .quantity__button:hover,
-.qa__qty button[name="minus"]:hover,
-.qa__qty button[name="plus"]:hover {
-  opacity: 0.45 !important;
+.qa__qty .quantity-input__btn:hover {
+  opacity: 0.4 !important;
 }
 
-.qa__qty .quantity__input,
-.qa__qty input[type="number"],
-.qa__qty input[name="quantity"] {
+.qa__qty .quantity-input__field {
   flex: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
   text-align: center !important;
   border: 0 !important;
   background: none !important;
-  font-family: var(--font-primary) !important;
-  font-size: 14px !important;
-  color: var(--color-text) !important;
-  -moz-appearance: textfield !important;
-  width: 100% !important;
-  height: 100% !important;
   padding: 0 !important;
+  font-size: 14px !important;
+  color: #111 !important;
+  -moz-appearance: textfield !important;
 }
 
 .qa__qty input::-webkit-inner-spin-button,
@@ -378,48 +482,45 @@
   -webkit-appearance: none;
 }
 
-/* ATC button */
+
+/* ── ATC button — OUTLINED white ── */
+
 .qa__atc {
   flex: 1;
+  min-width: 0;
   display: flex;
 }
 
 .qa__atc-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   width: 100%;
   height: 100%;
-  padding: 0 14px;
-  border: 1px solid var(--color-text);
+  padding: 0 12px;
+  border: 1px solid #111;
   border-radius: 0;
-  background: var(--color-text);
-  color: var(--color-background);
-  font-family: var(--font-primary);
+  background: #fff;
+  color: #111;
   font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
-  cursor: pointer;
   white-space: nowrap;
-  position: relative;
   overflow: hidden;
-  transition: opacity var(--transition-base);
+  cursor: pointer;
+  transition: background 180ms, color 180ms;
 }
 
 .qa__atc-btn:hover {
-  opacity: 0.82;
+  background: #111;
+  color: #fff;
 }
 
 .qa__atc-btn:disabled {
-  opacity: 0.38;
+  opacity: 0.35;
   cursor: not-allowed;
-}
-
-.qa__atc-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
 }
 
 .qa__atc-btn.is-loading .qa__atc-label {
@@ -437,10 +538,10 @@
   margin: auto;
   width: 18px;
   height: 18px;
-  border: 2px solid oklch(from var(--color-background) l c h / 0.35);
-  border-top-color: var(--color-background);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #111;
   border-radius: 50%;
-  animation: qa-spin 0.7s linear infinite;
+  animation: qa-spin 0.65s linear infinite;
 }
 
 @keyframes qa-spin {
@@ -449,54 +550,43 @@
   }
 }
 
-/* BUY IT NOW */
+
+/* ── BUY IT NOW — full-width solid black ── */
+
 .qa__buy-now {
-  margin-top: 0;
+  width: 100%;
 }
 
 .qa__buy-now .shopify-payment-button__button,
-.qa__buy-now [class*="shopify-payment-button"] {
+.qa__buy-now [class*="shopify-payment-button__button"] {
   border-radius: 0 !important;
-  font-family: var(--font-primary) !important;
-  font-weight: 400 !important;
-  letter-spacing: 0.08em !important;
-  height: 50px !important;
   min-height: 50px !important;
+  height: 50px !important;
+  width: 100% !important;
   font-size: 11px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.10em !important;
   text-transform: uppercase !important;
 }
 
-/* ─── Low-stock notice ─── */
-.qa__stock {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  font-family: var(--font-primary);
-  font-size: 12px;
-  color: var(--color-text);
+
+/* ── 7. Mobile touch swipe hint (no thumbstrip on mobile) ───── */
+
+@media (max-width: 599px) {
+  .qa__slides {
+    touch-action: pan-y;
+  }
 }
 
-.qa__stock-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #5aab64;
-  flex-shrink: 0;
-}
 
-/* ─── Reduced motion ─── */
+/* ── 8. Reduced motion ──────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
-  .qa__slider {
-    scroll-behavior: auto;
+  .qa__slide {
+    transition-duration: 0.001ms !important;
   }
 
   .qa__atc-spinner {
     animation: none;
-  }
-
-  .quick-add-modal__close,
-  .qa__slider-btn {
-    transition-duration: 0.001ms !important;
   }
 }
