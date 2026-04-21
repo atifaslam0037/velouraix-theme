@@ -1,5 +1,4 @@
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
-<footer>
+<footer class="color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}">
   <div class="footer__copyright">
     &copy;
     {{ 'now' | date: '%Y' }}

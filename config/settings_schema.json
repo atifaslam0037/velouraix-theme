@@ -52,7 +52,7 @@
       {
         "type": "font_picker",
         "id": "type_primary_font",
-        "default": "sans-serif",
+        "default": "assistant_n4",
         "label": "t:general.primary"
       },
       {

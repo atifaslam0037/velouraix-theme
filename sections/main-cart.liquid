@@ -6,7 +6,6 @@
     Settings from global theme settings control optional features (notes, free shipping).
 {%- endcomment -%}
 
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
 
 {{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
 {{ 'component-quantity-input.css' | asset_url | stylesheet_tag }}
@@ -19,7 +18,7 @@
   Line-item AJAX lives in cart-items-component inside the products block only. One layout tree so static block ids
   (cart-page-title, cart-page-items) are not duplicated.
 {%- endcomment -%}
-<div class="main-cart" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+<div class="main-cart color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
   <style>
     .cart-page__summary {
       --button-radius: {{ section.settings.corner_radius }}px;

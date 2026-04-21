@@ -6,9 +6,9 @@
   Settings: None
 {% endcomment %}
 
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
 
-<section class="section-main-search">
+
+<section class="section-main-search color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}">
   <div class="page-width">
     <h1>{{ 'search.title' | t }}</h1>
 
@@ -25,7 +25,7 @@
         class="search-form__input"
         data-search-input
       >
-      <button type="submit" class="button button--primary search-form__submit">
+      <button type="submit" class="btn search-form__submit">
         {{- 'search.submit' | t -}}
       </button>
     </form>

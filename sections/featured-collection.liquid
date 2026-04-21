@@ -38,12 +38,10 @@
   assign custom_css = section.settings.custom_css
 -%}
 
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
-
 {{ 'component-featured-collection.css' | asset_url | stylesheet_tag }}
 
 <section
-  class="featured-collection"
+  class="featured-collection color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}"
   id="section-{{ section.id }}"
   data-desktop-style="{{ desktop_style }}"
   data-mobile-style="{{ mobile_style }}"
@@ -83,7 +81,7 @@
           {%- if icon == 'carets' -%}
             {%- render 'icon', name: 'caret-left' -%}
           {%- else -%}
-            {%- render 'icon', name: 'arrow -left' -%}
+            {%- render 'icon', name: 'arrow-left' -%}
           {%- endif -%}
         </button>
         <button
@@ -120,7 +118,7 @@
 
     {%- if section.settings.show_view_all and collection.all_products_count > product_count -%}
       <div class="featured-collection__footer {{ section.settings.view_all_alignment }}">
-        <a href="{{ collection.url }}" class="button button--{{ section.settings.view_all_style }}">
+        <a href="{{ collection.url }}" class="btn btn--{{ section.settings.view_all_style }}">
           {{ section.settings.view_all_label | default: 'View all' }}
         </a>
       </div>

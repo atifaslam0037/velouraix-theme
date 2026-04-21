@@ -4,12 +4,12 @@
   FIXED: waits for DOMContentLoaded before reading localStorage.
 {% endcomment %}
 
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 
 {{ 'component-wishlist.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-card.css' | asset_url | stylesheet_tag }}
 
-<div class="wishlist-page" id="wishlist-page">
+<div class="wishlist-page color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}" id="wishlist-page">
   <h1 class="wishlist-page__heading">{{ page.title | default: 'My Wishlist' }}</h1>
   <p class="wishlist-page__count" id="wishlist-count" aria-live="polite"></p>
 

@@ -37,12 +37,11 @@
   assign custom_css = section.settings.custom_css
 -%}
 
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
 
 {{ 'component-recommended-products.css' | asset_url | stylesheet_tag }}
 
 <div
-  class="recommended-products"
+  class="recommended-products color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}"
   id="section-{{ section.id }}"
   data-section-id="{{ section.id }}"
   data-desktop-style="{{ desktop_style }}"

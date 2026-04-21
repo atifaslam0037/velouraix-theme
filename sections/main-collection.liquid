@@ -5,11 +5,11 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
+
 
 <h1>{{ collection.title }}</h1>
 
-<div class="collection-products">
+<div class="collection-products color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}">
   {% paginate collection.products by 20 %}
     {% for product in collection.products %}
       <div class="collection-product">

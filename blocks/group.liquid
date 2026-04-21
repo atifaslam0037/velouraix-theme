@@ -45,9 +45,15 @@
 
   .block-group--width-fit {
     width: fit-content;
+    flex-shrink: 0;
   }
   .block-group--width-fill {
     width: 100%;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .block-group--width-custom {
+    min-width: 0;
   }
 
   .block-group--height-fit {
@@ -55,6 +61,7 @@
   }
   .block-group--height-fill {
     height: 100%;
+    flex: 1 1 auto;
   }
 
   .block-group--border-none {
@@ -90,6 +97,7 @@
     justify-content: inherit;
     gap: inherit;
     width: 100%;
+    min-width: 0;
   }
 
   .block-group__link {
@@ -102,9 +110,16 @@
   @media (max-width: 749px) {
     .block-group--mobile-width-fit {
       width: fit-content;
+      flex-shrink: 0;
     }
     .block-group--mobile-width-fill {
       width: 100%;
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+    .block-group--mobile-width-custom {
+      width: var(--block-group-mobile-custom-width, 100%);
+      min-width: 0;
     }
   }
 {% endstylesheet %}
@@ -130,7 +145,7 @@
   assign height_style = ''
 
   if block.settings.width == 'custom'
-    assign width_style = 'width: ' | append: block.settings.custom_width | append: 'px;'
+    assign width_style = 'width: ' | append: block.settings.custom_width | append: '%;'
   endif
 
   if block.settings.height == 'custom'
@@ -160,6 +175,7 @@
     padding-right: {{ block.settings.padding_right }}px;
     border-radius: {{ block.settings.corner_radius }}px;
     --block-group-border-color: {{ block.settings.border_color }};
+    --block-group-mobile-custom-width: {{ block.settings.custom_mobile_width }}%;
     {{ width_style }}
     {{ height_style }}
   "
@@ -271,10 +287,15 @@
       "default": "fill"
     },
     {
-      "type": "number",
+      "type": "range",
       "id": "custom_width",
-      "label": "Custom width (px)",
-      "default": 400
+      "label": "Custom width (%)",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%",
+      "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
       "type": "select",
@@ -288,10 +309,15 @@
       "default": "fill"
     },
     {
-      "type": "number",
+      "type": "range",
       "id": "custom_mobile_width",
-      "label": "Custom mobile width (px)",
-      "default": 300
+      "label": "Custom mobile width (%)",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%",
+      "visible_if": "{{ block.settings.mobile_width == 'custom' }}"
     },
     {
       "type": "select",
@@ -305,10 +331,15 @@
       "default": "fit"
     },
     {
-      "type": "number",
+      "type": "range",
       "id": "custom_height",
       "label": "Custom height (px)",
-      "default": 300
+      "min": 50,
+      "max": 800,
+      "step": 10,
+      "default": 300,
+      "unit": "px",
+      "visible_if": "{{ block.settings.height == 'custom' }}"
     },
     {
       "type": "header",

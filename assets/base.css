@@ -1,7 +1,20 @@
-/** base CSS for the theme. This file is included on every page. */
+/**
+ * assets/base.css
+ * VELOURAIX — Global base / reset styles.
+ * Loaded on every page via theme.liquid (preloaded).
+ *
+ * css-variables.liquid already outputs :root{} tokens,
+ * html{}, body{}, h1-h6{}, :focus-visible, .visually-hidden,
+ * .page-width, .hidden, .overflow-hidden.
+ * This file handles everything else — media resets, input defaults,
+ * button base classes, section grid, RTE, and pricing helpers.
+ * No CSS variable is defined here — only consumed.
+ */
 
-/* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
-* {
+/* ── Reset ────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
 }
@@ -9,10 +22,10 @@
 body {
   display: flex;
   flex-direction: column;
-  margin: 0;
   min-height: 100svh;
 }
 
+/* Scroll-lock via [scroll-lock] attribute (used by drawer JS) */
 html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
   overflow: hidden;
 }
@@ -28,16 +41,10 @@ svg {
 }
 
 input,
+button,
 textarea,
 select {
   font: inherit;
-}
-
-
-
-dialog {
-  background-color: var(--color-background);
-  color: var(--color-text, var(--color-foreground));
 }
 
 p {
@@ -58,97 +65,60 @@ p:empty {
   display: none;
 }
 
-:is(p, h1, h2, h3, h4, h5, h6):first-child,
-:empty:first-child+ :where(p, h1, h2, h3, h4, h5, h6) {
+:is(p, h1, h2, h3, h4, h5, h6):first-child {
   margin-block-start: 0;
 }
 
-:is(p, h1, h2, h3, h4, h5, h6):last-child,
-:where(p, h1, h2, h3, h4, h5, h6)+ :has(+ :empty:last-child) {
+:is(p, h1, h2, h3, h4, h5, h6):last-child {
   margin-block-end: 0;
 }
 
-/** Theme styles below */
-body {
-  font-family: var(--font-primary--family);
-  font-size: var(--font-body-size);
-  font-weight: var(--font-body-weight);
-  line-height: var(--font-body-line-height);
-  background-color: var(--color-background);
-  color: var(--color-text, var(--color-foreground));
-}
-
-/** Headings */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  line-height: var(--font-heading-line-height);
-  color: var(--color-heading, var(--color-foreground));
-}
-
-h1 {
-  font-size: var(--font-h1-size);
-}
-
-h2 {
-  font-size: var(--font-h2-size);
-}
-
-h3 {
-  font-size: var(--font-h3-size);
-}
-
-h4 {
-  font-size: var(--font-h4-size);
-}
-
-h5 {
-  font-size: var(--font-h5-size);
-}
-
-h6 {
-  font-size: var(--font-h6-size);
-}
-
-/** Inputs */
+/* ── Inputs global defaults ───────────────────────────────────── */
 input,
 textarea,
 select {
   background-color: var(--color-input-background);
   color: var(--color-input-text);
-  border: var(--space-1) solid var(--color-input-border);
+  border: 1px solid var(--color-input-border);
   border-radius: var(--style-border-radius-inputs);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: var(--space-3) var(--space-4);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid var(--color-primary, var(--color-input-focus));
+  outline: 2px solid var(--color-primary);
   outline-offset: var(--space-1);
-  border-radius: var(--radius-sm, var(--style-border-radius-inputs));
   border-color: var(--color-input-focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-focus) 20%, transparent);
+  border-radius: var(--style-border-radius-inputs);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
-/** Buttons */
+/* ── Button base classes ──────────────────────────────────────── */
 .btn,
 button[type="submit"],
 .shopify-payment-button__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--color-btn-primary-bg);
   color: var(--color-btn-primary-text);
-  border: calc(var(--space-1) * 2) solid var(--color-btn-primary-bg);
+  border: 2px solid var(--color-btn-primary-bg);
   border-radius: var(--style-border-radius-buttons);
-  padding: 0.75rem 1.5rem;
-  font-family: inherit;
-  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  text-decoration: none;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base),
+    opacity var(--transition-base);
 }
 
 .btn:hover,
@@ -158,10 +128,23 @@ button[type="submit"]:hover {
   border-color: var(--color-btn-primary-bg-hover);
 }
 
+.btn:focus-visible,
+button[type="submit"]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.btn:disabled,
+button[type="submit"]:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .btn--secondary {
   background-color: var(--color-btn-secondary-bg);
   color: var(--color-btn-secondary-text);
-  border: calc(var(--space-1) * 2) solid var(--color-btn-secondary-text);
+  border-color: var(--color-btn-secondary-text);
 }
 
 .btn--secondary:hover {
@@ -170,7 +153,22 @@ button[type="submit"]:hover {
   border-color: var(--color-btn-secondary-bg-hover);
 }
 
-/** Pricing */
+.btn--ghost {
+  background-color: transparent;
+  color: var(--color-text);
+  border-color: oklch(from var(--color-text) l c h / 0.35);
+}
+
+.btn--ghost:hover {
+  background-color: oklch(from var(--color-text) l c h / 0.06);
+  border-color: var(--color-text);
+}
+
+.btn--full-width {
+  width: 100%;
+}
+
+/* ── Pricing helpers ──────────────────────────────────────────── */
 .price--sale,
 .price-item--sale {
   color: var(--color-price-sale);
@@ -182,63 +180,68 @@ button[type="submit"]:hover {
   text-decoration: line-through;
 }
 
-/** Borders */
+/* ── Borders ──────────────────────────────────────────────────── */
 hr,
 .border {
-  border-color: var(--color-border);
+  border: 0;
+  border-top: 1px solid var(--color-border);
 }
 
-/** Section layout utilities */
-
-/**
- * Setup a grid that enables both full-width and constrained layouts
- * depending on the class of the child elements.
- *
- * By default, a minimum content margin is set on the left and right
- * sides of the section and the content is centered in the viewport to
- * not exceed the maximum page width.
- *
- * When a child element is given the `full-width` class, it will span
- * the entire viewport.
- */
+/* ── Section grid layout ──────────────────────────────────────── */
+/*
+  Every .shopify-section is a 3-column CSS grid:
+    [margin] [content] [margin]
+  Children default to the centre column.
+  Children with .full-width span all three (edge-to-edge).
+*/
 .shopify-section {
   --content-width: min(calc(var(--page-width) - var(--page-margin) * 2),
       calc(100% - var(--page-margin) * 2));
   --content-margin: minmax(var(--page-margin), 1fr);
   --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
 
-  /* This is required to make <img> elements work as background images */
   position: relative;
-  grid-template-columns: var(--content-grid);
   display: grid;
+  grid-template-columns: var(--content-grid);
   width: 100%;
 }
 
-/* Child elements, by default, are constrained to the central column of the grid. */
 .shopify-section>* {
   grid-column: 2;
 }
 
-/* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section>.full-width {
   grid-column: 1 / -1;
 }
 
-.visually-hidden-focusable {
-  position: absolute;
-  top: -100%;
-  left: var(--space-4);
-  z-index: 1000;
-  padding: var(--space-3) var(--space-4);
-  background-color: var(--color-background);
+/* ── RTE (rich text) ──────────────────────────────────────────── */
+.rte a {
   color: var(--color-text);
-  border: var(--space-1) solid var(--color-border);
-  border-radius: var(--radius-sm);
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.visually-hidden-focusable:focus-visible {
-  top: 0;
-  outline: 2px solid var(--color-primary);
-  outline-offset: var(--space-1);
+.rte a:hover {
+  opacity: 0.65;
+}
+
+.rte ul,
+.rte ol {
+  padding-left: var(--space-5);
+}
+
+.rte li+li {
+  margin-top: var(--space-2);
+}
+
+/* ── Reduced motion ───────────────────────────────────────────── */
+@media screen and (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

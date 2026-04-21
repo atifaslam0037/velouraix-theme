@@ -1,14 +1,4 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin language editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
-  "_comment": "Add these keys into your locales/en.default.json under the matching parent keys",
   "general": {
     "heading": "Heading",
     "grid": "Grid",
@@ -28,6 +18,11 @@
     "branding": "Branding",
     "search": "Search",
     "cart": "Cart",
+    "collection": "Collection",
+    "blog": "Blog",
+    "article": "Article",
+    "footer": "Footer",
+    "variant_pickers": "Variant pickers",
     "pagination": {
       "label": "Pagination",
       "previous": "Previous",
@@ -231,6 +226,65 @@
         "name": "Accelerated checkout"
       }
     },
+    "price": {
+      "name": "Price",
+      "settings": {
+        "show_compare_at": {
+          "label": "Show compare-at price"
+        },
+        "show_installments": {
+          "label": "Show installments"
+        },
+        "show_tax_notice": {
+          "label": "Show tax & shipping notice"
+        }
+      },
+      "presets": {
+        "name": "Price"
+      }
+    },
+    "cart_summary": {
+      "name": "Cart summary",
+      "settings": {
+        "enable_sticky": {
+          "label": "Sticky summary panel"
+        },
+        "borders_header": {
+          "content": "Border"
+        },
+        "border_style": {
+          "label": "Border style",
+          "options": {
+            "none": "None",
+            "solid": "Solid"
+          }
+        },
+        "border_thickness": {
+          "label": "Thickness"
+        },
+        "border_opacity": {
+          "label": "Opacity"
+        },
+        "corner_radius": {
+          "label": "Corner radius"
+        },
+        "padding_header": {
+          "content": "Padding"
+        },
+        "padding_top": {
+          "label": "Top"
+        },
+        "padding_bottom": {
+          "label": "Bottom"
+        },
+        "padding_left": {
+          "label": "Left"
+        },
+        "padding_right": {
+          "label": "Right"
+        }
+      }
+    },
     "variant_picker": {
       "name": "Variant picker",
       "settings": {
@@ -279,6 +333,7 @@
     "h4_size": "H4 size",
     "h5_size": "H5 size",
     "h6_size": "H6 size",
+    "heading_font": "Heading font",
     "base_colors": "Base colors",
     "background": "Background",
     "foreground": "Foreground",
@@ -322,10 +377,64 @@
     "cart_notes": "Enable order instructions",
     "free_shipping_bar": "Show free shipping progress bar",
     "free_shipping_threshold": "Free shipping threshold",
-    "heading_font": "Heading font"
+    "menu": "Menu",
+    "show_payment_icons": "Show payment icons",
+    "grid_item_width": "Card size",
+    "grid_gap": "Grid gap",
+    "variant_pickers_buttons_header": "Button style",
+    "variant_btn_border_thickness": "Border thickness",
+    "variant_btn_corner_radius": "Corner radius",
+    "variant_btn_width": "Button width"
+  },
+  "options": {
+    "search_page": {
+      "page": "Search page"
+    },
+    "search_style": {
+      "modal": "Search modal"
+    },
+    "cart_style": {
+      "drawer": "Cart drawer",
+      "page": "Cart page"
+    },
+    "page_width": {
+      "narrow": "Narrow",
+      "normal": "Normal",
+      "wide": "Wide"
+    },
+    "font_weight": {
+      "light": "Light",
+      "regular": "Regular",
+      "medium": "Medium",
+      "semibold": "Semibold",
+      "bold": "Bold",
+      "extrabold": "Extrabold",
+      "black": "Black"
+    },
+    "line_height": {
+      "tight": "Tight",
+      "normal": "Normal",
+      "relaxed": "Relaxed"
+    },
+    "size": {
+      "small": "Small",
+      "large": "Large"
+    },
+    "variant_btn_width": {
+      "fit": "Fit content",
+      "fill": "Fill row"
+    },
+    "full": "Full width",
+    "narrow": "Narrow"
   },
   "placeholders": {
     "logo_alt": "Your shop name"
+  },
+  "accessibility": {
+    "close": "Close",
+    "expand": "Expand",
+    "expand_submenu": "Expand submenu for",
+    "skip_to_content": "Skip to content"
   },
   "404": {
     "title": "404",
@@ -381,6 +490,7 @@
       "quick_add": "Quick add",
       "available_sizes": "Available sizes",
       "add_to_wishlist": "Add to wishlist",
+      "remove_from_wishlist": "Remove from wishlist",
       "buy_it_now": "Buy it now",
       "price": {
         "regular_price": "Regular price"
@@ -408,45 +518,6 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
-  },
-  "options": {
-    "search_page": {
-      "page": "Search page"
-    },
-    "search_style": {
-      "modal": "Search Modal"
-    },
-    "cart_style": {
-      "drawer": "Cart drawer",
-      "page": "Cart page"
-    },
-    "page_width": {
-      "narrow": "Narrow",
-      "normal": "Normal",
-      "wide": "Wide"
-    },
-    "font_weight": {
-      "light": "Light",
-      "regular": "Regular",
-      "medium": "Medium",
-      "semibold": "Semibold",
-      "bold": "Bold",
-      "extrabold": "Extrabold",
-      "black": "Black"
-    },
-    "line_height": {
-      "tight": "Tight",
-      "normal": "Normal",
-      "relaxed": "Relaxed"
-    },
-    "full": "Full width",
-    "narrow": "Narrow"
-  },
-  "accessibility": {
-    "close": "Close",
-    "expand": "Expand",
-    "expand_submenu": "Expand submenu for",
-    "skip_to_content": "Skip to content"
   },
   "cart": {
     "checkout": "Checkout",
@@ -478,87 +549,47 @@
     "upsell_label": "You might also like"
   },
   "sections": {
-    "hero_banner": {
-      "aria_label": "Hero banner",
-      "slide_nav_label": "Slide navigation"
+    "main-product": {
+      "name": "Product"
     },
-    "featured_collection": {
-      "name": "Featured collection",
-      "settings": {
-        "heading": {
-          "info": "Leave blank to use collection title"
-        },
-        "type": {
-          "label": "Type"
-        },
-        "carousel_on_mobile": {
-          "label": "Carousel on mobile"
-        },
-        "carousel_navigation": {
-          "header": "Carousel navigation"
-        },
-        "icon": {
-          "label": "Icon"
-        },
-        "icon_background": {
-          "label": "Icon background"
-        },
-        "product_count": {
-          "label": "Product count"
-        },
-        "columns": {
-          "label": "Columns"
-        },
-        "mobile_columns": {
-          "label": "Mobile columns"
-        },
-        "h_gap": {
-          "label": "Horizontal gap"
-        },
-        "v_gap": {
-          "label": "Vertical gap"
-        },
-        "header_section": "Section layout",
-        "width": {
-          "label": "Width"
-        },
-        "alignment": {
-          "label": "Alignment"
-        },
-        "gap": {
-          "label": "Gap"
-        }
+    "main_cart": {
+      "name": "Cart",
+      "presets": {
+        "name": "Cart"
       }
     },
     "header": {
-      "name": "Header",
-      "menu_label": "Menu",
       "search_label": "Search",
-      "search_placeholder": "Search...",
-      "popular_searches": "Popular searches",
-      "popular_new_in": "New in",
-      "popular_dresses": "Dresses",
-      "popular_accessories": "Accessories",
-      "popular_query_new": "new",
-      "popular_query_dresses": "dresses",
-      "popular_query_accessories": "accessories",
-      "recently_viewed": "Recently viewed",
-      "search_aria_label": "Search",
+      "search_aria_label": "Search our site",
       "account_label": "Account",
-      "account_aria_label": "Account",
+      "account_aria_label": "Log into your account",
       "wishlist_label": "Wishlist",
-      "wishlist_aria_label": "Wishlist",
+      "wishlist_aria_label": "View your wishlist",
       "cart_label": "Cart",
-      "cart_aria_label": "Cart ({{ count }} items)",
-      "summary_items": "Summary items",
-      "mobile_menu_label": "Open menu",
-      "menu_close_label": "Close",
-      "mobile_search_placeholder": "Search",
-      "mobile_register_label": "Register",
-      "mobile_contacts_label": "Contacts",
-      "nav_aria_label": "Main navigation",
+      "cart_aria_label": {
+        "zero": "Your cart is empty",
+        "one": "Your cart, {{ count }} item",
+        "other": "Your cart, {{ count }} items"
+      },
       "icons_aria_label": "Header actions",
-      "logo_aria_label": "{{ store }} — home",
+      "menu_label": "Menu",
+      "mobile_menu_label": "Open menu",
+      "nav_aria_label": "Main navigation",
+      "logo_aria_label": "{{ store }} - Home",
+      "menu_close_label": "Close menu",
+      "mobile_search_placeholder": "Search...",
+      "mobile_register_label": "Create account",
+      "mobile_contacts_label": "Contact us",
+      "search_placeholder": "Search store...",
+      "popular_searches": "Popular Searches",
+      "popular_new_in": "New In",
+      "popular_query_new": "new in",
+      "popular_dresses": "Dresses",
+      "popular_query_dresses": "dresses",
+      "popular_accessories": "Accessories",
+      "popular_query_accessories": "accessories",
+      "recently_viewed": "Recently Viewed",
+      "name": "Header",
       "settings": {
         "layout_header": "Layout",
         "behavior_header": "Behaviour",
@@ -679,36 +710,45 @@
     "announcement_bar": {
       "aria_label": "Announcement"
     },
+    "hero_banner": {
+      "slide_nav_label": "Slide navigation",
+      "aria_label": "Hero banner"
+    },
     "recommended_products": {
-      "name": "Recommended products",
-      "title": "Related products",
+      "title": "Recommended for you",
       "cart_title": "You may also like",
+      "name": "Recommended products",
+      "grid_label": "Recommended products",
+      "no_results": "No products found.",
+      "remove_from_wishlist": "Remove from wishlist",
       "previous": "Previous products",
       "next": "Next products",
-      "blocks": {
-        "header": {
-          "name": "Header"
-        }
-      },
       "settings": {
-        "fallback_collection": {
-          "label": "Fallback collection",
-          "info": "Shown when no product context exists (e.g. homepage)."
+        "heading": {
+          "label": "Heading"
         },
-        "header_cards": "Cards layout",
-        "header_section": "Section layout",
+        "product_header": {
+          "content": "Product source"
+        },
+        "product": {
+          "label": "Product",
+          "info": "Recommendations load for this product. Leave blank to use the current product page, or fall back to best sellers."
+        },
+        "cards_header": {
+          "content": "Cards layout"
+        },
+        "display_style": {
+          "label": "Style",
+          "options": {
+            "grid": "Grid",
+            "carousel": "Carousel"
+          }
+        },
+        "carousel_mobile": {
+          "label": "Carousel on mobile"
+        },
         "product_count": {
           "label": "Product count"
-        },
-        "desktop_style": {
-          "label": "Style (desktop)"
-        },
-        "mobile_style": {
-          "label": "Style (mobile)"
-        },
-        "show_arrows": {
-          "label": "Show arrows",
-          "info": "Arrows appear only when desktop style is Carousel."
         },
         "columns": {
           "label": "Columns"
@@ -716,11 +756,88 @@
         "mobile_columns": {
           "label": "Mobile columns"
         },
-        "h_gap": {
+        "gap_horizontal": {
           "label": "Horizontal gap"
         },
-        "v_gap": {
+        "gap_vertical": {
           "label": "Vertical gap"
+        },
+        "section_header": {
+          "content": "Section layout"
+        },
+        "section_width": {
+          "label": "Width",
+          "options": {
+            "page": "Page",
+            "full": "Full"
+          }
+        },
+        "section_gap": {
+          "label": "Gap"
+        },
+        "padding_header": {
+          "content": "Padding"
+        },
+        "padding_top": {
+          "label": "Top"
+        },
+        "padding_bottom": {
+          "label": "Bottom"
+        },
+        "custom_css_header": {
+          "content": "Custom CSS"
+        },
+        "custom_css": {
+          "label": "Custom CSS"
+        }
+      }
+    },
+    "wishlist": {
+      "name": "Wishlist",
+      "removed": "removed from wishlist",
+      "item_count": "items",
+      "settings": {
+        "heading": {
+          "label": "Page heading"
+        },
+        "empty_header": {
+          "content": "Empty state"
+        },
+        "empty_heading": {
+          "label": "Heading"
+        },
+        "empty_body": {
+          "label": "Message"
+        },
+        "empty_cta_label": {
+          "label": "Button label"
+        },
+        "empty_cta_url": {
+          "label": "Button link"
+        },
+        "grid_header": {
+          "content": "Grid"
+        },
+        "columns": {
+          "label": "Columns"
+        },
+        "mobile_columns": {
+          "label": "Mobile columns"
+        },
+        "gap_horizontal": {
+          "label": "Horizontal gap"
+        },
+        "gap_vertical": {
+          "label": "Vertical gap"
+        },
+        "padding_header": {
+          "content": "Padding"
+        },
+        "padding_top": {
+          "label": "Top"
+        },
+        "padding_bottom": {
+          "label": "Bottom"
         }
       }
     }

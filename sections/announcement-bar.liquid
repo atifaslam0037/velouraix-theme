@@ -1,7 +1,6 @@
 {%- if section.settings.show_announcement and section.blocks.size > 0 -%}
-  {%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
   <div
-    class="announcement-bar"
+    class="announcement-bar color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}"
     role="region"
     aria-label="Announcement"
     style="
@@ -9,7 +8,7 @@
       --ann-color: {{ section.settings.color_scheme.settings.text | default: '#121212' }};
     "
   >
-    <div class="announcement-bar__inner page-width">
+    <div class="announcement-bar__inner">
       <announcement-slider
         class="announcement-slider"
         data-autoplay="{%- if section.blocks.size > 1 -%}true{%- else -%}false{%- endif -%}"
@@ -85,7 +84,7 @@
     visibility: hidden;
     transition: opacity 0.5s ease, visibility 0.5s ease;
   }
-  
+
   /* Reset paragraph styling within richtext so it honors the slider slide styles */
   .announcement-slider__slide .rte p {
     font-family: inherit;
@@ -166,6 +165,8 @@
 {% schema %}
 {
   "name": "Announcement bar",
+  "tag": "section",
+  "class": "announcement-bar page-width",
   "max_blocks": 5,
   "settings": [
     {

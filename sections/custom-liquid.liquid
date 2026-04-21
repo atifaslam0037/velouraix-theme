@@ -1,5 +1,3 @@
-{%- render 'color-scheme', scheme: section.settings.color_scheme, selector: '#shopify-section-' | append: section.id -%}
-
 {%- style -%}
   .custom-liquid-{{ section.id }} {
     padding-top: {{ section.settings.padding_top }}px;
@@ -7,13 +5,15 @@
   }
 {%- endstyle -%}
 
-<div class="custom-liquid-{{ section.id }} page-width">
+<div class="custom-liquid-{{ section.id }} page-width color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}">
   {{ section.settings.custom_liquid }}
 </div>
 
 {% schema %}
 {
   "name": "t:general.custom_liquid",
+  "tag": "section",
+  "class": "custom-liquid page-width",
   "settings": [
     {
       "type": "liquid",

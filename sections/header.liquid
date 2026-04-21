@@ -17,36 +17,40 @@
   assign cart_style = settings.cart_style | default: 'drawer'
   assign search_style = settings.search_style | default: 'modal'
   assign layout = section.settings.layout | default: 'logo_center'
+
+  comment
+    Resolve header colours from the section's color_scheme picker.
+    Falls back to the global :root tokens if the scheme is blank.
+  endcomment
+  assign hdr_scheme = section.settings.color_scheme
+  assign hdr_bg = hdr_scheme.settings.background | default: ''
+  assign hdr_text = hdr_scheme.settings.text | default: ''
+  assign hdr_border = hdr_scheme.settings.border | default: ''
 -%}
 
 {{ 'component-header.css' | asset_url | stylesheet_tag }}
 
-{%- comment -%}
-  Sticky must apply to the outer #shopify-section wrapper: an inner grid child
-  (grid-column 2) does not stick reliably to the viewport in this layout.
-{%- endcomment -%}
 {%- if section.settings.sticky -%}
   <style>
     #shopify-section-{{ section.id }} {
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      align-self: flex-start;
-      width: 100%;
+      position:    sticky;
+      top:         0;
+      z-index:     200;
+      width:       100%;
       flex-shrink: 0;
     }
   </style>
 {%- endif -%}
 
 <sticky-header
-  class="site-header"
+  class="site-header color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}"
   data-sticky="{{ section.settings.sticky }}"
   data-transparent="{{ section.settings.transparent }}"
   style="
     --header-height: {{ section.settings.header_height }}px;
-    --header-bg: {{ section.settings.bg_color }};
-    --header-color: {{ section.settings.text_color }};
-    --header-border: {{ section.settings.border_color }};
+    {%- if hdr_bg     != '' -%}--header-bg:     {{ hdr_bg }};{%- endif -%}
+    {%- if hdr_text   != '' -%}--header-color:  {{ hdr_text }};{%- endif -%}
+    {%- if hdr_border != '' -%}--header-border: {{ hdr_border }};{%- endif -%}
   "
 >
   {%- case layout -%}
@@ -83,27 +87,22 @@
   {%- endcase -%}
 </sticky-header>
 
-{%- comment -%} Mega menu — rendered outside sticky-header for fixed positioning {%- endcomment -%}
 {%- if nav_left_block != null -%}
   {%- render 'header-mega-menu', block: nav_left_block, section_blocks: section.blocks -%}
 {%- endif -%}
 
-{%- comment -%} Mobile menu — always available {%- endcomment -%}
 {%- render 'header-mobile-menu', block: nav_left_block, nav_right_block: nav_right_block, cart_style: cart_style -%}
 
-{%- comment -%} Search modal {%- endcomment -%}
 {%- if search_style == 'modal' -%}
   {%- render 'header-search-modal' -%}
 {%- endif -%}
 
-{%- comment -%} Cart drawer {%- endcomment -%}
 {%- if cart_style == 'drawer' -%}
   {%- render 'cart-drawer' -%}
 {%- endif -%}
 
-{%- comment -%} Scripts — loaded once, deferred {%- endcomment -%}
 <script src="{{ 'sticky-header.js' | asset_url }}" defer></script>
-<script src="{{ 'mobile-menu.js' | asset_url }}" defer></script>
+<script src="{{ 'mobile-menu.js'   | asset_url }}" defer></script>
 {%- if nav_left_block != null -%}
   <script src="{{ 'header-mega-menu.js' | asset_url }}" defer></script>
 {%- endif -%}
@@ -112,17 +111,28 @@
 {%- endif -%}
 {%- if cart_style == 'drawer' -%}
   <script src="{{ 'component-cart-drawer.js' | asset_url }}" defer></script>
-  <script src="{{ 'component-cart-items.js' | asset_url }}" defer></script>
+  <script src="{{ 'component-cart-items.js'  | asset_url }}" defer></script>
   <script src="{{ 'component-quantity-input.js' | asset_url }}" defer></script>
   {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
-  <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ 'component-quantity-input.css' | asset_url }}" media="print" onload="this.media='all'">
+  <link
+    rel="stylesheet"
+    href="{{ 'component-cart-items.css'     | asset_url }}"
+    media="print"
+    onload="this.media='all'"
+  >
+  <link
+    rel="stylesheet"
+    href="{{ 'component-quantity-input.css' | asset_url }}"
+    media="print"
+    onload="this.media='all'"
+  >
 {%- endif -%}
 
 {% schema %}
 {
   "name": "t:sections.header.name",
-  "class": "site-header-section",
+  "tag": "header",
+  "class": "site-header-section page-width",
   "limit": 1,
   "settings": [
     {
@@ -171,22 +181,10 @@
       "content": "t:sections.header.settings.colors_header"
     },
     {
-      "type": "color",
-      "id": "bg_color",
-      "label": "t:sections.header.settings.bg_color.label",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.header.settings.text_color.label",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "t:sections.header.settings.border_color.label",
-      "default": "#e8e8e8"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:general.color_scheme",
+      "default": "scheme-1"
     }
   ],
   "blocks": [
