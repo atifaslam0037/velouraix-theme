@@ -6,7 +6,6 @@
     Settings from global theme settings control optional features (notes, free shipping).
 {%- endcomment -%}
 
-
 {{ 'component-cart-items.css' | asset_url | stylesheet_tag }}
 {{ 'component-quantity-input.css' | asset_url | stylesheet_tag }}
 {{ 'section-main-cart.css' | asset_url | stylesheet_tag }}
@@ -18,7 +17,10 @@
   Line-item AJAX lives in cart-items-component inside the products block only. One layout tree so static block ids
   (cart-page-title, cart-page-items) are not duplicated.
 {%- endcomment -%}
-<div class="main-cart color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+<div
+  class="main-cart color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}"
+  style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
   <style>
     .cart-page__summary {
       --button-radius: {{ section.settings.corner_radius }}px;
@@ -76,10 +78,10 @@
     {
       "type": "select",
       "id": "width",
-      "label": "Width",
+      "label": "t:general.width",
       "options": [
-        { "value": "page", "label": "Page" },
-        { "value": "full", "label": "Full" }
+        { "value": "page", "label": "t:general.page" },
+        { "value": "full", "label": "t:general.full" }
       ],
       "default": "page"
     },
@@ -91,7 +93,7 @@
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "t:general.padding_header"
     },
     {
       "type": "range",
@@ -100,7 +102,7 @@
       "max": 100,
       "step": 2,
       "unit": "px",
-      "label": "Top",
+      "label": "t:general.top",
       "default": 58
     },
     {
@@ -110,30 +112,30 @@
       "max": 100,
       "step": 2,
       "unit": "px",
-      "label": "Bottom",
+      "label": "t:general.bottom",
       "default": 54
     },
     {
       "type": "header",
-      "content": "Theme Settings"
+      "content": "t:general.theme_settings"
     },
     {
       "type": "select",
       "id": "product_title_case",
-      "label": "Product title case",
+      "label": "t:general.product_title_case",
       "options": [
-        { "value": "default", "label": "Default" },
-        { "value": "uppercase", "label": "Uppercase" }
+        { "value": "default", "label": "t:general.default" },
+        { "value": "uppercase", "label": "t:general.uppercase" }
       ],
       "default": "default"
     },
     {
       "type": "select",
       "id": "border_style",
-      "label": "Border style",
+      "label": "t:general.border_style",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "solid", "label": "Solid" }
+        { "value": "none", "label": "t:general.none" },
+        { "value": "solid", "label": "t:general.solid" }
       ],
       "default": "none"
     },
@@ -144,37 +146,37 @@
       "max": 40,
       "step": 2,
       "unit": "px",
-      "label": "Corner radius",
+      "label": "t:general.corner_radius",
       "default": 0
     },
     {
       "type": "checkbox",
       "id": "cart_items",
-      "label": "Cart items",
+      "label": "t:general.cart_items",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "allow_note",
-      "label": "Allow note to seller",
+      "label": "t:general.allow_note_to_seller",
       "default": false
     },
     {
       "type": "checkbox",
       "id": "allow_discounts",
-      "label": "Allow discounts in cart",
+      "label": "t:general.allow_discounts_in_cart",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "cart_total",
-      "label": "Cart total",
+      "label": "t:general.cart_total",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "installments",
-      "label": "Installments",
+      "label": "t:general.installments",
       "default": true
     }
   ],

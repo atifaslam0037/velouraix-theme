@@ -361,7 +361,7 @@
 {% endstylesheet %}
 
 <hero-banner
-  class="hero-banner color-{{ section.settings.color_scheme.id | default: 'scheme-1' }}"
+  class="hero-banner color-{{ section.settings.color_scheme }}"
   id="{{ section_id }}"
   data-anim="{{ slide_anim }}"
   data-show-arrows="{{ show_arrows }}"
@@ -374,6 +374,19 @@
   style="
     --hb-min-height: {{ min_height }}svh;
     --hb-overlay: {{ overlay_op | divided_by: 100.0 }};
+    --color-background:               {{ section.settings.color_scheme.settings.background        | default: '#FFFFFF' }};
+    --color-text:                     {{ section.settings.color_scheme.settings.text              | default: '#FFFFFF' }};
+    --color-heading:                  {{ section.settings.color_scheme.settings.heading           | default: '#FFFFFF' }};
+    --color-text-muted:               {{ section.settings.color_scheme.settings.text_muted        | default: 'rgba(255,255,255,0.8)' }};
+    --color-border:                   {{ section.settings.color_scheme.settings.border            | default: 'rgba(255,255,255,0.25)' }};
+    --color-btn-primary-bg:           {{ section.settings.color_scheme.settings.button            | default: '#FFFFFF' }};
+    --color-btn-primary-text:         {{ section.settings.color_scheme.settings.button_label      | default: '#111111' }};
+    --color-btn-primary-bg-hover:     {{ section.settings.color_scheme.settings.button_hover      | default: 'transparent' }};
+    --color-btn-primary-text-hover:   {{ section.settings.color_scheme.settings.button_label_hover| default: '#FFFFFF' }};
+    --color-btn-secondary-bg:         {{ section.settings.color_scheme.settings.secondary_button             | default: 'rgba(255,255,255,0.12)' }};
+    --color-btn-secondary-text:       {{ section.settings.color_scheme.settings.secondary_button_label       | default: '#FFFFFF' }};
+    --color-btn-secondary-bg-hover:   {{ section.settings.color_scheme.settings.secondary_button_hover       | default: '#FFFFFF' }};
+    --color-btn-secondary-text-hover: {{ section.settings.color_scheme.settings.secondary_button_label_hover | default: '#111111' }};
   "
   aria-label="{{ 'sections.hero_banner.aria_label' | t }}"
 >
@@ -437,25 +450,23 @@
               {%- if forloop.first -%}
                 {{
                   block.settings.image
-                  | image_url: width: 2400
+                  | image_url: width: 3840
                   | image_tag:
                     loading: 'eager',
                     fetchpriority: 'high',
-                    width: '',
-                    height: '',
                     alt: block.settings.image.alt,
+                    widths: '750, 1100, 1500, 1920, 2400, 3840',
                     sizes: '100vw'
                 }}
               {%- else -%}
                 {{
                   block.settings.image
-                  | image_url: width: 2400
+                  | image_url: width: 3840
                   | image_tag:
                     loading: 'lazy',
                     fetchpriority: 'low',
-                    width: '',
-                    height: '',
                     alt: block.settings.image.alt,
+                    widths: '750, 1100, 1500, 1920, 2400, 3840',
                     sizes: '100vw'
                 }}
               {%- endif -%}

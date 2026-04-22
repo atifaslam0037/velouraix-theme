@@ -95,35 +95,35 @@
   "settings": [
     {
       "type": "header",
-      "content": "Icon source",
+      "content": "t:general.icon_source",
       "info": "Image takes priority. If no image, custom SVG is used. If neither, a placeholder renders."
     },
     {
       "type": "image_picker",
       "id": "icon_image",
-      "label": "Icon image",
+      "label": "t:general.icon_image",
       "info": "Upload an SVG or PNG icon."
     },
     {
       "type": "html",
       "id": "custom_svg",
-      "label": "Custom SVG code",
+      "label": "t:general.custom_svg",
       "info": "Paste raw <svg>…</svg> markup. Used only when no image is uploaded."
     },
     {
       "type": "header",
-      "content": "Style"
+      "content": "t:general.style"
     },
     {
       "type": "color",
       "id": "icon_color",
-      "label": "Icon color",
+      "label": "t:general.icon_color",
       "default": "#000000"
     },
     {
       "type": "range",
       "id": "icon_size",
-      "label": "Icon size",
+      "label": "t:general.icon_size",
       "min": 20,
       "max": 80,
       "step": 2,
@@ -133,12 +133,12 @@
     {
       "type": "select",
       "id": "icon_stroke_width",
-      "label": "Stroke width",
+      "label": "t:general.stroke_width",
       "info": "Applies to custom SVG code only.",
       "options": [
-        { "value": "1", "label": "Thin (1px)" },
-        { "value": "1.5", "label": "Regular (1.5px)" },
-        { "value": "2", "label": "Bold (2px)" }
+        { "value": "1", "label": "t:general.thin" },
+        { "value": "1.5", "label": "t:general.regular_border" },
+        { "value": "2", "label": "t:general.bold_border" }
       ],
       "default": "1.5"
     }

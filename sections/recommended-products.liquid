@@ -37,7 +37,6 @@
   assign custom_css = section.settings.custom_css
 -%}
 
-
 {{ 'component-recommended-products.css' | asset_url | stylesheet_tag }}
 
 <div
@@ -246,13 +245,13 @@
     {
       "type": "select",
       "id": "heading_size",
-      "label": "Heading size",
+      "label": "t:general.heading_size",
       "options": [
-        { "value": "h1", "label": "H1" },
-        { "value": "h2", "label": "H2" },
-        { "value": "h3", "label": "H3" },
-        { "value": "h4", "label": "H4" },
-        { "value": "h5", "label": "H5" }
+        { "value": "h1", "label": "t:general.h1" },
+        { "value": "h2", "label": "t:general.h2" },
+        { "value": "h3", "label": "t:general.h3" },
+        { "value": "h4", "label": "t:general.h4" },
+        { "value": "h5", "label": "t:general.h5" }
       ],
       "default": "h3"
     },
@@ -316,8 +315,8 @@
       "id": "mobile_columns",
       "label": "t:sections.recommended_products.settings.mobile_columns.label",
       "options": [
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" }
+        { "value": "1", "label": "t:general.line_height_1" },
+        { "value": "2", "label": "t:general.line_height_2" }
       ],
       "default": "2"
     },

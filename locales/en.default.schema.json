@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "general": {
     "404": "Not found",
     "article": "Article",
@@ -57,7 +56,137 @@
     "full": "Full",
     "color_scheme": "Color scheme",
     "custom_css": "Custom CSS",
-    "padding": "Padding"
+    "padding": "Padding",
+    "alignment": "Alignment",
+    "allow_discounts_in_cart": "Allow discounts in cart",
+    "allow_note_to_seller": "Allow order notes",
+    "always_stack_buttons": "Always stack buttons",
+    "appearance": "Appearance",
+    "arrows": "Arrows",
+    "auto": "Auto",
+    "autoplay_speed": "Autoplay speed",
+    "background": "Background",
+    "background_image": "Background Image",
+    "background_media": "Background Media",
+    "background_overlay_color": "Background overlay color",
+    "block_link": "Block Link",
+    "body": "Body",
+    "bold": "Bold",
+    "bold_border": "Bold",
+    "bold_weight": "Bold (700)",
+    "border_color": "Border Color",
+    "border_style": "Border Style",
+    "borders": "Borders",
+    "bottom": "Bottom",
+    "buttons": "Buttons",
+    "carets": "Carets",
+    "cart_items": "Cart items",
+    "cart_total": "Cart total",
+    "case": "Case",
+    "center": "Center",
+    "circle": "Circle",
+    "column_dividers": "Column dividers",
+    "corner_radius": "Corner Radius",
+    "custom": "Custom",
+    "custom_font_size": "Custom Font Size",
+    "custom_font_weight": "Custom Font Weight",
+    "custom_height": "Custom Height",
+    "custom_line_height": "Custom line height",
+    "custom_mobile_width": "Custom Mobile Width",
+    "custom_svg": "Custom Svg",
+    "custom_width": "Custom Width",
+    "default": "Default",
+    "direction": "Direction",
+    "displays_variants_info": "Displays variants from the parent product.",
+    "dropdowns": "Dropdowns",
+    "edit_variant_styling_info": "Edit variant styling in theme settings.",
+    "extrabold_weight": "Extra Bold (800)",
+    "fill": "Fill",
+    "fit": "Fit",
+    "font": "Font",
+    "font_size_10": "10px",
+    "font_size_11": "11px",
+    "font_size_12": "12px",
+    "font_size_13": "13px",
+    "font_size_14": "14px",
+    "font_size_15": "15px",
+    "font_size_16": "16px",
+    "full_screen": "Full Screen",
+    "gap": "Gap",
+    "ghost": "Ghost",
+    "gift_card_form": "Gift Card Form",
+    "h1": "H1",
+    "h2": "H2",
+    "h3": "H3",
+    "h4": "H4",
+    "h5": "H5",
+    "heading_1": "Heading 1",
+    "heading_2": "Heading 2",
+    "heading_3": "Heading 3",
+    "heading_4": "Heading 4",
+    "heading_5": "Heading 5",
+    "heading_6": "Heading 6",
+    "heading_size": "Heading Size",
+    "height": "Height",
+    "horizontal": "Horizontal",
+    "icon_color": "Icon Color",
+    "icon_image": "Icon Image",
+    "icon_size": "Icon Size",
+    "icon_source": "Icon Source",
+    "image": "Image",
+    "installments": "Installments",
+    "large": "Large",
+    "left": "Left",
+    "letter_spacing": "Letter Spacing",
+    "light_weight": "Light (300)",
+    "line_height_1": "1.0",
+    "line_height_1_2": "1.2",
+    "line_height_1_4": "1.4",
+    "line_height_1_6": "1.6",
+    "line_height_1_8": "1.8",
+    "line_height_2": "2.0",
+    "link": "Link",
+    "loose": "Loose",
+    "max_width": "Max Width",
+    "medium": "Medium",
+    "medium_weight": "Medium (500)",
+    "mobile_width": "Mobile Width",
+    "narrow": "Narrow",
+    "none": "None",
+    "normal": "Normal",
+    "open_link_in_new_tab": "Open link in new tab",
+    "overlay_opacity": "Overlay Opacity",
+    "padding_header": "Padding",
+    "paragraph": "Paragraph",
+    "position": "Position",
+    "preset": "Preset",
+    "product_title_case": "Product title case",
+    "regular_border": "Regular",
+    "regular_weight": "Regular (400)",
+    "right": "Right",
+    "semibold": "Semibold",
+    "semibold_weight": "Semibold (600)",
+    "show_announcement": "Show announcement",
+    "show_column_dividers": "Show column dividers",
+    "show_pickup_availability": "Show pickup availability",
+    "show_sold_out_options": "Show sold-out options",
+    "size": "Size",
+    "small": "Small",
+    "solid": "Solid",
+    "space_between": "Space Between",
+    "square": "Square",
+    "stroke_width": "Stroke Width",
+    "style": "Style",
+    "subheading": "Subheading",
+    "swatches": "Swatches",
+    "theme_settings": "Theme Settings",
+    "thin": "Thin",
+    "tight": "Tight",
+    "top": "Top",
+    "uppercase": "Uppercase",
+    "vertical": "Vertical",
+    "vertical_mobile": "Vertical Mobile",
+    "weight": "Weight"
   },
   "labels": {
     "alignment": "Alignment",
@@ -408,16 +537,16 @@
           "content": "Padding"
         },
         "padding_top": {
-          "label": "Top"
+          "label": "t:general.padding_top"
         },
         "padding_bottom": {
-          "label": "Bottom"
+          "label": "t:general.padding_bottom"
         },
         "padding_left": {
-          "label": "Left"
+          "label": "t:general.padding_left"
         },
         "padding_right": {
-          "label": "Right"
+          "label": "t:general.padding_right"
         }
       }
     },
@@ -445,16 +574,16 @@
           "content": "Padding"
         },
         "padding_top": {
-          "label": "Top"
+          "label": "t:general.padding_top"
         },
         "padding_bottom": {
-          "label": "Bottom"
+          "label": "t:general.padding_bottom"
         },
         "padding_left": {
-          "label": "Left"
+          "label": "t:general.padding_left"
         },
         "padding_right": {
-          "label": "Right"
+          "label": "t:general.padding_right"
         }
       }
     },
@@ -490,16 +619,16 @@
           "content": "Padding"
         },
         "padding_top": {
-          "label": "Top"
+          "label": "t:general.padding_top"
         },
         "padding_bottom": {
-          "label": "Bottom"
+          "label": "t:general.padding_bottom"
         },
         "padding_left": {
-          "label": "Left"
+          "label": "t:general.padding_left"
         },
         "padding_right": {
-          "label": "Right"
+          "label": "t:general.padding_right"
         }
       }
     },
@@ -553,22 +682,21 @@
         },
         "padding_header": "Padding",
         "padding_top": {
-          "label": "Top"
+          "label": "t:general.padding_top"
         },
         "padding_bottom": {
-          "label": "Bottom"
+          "label": "t:general.padding_bottom"
         },
         "padding_left": {
-          "label": "Left"
+          "label": "t:general.padding_left"
         },
         "padding_right": {
-          "label": "Right"
+          "label": "t:general.padding_right"
         }
       }
     }
   },
   "sections": {
-
     "header_group": {
       "name": "Header group"
     },
@@ -970,7 +1098,6 @@
         }
       }
     },
-
     "featured_collection": {
       "name": "Featured collection",
       "settings": {
